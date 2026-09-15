@@ -1,0 +1,19 @@
+# Python / Django
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Node / React
+node_modules/
+.vite/
+build/
+dist/
+
+# Variables de entorno (nunca subir contraseñas)
+.env
+*.env.local
+
+# Sistema
+.DS_Store
+Thumbs.db

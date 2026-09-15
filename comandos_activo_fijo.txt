@@ -1,0 +1,40 @@
+========================================
+COMANDOS PARA LEVANTAR EL PROYECTO ACTIVO FIJO
+========================================
+
+--------- BACKEND (Django) ---------
+Abrir una ventana de cmd y ejecutar:
+
+cd D:\activos_fijos\activo-fijo-backend-main
+venv\Scripts\activate
+set DB_PASSWORD=malavida32
+python manage.py runserver
+
+Backend disponible en: http://127.0.0.1:8000/
+
+--------- FRONTEND (React) ---------
+Abrir OTRA ventana de cmd (dejando la del backend abierta) y ejecutar:
+
+cd D:\activos_fijos\activo-fijo-frontend-main
+npm start
+
+Frontend disponible en: http://localhost:3000/
+
+--------- CREDENCIALES DE LOGIN ---------
+Usuario: abel@bulo.com
+Contraseña: malavida32
+
+--------- BASE DE DATOS ---------
+Motor: PostgreSQL
+Base de datos: activo_fijo
+Usuario: postgres
+Contraseña: malavida32
+Host: localhost
+Puerto: 5432
+
+--------- NOTAS ---------
+- Siempre activar el venv y definir DB_PASSWORD antes de correr el backend.
+- El backend y el frontend deben quedar corriendo AL MISMO TIEMPO
+  (en dos ventanas de cmd distintas) para que la app funcione.
+- Si aparece "ModuleNotFoundError: No module named 'X'", instalar con:
+  pip install X   (dentro del venv activado)
