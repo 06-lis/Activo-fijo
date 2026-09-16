@@ -274,7 +274,7 @@ export default function Proveedores() {
                                 e.stopPropagation();
                                 if (window.confirm('¿Está seguro de eliminar este proveedor? Tenga en cuenta que no debe tener contactos asociados.')) { 
                                   try {
-                                    await eliminarProv({ variables: { codProv: p.codProv } }); 
+                                    await eliminarProv({ variables: { codProv: Number(p.codProv) } }); 
                                     refetch(); 
                                   } catch (err: any) {
                                     alert('Error al eliminar: ' + err.message);

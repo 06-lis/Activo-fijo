@@ -220,13 +220,13 @@ export default function Ingresos() {
 
   const handleSelectRecep = (r: any) => {
     setForm({ ...form, codEmpRecep: r.codResp });
-    setRecepSearch(`[${r.codEstprog}] ${r.codEmp.nombre} ${r.codEmp.apellido}`);
+    setRecepSearch(`${r.codEstprog} - ${r.codEmp.nombre} ${r.codEmp.apellido} | ${r.codEmp.cargo}`);
     setShowRecepDropdown(false);
   };
 
   const handleSelectDest = (r: any) => {
     setForm({ ...form, codEmpDest: r.codResp });
-    setDestSearch(`[${r.codEstprog}] ${r.codEmp.nombre} ${r.codEmp.apellido}`);
+    setDestSearch(`${r.codEstprog} - ${r.codEmp.nombre} ${r.codEmp.apellido} | ${r.codEmp.cargo}`);
     setShowDestDropdown(false);
   };
 
@@ -392,7 +392,7 @@ export default function Ingresos() {
                             <li
                               key={o.codOfic}
                               className="autocomplete-item"
-                              onClick={() => handleSelectOficina(o)}
+                              onMouseDown={() => handleSelectOficina(o)}
                             >
                               [{unified}] {o.desDpto}
                             </li>
@@ -424,13 +424,13 @@ export default function Ingresos() {
                     />
                     {showRecepDropdown && (
                       <ul className="autocomplete-dropdown">
-                        {filteredResponsiblesRecep.slice(0, 20).map((r: any) => (
+                        {filteredResponsiblesRecep.map((r: any) => (
                           <li
                             key={r.codResp}
-                            className="autocomplete-item"
-                            onClick={() => handleSelectRecep(r)}
+                            style={{ padding: '0.5rem', cursor: 'pointer', borderBottom: '1px solid #f1f5f9' }}
+                            onMouseDown={() => handleSelectRecep(r)}
                           >
-                            [{r.codEstprog}] {r.codEmp.nombre} {r.codEmp.apellido} ({r.codEmp.cargo || 'Sin cargo'})
+                            {r.codEstprog} - {r.codEmp.nombre} {r.codEmp.apellido} | {r.codEmp.cargo || 'Sin cargo'}
                           </li>
                         ))}
                         {filteredResponsiblesRecep.length === 0 && (
@@ -458,13 +458,13 @@ export default function Ingresos() {
                     />
                     {showDestDropdown && (
                       <ul className="autocomplete-dropdown">
-                        {filteredResponsiblesDest.slice(0, 20).map((r: any) => (
+                        {filteredResponsiblesDest.map((r: any) => (
                           <li
                             key={r.codResp}
-                            className="autocomplete-item"
-                            onClick={() => handleSelectDest(r)}
+                            style={{ padding: '0.5rem', cursor: 'pointer', borderBottom: '1px solid #f1f5f9' }}
+                            onMouseDown={() => handleSelectDest(r)}
                           >
-                            [{r.codEstprog}] {r.codEmp.nombre} {r.codEmp.apellido} ({r.codEmp.cargo || 'Sin cargo'})
+                            {r.codEstprog} - {r.codEmp.nombre} {r.codEmp.apellido} | {r.codEmp.cargo || 'Sin cargo'}
                           </li>
                         ))}
                         {filteredResponsiblesDest.length === 0 && (

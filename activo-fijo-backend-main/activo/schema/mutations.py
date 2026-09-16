@@ -33,8 +33,8 @@ from .types import (
 
 
 def validar_y_calcular_nivel(codigo, cod_padre_id, model_class):
-    if not re.match(r'^[a-zA-Z0-9]{2}(-[a-zA-Z0-9]{2}){0,2}$', codigo):
-        raise Exception("Formato de código inválido. Debe tener la estructura XX, XX-XX o XX-XX-XX (cada nivel con 2 caracteres alfanuméricos separados por guiones).")
+    if not re.match(r'^[a-zA-Z0-9]{1,3}(-[a-zA-Z0-9]{1,3}){0,2}$', codigo):
+        raise Exception("Formato de código inválido. Se esperaba una estructura por niveles separados por guiones (Ej: 1, 1-01, 1-01-200). Cada nivel puede tener entre 1 y 3 caracteres.")
     
     partes = codigo.split('-')
     nivel = len(partes)
@@ -650,7 +650,7 @@ class CrearResponsable(graphene.Mutation):
     responsable = graphene.Field(InResponsableType)
     def mutate(root, info, cod_estprog, cod_emp, tipo_per, fecha):
         obj = in_responsable.objects.create(
-            cod_estprog=cod_estprog, cod_emp=cod_emp,
+            cod_estprog=cod_estprog, cod_emp_id=cod_emp,
             tipo_per=tipo_per, fecha=fecha, a_b='A'
         )
         return CrearResponsable(responsable=obj)
@@ -666,7 +666,7 @@ class EditarResponsable(graphene.Mutation):
     def mutate(root, info, cod_resp, cod_estprog=None, cod_emp=None, tipo_per=None, fecha=None):
         obj = in_responsable.objects.get(pk=cod_resp)
         if cod_estprog is not None: obj.cod_estprog = cod_estprog
-        if cod_emp     is not None: obj.cod_emp = cod_emp
+        if cod_emp     is not None: obj.cod_emp_id = cod_emp
         if tipo_per    is not None: obj.tipo_per = tipo_per
         if fecha       is not None: obj.fecha = fecha
         obj.save()
@@ -2175,10 +2175,11 @@ class RegistrarEmpleadoUsuario(graphene.Mutation):
         correo = graphene.String(required=True)
         contrasena = graphene.String(required=True)
         procedencia = graphene.String()
+        cargo = graphene.String()
 
     usuario = graphene.Field(InUsuarioType)
 
-    def mutate(self, info, nombre, apellido, numero_documento, tipo_documento, fecha_ingreso, salario, correo, contrasena, procedencia=None):
+    def mutate(self, info, nombre, apellido, numero_documento, tipo_documento, fecha_ingreso, salario, correo, contrasena, procedencia=None, cargo=None):
         if in_usuario.objects.filter(correo=correo).exists():
             raise Exception("El correo ya se encuentra registrado")
         if in_empleado.objects.filter(numero_documento=numero_documento).exists():
@@ -2191,7 +2192,8 @@ class RegistrarEmpleadoUsuario(graphene.Mutation):
             tipo_documento=tipo_documento,
             fecha_ingreso=fecha_ingreso,
             salario=salario,
-            procedencia=procedencia
+            procedencia=procedencia,
+            cargo=cargo
         )
 
         usr = in_usuario.objects.create(
@@ -2464,12 +2466,52 @@ class GuardarTasaRev(graphene.Mutation):
         return GuardarTasaRev(tasa_rev=obj)
 
 
+class EliminarProvedor(graphene.Mutation):
+    class Arguments:
+        cod_prov = graphene.Int(required=True)
+    ok = graphene.Boolean()
+    def mutate(root, info, cod_prov):
+        from django.db.models.deletion import ProtectedError
+        try:
+            in_provedor.objects.filter(pk=cod_prov).delete()
+            return EliminarProvedor(ok=True)
+        except ProtectedError:
+            raise Exception("No se puede eliminar el proveedor porque tiene contactos o ingresos asociados.")
+
+class EliminarMarca(graphene.Mutation):
+    class Arguments:
+        cod_marca = graphene.Int(required=True)
+    ok = graphene.Boolean()
+    def mutate(root, info, cod_marca):
+        from django.db.models.deletion import ProtectedError
+        try:
+            in_marca.objects.filter(pk=cod_marca).delete()
+            return EliminarMarca(ok=True)
+        except ProtectedError:
+            raise Exception("No se puede eliminar la marca porque tiene modelos o activos asociados.")
+
+class EliminarModelo(graphene.Mutation):
+    class Arguments:
+        cod_modelo = graphene.Int(required=True)
+    ok = graphene.Boolean()
+    def mutate(root, info, cod_modelo):
+        from django.db.models.deletion import ProtectedError
+        try:
+            in_modelo.objects.filter(pk=cod_modelo).delete()
+            return EliminarModelo(ok=True)
+        except ProtectedError:
+            raise Exception("No se puede eliminar el modelo porque está en uso por algún activo.")
+
+
 
 # ═══════════════════════════════════════════════════════════════
 # MUTATION ROOT
 # ═══════════════════════════════════════════════════════════════
 
 class Mutation(graphene.ObjectType):
+    eliminar_provedor = EliminarProvedor.Field()
+    eliminar_marca = EliminarMarca.Field()
+    eliminar_modelo = EliminarModelo.Field()
 
     # ── Catálogos ───────────────────────────────────────────────
     crear_estado         = CrearEstado.Field()

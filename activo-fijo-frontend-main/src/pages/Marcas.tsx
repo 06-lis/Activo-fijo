@@ -75,7 +75,7 @@ export default function Marcas() {
                 <td>
                   <div className="btn-group">
                     {puedeEditarMarca && <button className="btn btn-warning btn-sm" onClick={() => { setEditandoMarca(m); setFormMarca({ desMarca: m.desMarca }); setShowMarcaModal(true); }}>Editar</button>}
-                    {puedeEliminarMarca && <button className="btn btn-danger btn-sm" onClick={async () => { if (window.confirm('¿Eliminar?')) { await eliminarMarca({ variables: { codMarca: m.codMarca } }); refetchMarcas(); } }}>Eliminar</button>}
+{puedeEliminarMarca && <button className="btn btn-danger btn-sm" onClick={async () => { if (window.confirm('¿Eliminar?')) { try { await eliminarMarca({ variables: { codMarca: Number(m.codMarca) } }); refetchMarcas(); } catch(e:any) { alert(e.message); } } }}>Eliminar</button>}
                   </div>
                 </td>
               </tr>

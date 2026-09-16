@@ -379,11 +379,6 @@ export default function Roles() {
           <div className="table-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', padding: '0 0.5rem' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1a3c6e', margin: 0 }}>Roles de Usuario</h3>
-              {puedeGestionarRoles && (
-                <button className="btn btn-primary btn-sm" onClick={() => { setEditRolObj(null); setRolName(''); setRolDesc(''); setShowRolModal(true); }}>
-                  + Nuevo Rol
-                </button>
-              )}
             </div>
             <table>
               <thead>
@@ -432,11 +427,6 @@ export default function Roles() {
           <div className="table-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', padding: '0 0.5rem' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1a3c6e', margin: 0 }}>Permisos Globales en BD</h3>
-              {puedeGestionarRoles && (
-                <button className="btn btn-primary btn-sm" onClick={() => { setEditPermObj(null); setPermName(''); setShowPermModal(true); }}>
-                  + Nuevo Permiso
-                </button>
-              )}
             </div>
             <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
               <table>

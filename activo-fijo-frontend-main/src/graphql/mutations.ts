@@ -100,7 +100,6 @@ export const CALCULAR_DEP_MASIVA = gql`
   }
 `;
 
-
 // ==================== GRUPOS ====================
 export const CREAR_GRUPO = gql`
   mutation CrearGrupo($codHijo: String!, $desGrupo: String, $codGest: Int!, $codPadre: Int, $vidaUtilDefault: Int, $codigoContable: String) {
@@ -138,7 +137,7 @@ export const ELIMINAR_GRUPO = gql`
 // ==================== OFICINAS ====================
 export const CREAR_OFIC = gql`
   mutation CrearOficina($codDpto: String!, $desDpto: String!, $codGest: Int!, $codPadre: Int) {
- crearOficina(codDpto: $codDpto, desDpto: $desDpto, codGest: $codGest, codPadre: $codPadre) {
+    crearOficina(codDpto: $codDpto, desDpto: $desDpto, codGest: $codGest, codPadre: $codPadre) {
       oficina {
         codOfic
         desDpto
@@ -148,9 +147,12 @@ export const CREAR_OFIC = gql`
 `;
 
 export const ELIMINAR_OFIC = gql`
-  mutation EliminarOficina($codOfic: Int!) {
-    eliminarOficina(codOfic: $codOfic) {
-      ok
+  mutation DarDeBajaOficina($codOfic: Int!) {
+    darDeBajaOficina(codOfic: $codOfic) {
+      oficina {
+        codOfic
+        aB
+      }
     }
   }
 `;
@@ -358,7 +360,8 @@ export const REGISTRAR_EMPLEADO_USUARIO = gql`
     $salario: Decimal!,
     $correo: String!,
     $contrasena: String!,
-    $procedencia: String
+    $procedencia: String,
+    $cargo: String
   ) {
     registrarEmpleadoUsuario(
       nombre: $nombre,
@@ -369,7 +372,8 @@ export const REGISTRAR_EMPLEADO_USUARIO = gql`
       salario: $salario,
       correo: $correo,
       contrasena: $contrasena,
-      procedencia: $procedencia
+      procedencia: $procedencia,
+      cargo: $cargo
     ) {
       usuario {
         idUsuario

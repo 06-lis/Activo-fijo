@@ -1,0 +1,24 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+django.setup()
+
+from activo.models import in_grupo
+
+data = [{'cod_grupo': 5, 'cod_hijo': '1', 'des_grupo': 'Muebles de Oficina', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 6, 'cod_hijo': '2', 'des_grupo': 'Equipos de Oficina', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 7, 'cod_hijo': '3', 'des_grupo': 'Maquinarias y Equipo de produccion', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 8, 'cod_hijo': '4', 'des_grupo': 'Equipo de Transporte. Traccion y eleva', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 9, 'cod_hijo': '5', 'des_grupo': 'Equipo Medico y de laboratorio ', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 10, 'cod_hijo': '6', 'des_grupo': 'Equipo de Comunicacion', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 11, 'cod_hijo': '7', 'des_grupo': 'Equipo Educacional y Recreativo', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 12, 'cod_hijo': '8', 'des_grupo': 'Otros equipos', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 13, 'cod_hijo': '9', 'des_grupo': 'Otros activos', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 15, 'cod_hijo': 'A', 'des_grupo': 'Edificios', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 16, 'cod_hijo': 'B', 'des_grupo': 'Terrenos', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 17, 'cod_hijo': 'C', 'des_grupo': 'Infraestructura e instalaciones ', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 18, 'cod_hijo': 'D', 'des_grupo': 'Activos intangibles', 'cod_padre_id': None, 'nivel': 1, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 19, 'cod_hijo': '1-02', 'des_grupo': 'Mesa', 'cod_padre_id': 5, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 20, 'cod_hijo': '1-03', 'des_grupo': ' Silla', 'cod_padre_id': 5, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 21, 'cod_hijo': '1-04', 'des_grupo': ' Estante', 'cod_padre_id': 5, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 14, 'cod_hijo': '1-01', 'des_grupo': 'Sofa', 'cod_padre_id': 5, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 26, 'cod_hijo': '2-01', 'des_grupo': 'Computadora', 'cod_padre_id': 6, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 27, 'cod_hijo': '2-02', 'des_grupo': 'Impresora', 'cod_padre_id': 6, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 28, 'cod_hijo': '2-03', 'des_grupo': 'Adaptador de corriente', 'cod_padre_id': 6, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 29, 'cod_hijo': '2-04', 'des_grupo': 'Proyector', 'cod_padre_id': 6, 'nivel': 2, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 22, 'cod_hijo': '1-02-1', 'des_grupo': ' Metalica', 'cod_padre_id': 19, 'nivel': 3, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 23, 'cod_hijo': '1-03-1', 'des_grupo': ' Madera', 'cod_padre_id': 20, 'nivel': 3, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 24, 'cod_hijo': '1-04-1', 'des_grupo': 'Plastica', 'cod_padre_id': 21, 'nivel': 3, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 25, 'cod_hijo': '1-01-1', 'des_grupo': 'Cuerina', 'cod_padre_id': 14, 'nivel': 3, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 30, 'cod_hijo': '2-01-1', 'des_grupo': 'De escritorio', 'cod_padre_id': 26, 'nivel': 3, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 31, 'cod_hijo': '2-04-1', 'des_grupo': 'Laser monocromatica', 'cod_padre_id': 29, 'nivel': 3, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}, {'cod_grupo': 32, 'cod_hijo': '2-03-1', 'des_grupo': 'Fuente de poder', 'cod_padre_id': 28, 'nivel': 3, 'cod_gest_id': 1, 'cod_tipo_id': None, 'a_b': 'A'}]
+
+map_id = {}
+for item in sorted(data, key=lambda x: x['nivel']):
+    new_padre = map_id.get(item['cod_padre_id']) if item['cod_padre_id'] else None
+    new_obj = in_grupo.objects.create(
+        cod_hijo=item['cod_hijo'], 
+        des_grupo=item['des_grupo'], 
+        cod_padre_id=new_padre, 
+        nivel=item['nivel'], 
+        cod_gest_id=1, 
+        a_b='A'
+    )
+    map_id[item['cod_grupo']] = new_obj.cod_grupo
+
+print('Grupos restaurados con exito')

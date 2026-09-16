@@ -25,28 +25,37 @@ const getSugerenciaCodigo = (oficinas: any[], nivel: number, codPadreId: number 
   const hermanas = oficinas.filter(o => 
     o.nivel === nivel && (codPadreId ? String(o.codPadre?.codOfic) === String(codPadreId) : !o.codPadre)
   );
-  const codigosOcupados = new Set(hermanas.map(o => o.codDpto?.toUpperCase()));
+  
+  const codigosOcupados = new Set(hermanas.map(o => {
+    if (!o.codDpto) return '';
+    const parts = o.codDpto.split('-');
+    return parts[parts.length - 1].toUpperCase();
+  }));
 
   let secuencia: string[] = [];
-  if (nivel === 1 || nivel === 3) {
+  if (nivel === 1) {
     for (let i = 1; i <= 9; i++) secuencia.push(i.toString());
     for (let i = 65; i <= 90; i++) secuencia.push(String.fromCharCode(i));
-  } else if (nivel === 2) {
-    for (let i = 1; i <= 99; i++) secuencia.push(i.toString().padStart(2, '0'));
-    secuencia.push('00'); // Por si acaso se usa como caso especial
-    for (let i = 65; i <= 90; i++) {
-      for (let j = 65; j <= 90; j++) {
-        secuencia.push(String.fromCharCode(i) + String.fromCharCode(j));
-      }
+  } else {
+    for (let i = 1; i <= 200; i++) secuencia.push(i.toString().padStart(2, '0'));
+  }
+
+  let nextSufijo = '';
+  for (const cod of secuencia) {
+    if (!codigosOcupados.has(cod)) {
+      nextSufijo = cod;
+      break;
     }
   }
 
-  for (const cod of secuencia) {
-    if (!codigosOcupados.has(cod)) {
-      return cod;
+  if (nivel > 1 && codPadreId) {
+    const padre = oficinas.find(o => String(o.codOfic) === String(codPadreId));
+    if (padre && padre.codDpto) {
+      return `${padre.codDpto}-${nextSufijo}`;
     }
   }
-  return '';
+
+  return nextSufijo;
 };
 
 // Componente para búsqueda con autocompletado
@@ -164,7 +173,7 @@ export default function Oficinas() {
   }, [form.nivel, form.codPadre, showModal, data]);
 
   const handleSubmit = async () => {
-    if (!form.codDpto || !form.desDpto) { alert('Complete los campos obligatorios'); return; }
+    if (!form.codDpto) { alert('El código es obligatorio'); return; }
     try {
       await crearOfic({ variables: {
         codDpto: form.codDpto, desDpto: form.desDpto, codGest: 1,
@@ -176,7 +185,7 @@ export default function Oficinas() {
 
   const handleEliminar = async (codOfic: number) => {
     if (!window.confirm('¿Eliminar esta oficina?')) return;
-   await eliminarOfic({ variables: { codOfic: Number(codOfic) } }); refetch();
+    await eliminarOfic({ variables: { codOfic: Number(codOfic) } }); refetch();
   };
 
   const { user } = useAuth();

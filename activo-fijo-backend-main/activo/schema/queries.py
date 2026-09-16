@@ -268,30 +268,30 @@ class Query(graphene.ObjectType):
 
     # ── Resolvers — Catálogos simples ───────────────────────────
     def resolve_todos_estados(root, info):
-        return in_estado.objects.all()
+        return in_estado.objects.all().order_by('pk')
     def resolve_estado(root, info, cod_estado):
         return in_estado.objects.get(pk=cod_estado)
 
     def resolve_todas_condiciones(root, info):
-        return in_condicion.objects.all()
+        return in_condicion.objects.all().order_by('pk')
     def resolve_condicion(root, info, cod_cond):
         return in_condicion.objects.get(pk=cod_cond)
 
     def resolve_todas_unidades(root, info):
-        return in_unidad.objects.all()
+        return in_unidad.objects.all().order_by('pk')
     def resolve_unidad(root, info, cod_unidad):
         return in_unidad.objects.get(pk=cod_unidad)
 
     def resolve_todos_tipos_asig(root, info):
-        return in_tipo_asig.objects.all()
+        return in_tipo_asig.objects.all().order_by('pk')
     def resolve_tipo_asig(root, info, tipo_asig):
         return in_tipo_asig.objects.get(pk=tipo_asig)
 
     def resolve_todos_tipomats(root, info):
-        return in_tipomat.objects.all()
+        return in_tipomat.objects.all().order_by('pk')
 
     def resolve_todos_tipos(root, info, solo_activos=True):
-        qs = in_tipo.objects.all()
+        qs = in_tipo.objects.all().order_by('pk')
         if solo_activos:
             qs = qs.exclude(a_b='B')
         return qs
@@ -299,19 +299,19 @@ class Query(graphene.ObjectType):
         return in_tipo.objects.get(pk=cod_tipo)
 
     def resolve_todas_marcas(root, info):
-        return in_marca.objects.all()
+        return in_marca.objects.all().order_by('pk')
     def resolve_marca(root, info, cod_marca):
         return in_marca.objects.get(pk=cod_marca)
 
     def resolve_todos_modelos(root, info):
-        return in_modelo.objects.select_related('cod_marca').all()
+        return in_modelo.objects.select_related('cod_marca').all().order_by('pk')
     def resolve_modelo(root, info, cod_modelo):
         return in_modelo.objects.get(pk=cod_modelo)
     def resolve_modelos_por_marca(root, info, cod_marca):
         return in_modelo.objects.filter(cod_marca_id=cod_marca)
 
     def resolve_todas_gestiones(root, info, solo_activas=True):
-        qs = in_gestion.objects.all()
+        qs = in_gestion.objects.all().order_by('pk')
         if solo_activas:
             qs = qs.exclude(a_b='B')
         return qs
@@ -319,7 +319,7 @@ class Query(graphene.ObjectType):
         return in_gestion.objects.get(pk=cod_gest)
 
     def resolve_todas_partes(root, info, solo_activas=True):
-        qs = in_parte.objects.all()
+        qs = in_parte.objects.all().order_by('pk')
         if solo_activas:
             qs = qs.exclude(a_b='B')
         return qs
@@ -327,7 +327,7 @@ class Query(graphene.ObjectType):
         return in_parte.objects.get(pk=cod_parte)
 
     def resolve_todos_revaluos(root, info, estado=None):
-        qs = in_revaluo.objects.all()
+        qs = in_revaluo.objects.all().order_by('pk')
         if estado:
             qs = qs.filter(estado=estado)
         return qs
@@ -335,7 +335,7 @@ class Query(graphene.ObjectType):
         return in_revaluo.objects.get(pk=cod_reval)
 
     def resolve_todas_funciones_adm(root, info):
-        return in_funcion_adm.objects.all()
+        return in_funcion_adm.objects.all().order_by('pk')
     def resolve_funcion_adm(root, info, cod_func):
         return in_funcion_adm.objects.get(pk=cod_func)
 
@@ -344,7 +344,7 @@ class Query(graphene.ObjectType):
         qs = in_grupo.objects.select_related('cod_padre', 'cod_gest', 'cod_tipo')
         if solo_activos:
             qs = qs.exclude(a_b='B')
-        return qs
+        return qs.order_by('cod_hijo')
     def resolve_grupo(root, info, cod_grupo):
         return in_grupo.objects.get(pk=cod_grupo)
     def resolve_grupos_raiz(root, info, solo_activos=True):
@@ -359,7 +359,7 @@ class Query(graphene.ObjectType):
         qs = in_oficina.objects.select_related('cod_padre')
         if solo_activas:
             qs = qs.exclude(a_b='B')
-        return qs
+        return qs.order_by('cod_dpto')
     def resolve_oficina(root, info, cod_ofic):
         return in_oficina.objects.get(pk=cod_ofic)
     def resolve_oficinas_raiz(root, info, solo_activas=True):
@@ -372,7 +372,7 @@ class Query(graphene.ObjectType):
 
     # ── Resolvers — Proveedores ─────────────────────────────────
     def resolve_todos_provedores(root, info):
-        return in_provedor.objects.all()
+        return in_provedor.objects.all().order_by('pk')
     def resolve_provedor(root, info, cod_prov):
         return in_provedor.objects.get(pk=cod_prov)
     def resolve_contactos_por_proveedor(root, info, cod_prov):
@@ -382,7 +382,7 @@ class Query(graphene.ObjectType):
 
     # ── Resolvers — Responsables ────────────────────────────────
     def resolve_todos_responsables(root, info, solo_activos=True):
-        qs = in_responsable.objects.all()
+        qs = in_responsable.objects.all().order_by('pk')
         if solo_activos:
             qs = qs.exclude(a_b='B')
         return qs
@@ -566,38 +566,38 @@ class Query(graphene.ObjectType):
         ).values_list('id_permiso__nombre', flat=True).distinct())
 
     def resolve_todos_roles(root, info):
-        return in_rol.objects.prefetch_related('permisos__id_permiso').all()
+        return in_rol.objects.prefetch_related('permisos__id_permiso').all().order_by('pk')
 
     def resolve_rol(root, info, id_rol):
         return in_rol.objects.get(pk=id_rol)
 
     def resolve_todos_permisos(root, info):
-        return in_permiso.objects.all()
+        return in_permiso.objects.all().order_by('pk')
 
     def resolve_permiso(root, info, id_permiso):
         return in_permiso.objects.get(pk=id_permiso)
 
     def resolve_todos_empleados(root, info):
-        return in_empleado.objects.all()
+        return in_empleado.objects.all().order_by('pk')
 
     def resolve_empleado(root, info, id_empleado):
         return in_empleado.objects.get(pk=id_empleado)
 
     def resolve_todos_usuarios(root, info):
-        return in_usuario.objects.select_related('id_empleado').prefetch_related('roles_permisos__id_rol', 'roles_permisos__id_permiso').all()
+        return in_usuario.objects.select_related('id_empleado').prefetch_related('roles_permisos__id_rol', 'roles_permisos__id_permiso').all().order_by('pk')
 
     def resolve_usuario(root, info, id_usuario):
         return in_usuario.objects.get(pk=id_usuario)
 
     # ── Resolvers de nuevos modelos y UFV ────────────────────────
     def resolve_todos_motivos(root, info):
-        return in_motivo.objects.all()
+        return in_motivo.objects.all().order_by('pk')
 
     def resolve_todas_bajas_detalladas(root, info):
-        return in_baja_act.objects.select_related('nro_activo').all()
+        return in_baja_act.objects.select_related('nro_activo').all().order_by('pk')
 
     def resolve_todos_vehiculos(root, info):
-        return in_vehic.objects.select_related('nro_activo').all()
+        return in_vehic.objects.select_related('nro_activo').all().order_by('pk')
 
     def resolve_vehiculo_por_activo(root, info, nro_activo):
         try:
@@ -606,29 +606,29 @@ class Query(graphene.ObjectType):
             return None
 
     def resolve_todas_tasas_rev(root, info):
-        return in_tasa_rev.objects.all().order_by('-fecha')
+        return in_tasa_rev.objects.all().order_by('pk').order_by('-fecha')
 
     # ── Resolvers de logs de auditoría ──────────────────────────
     def resolve_todos_logs_activos(root, info):
-        return in_log_activo.objects.all().order_by('-id')
+        return in_log_activo.objects.all().order_by('pk').order_by('-id')
 
     def resolve_todos_logs_ingresos(root, info):
-        return in_log_ingreso.objects.all().order_by('-id')
+        return in_log_ingreso.objects.all().order_by('pk').order_by('-id')
 
     def resolve_todos_logs_asignados(root, info):
-        return in_log_asignado.objects.all().order_by('-id')
+        return in_log_asignado.objects.all().order_by('pk').order_by('-id')
 
     def resolve_todos_logs_det_asig(root, info):
-        return in_log_det_asig.objects.all().order_by('-id')
+        return in_log_det_asig.objects.all().order_by('pk').order_by('-id')
 
     def resolve_todos_logs_oficina(root, info):
-        return in_log_oficina.objects.all().order_by('-id')
+        return in_log_oficina.objects.all().order_by('pk').order_by('-id')
 
     def resolve_todos_logs_det_reval(root, info):
-        return in_log_det_reval.objects.all().order_by('-id')
+        return in_log_det_reval.objects.all().order_by('pk').order_by('-id')
 
     def resolve_todos_logs_baja_act(root, info):
-        return in_log_baja_act.objects.all().order_by('-id')
+        return in_log_baja_act.objects.all().order_by('pk').order_by('-id')
 
     # ── Resolvers de consultas paginadas ────────────────────────
     def resolve_todos_activos_paginados(root, info, limit=15, offset=0, search=None, solo_activos=True, solo_aprobados=False, solo_pendientes=False):
@@ -679,7 +679,7 @@ class Query(graphene.ObjectType):
         return InAsignadoPaginatedType(total_count=total_count, results=results)
 
     def resolve_todos_logs_activos_paginados(root, info, limit=15, offset=0, search=None):
-        qs = in_log_activo.objects.all()
+        qs = in_log_activo.objects.all().order_by('pk')
         if search:
             from django.db.models import Q
             q_obj = Q(cod_activo__icontains=search) | Q(descripcion__icontains=search) | Q(nro_serie__icontains=search)
@@ -691,7 +691,7 @@ class Query(graphene.ObjectType):
         return InLogActivoPaginatedType(total_count=total_count, results=results)
 
     def resolve_todos_logs_ingresos_paginados(root, info, limit=15, offset=0, search=None):
-        qs = in_log_ingreso.objects.all()
+        qs = in_log_ingreso.objects.all().order_by('pk')
         if search:
             from django.db.models import Q
             q_obj = Q(glosa__icontains=search)
@@ -703,7 +703,7 @@ class Query(graphene.ObjectType):
         return InLogIngresoPaginatedType(total_count=total_count, results=results)
 
     def resolve_todos_logs_asignados_paginados(root, info, limit=15, offset=0, search=None):
-        qs = in_log_asignado.objects.all()
+        qs = in_log_asignado.objects.all().order_by('pk')
         if search:
             from django.db.models import Q
             q_obj = Q(obs__icontains=search)
@@ -715,7 +715,7 @@ class Query(graphene.ObjectType):
         return InLogAsignadoPaginatedType(total_count=total_count, results=results)
 
     def resolve_todos_logs_det_asig_paginados(root, info, limit=15, offset=0, search=None):
-        qs = in_log_det_asig.objects.all()
+        qs = in_log_det_asig.objects.all().order_by('pk')
         if search:
             from django.db.models import Q
             q_obj = Q()
@@ -729,7 +729,7 @@ class Query(graphene.ObjectType):
         return InLogDetAsigPaginatedType(total_count=total_count, results=results)
 
     def resolve_todos_logs_oficina_paginados(root, info, limit=15, offset=0, search=None):
-        qs = in_log_oficina.objects.all()
+        qs = in_log_oficina.objects.all().order_by('pk')
         if search:
             from django.db.models import Q
             q_obj = Q(cod_dpto__icontains=search) | Q(des_dpto__icontains=search)
@@ -741,7 +741,7 @@ class Query(graphene.ObjectType):
         return InLogOficinaPaginatedType(total_count=total_count, results=results)
 
     def resolve_todos_logs_det_reval_paginados(root, info, limit=15, offset=0, search=None):
-        qs = in_log_det_reval.objects.all()
+        qs = in_log_det_reval.objects.all().order_by('pk')
         if search:
             from django.db.models import Q
             q_obj = Q()
@@ -755,7 +755,7 @@ class Query(graphene.ObjectType):
         return InLogDetRevalPaginatedType(total_count=total_count, results=results)
 
     def resolve_todos_logs_baja_act_paginados(root, info, limit=15, offset=0, search=None):
-        qs = in_log_baja_act.objects.all()
+        qs = in_log_baja_act.objects.all().order_by('pk')
         if search:
             from django.db.models import Q
             q_obj = Q(observacion__icontains=search) | Q(documento__icontains=search)

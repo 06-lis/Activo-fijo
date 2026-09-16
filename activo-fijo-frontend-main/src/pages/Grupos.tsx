@@ -26,28 +26,39 @@ const getSugerenciaCodigo = (grupos: any[], nivel: number, codPadreId: number | 
   const hermanas = grupos.filter(g => 
     g.nivel === nivel && (codPadreId ? String(g.codPadre?.codGrupo) === String(codPadreId) : !g.codPadre)
   );
-  const codigosOcupados = new Set(hermanas.map(g => g.codHijo?.toUpperCase()));
+  
+  const codigosOcupados = new Set(hermanas.map(g => {
+    if (!g.codHijo) return '';
+    const parts = g.codHijo.split('-');
+    return parts[parts.length - 1].toUpperCase();
+  }));
 
   let secuencia: string[] = [];
-  if (nivel === 1 || nivel === 3) {
+  if (nivel === 1) {
     for (let i = 1; i <= 9; i++) secuencia.push(i.toString());
-    for (let i = 65; i <= 90; i++) secuencia.push(String.fromCharCode(i));
+    for (let i = 65; i <= 69; i++) secuencia.push(String.fromCharCode(i)); // A hasta E
   } else if (nivel === 2) {
-    for (let i = 1; i <= 99; i++) secuencia.push(i.toString().padStart(2, '0'));
-    secuencia.push('00'); // Por si acaso se usa como caso especial
-    for (let i = 65; i <= 90; i++) {
-      for (let j = 65; j <= 90; j++) {
-        secuencia.push(String.fromCharCode(i) + String.fromCharCode(j));
-      }
+    for (let i = 1; i <= 200; i++) secuencia.push(i.toString().padStart(2, '0'));
+  } else if (nivel === 3) {
+    for (let i = 1; i <= 200; i++) secuencia.push(i.toString()); // Sin cero a la izquierda
+  }
+
+  let nextSufijo = '';
+  for (const cod of secuencia) {
+    if (!codigosOcupados.has(cod)) {
+      nextSufijo = cod;
+      break;
     }
   }
 
-  for (const cod of secuencia) {
-    if (!codigosOcupados.has(cod)) {
-      return cod;
+  if (nivel > 1 && codPadreId) {
+    const padre = grupos.find(g => String(g.codGrupo) === String(codPadreId));
+    if (padre && padre.codHijo) {
+      return `${padre.codHijo}-${nextSufijo}`;
     }
   }
-  return '';
+
+  return nextSufijo;
 };
 
 // Componente para búsqueda con autocompletado
@@ -247,7 +258,7 @@ export default function Grupos() {
   const handleEliminar = async (codGrupo: number) => {
     if (!window.confirm('¿Eliminar este grupo?')) return;
     try {
-    await eliminarGrupo({ variables: { codGrupo: Number(codGrupo) } });
+      await eliminarGrupo({ variables: { codGrupo: Number(codGrupo) } });
       refetch();
     } catch (e: any) {
       alert('Error: ' + e.message);

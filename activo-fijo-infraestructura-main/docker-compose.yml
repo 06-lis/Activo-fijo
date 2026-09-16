@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: activo_fijo_db
+    restart: always
+    environment:
+      POSTGRES_DB: activo_fijo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "Aforo255#2019"
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

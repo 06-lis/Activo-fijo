@@ -136,7 +136,8 @@ export default function Usuarios() {
     contrasena: '',
     hacerResponsable: false,
     codEstprog: '',
-    procedencia: ''
+    procedencia: '',
+    cargo: ''
   });
 
   const [formResp, setFormResp] = useState({
@@ -219,7 +220,7 @@ export default function Usuarios() {
 
   // Submit new employee + user creation
   const handleRegistrar = async () => {
-    const { nombre, apellido, numeroDocumento, tipoDocumento, fechaIngreso, salario, correo, contrasena, hacerResponsable, codEstprog, procedencia } = formUsr;
+    const { nombre, apellido, numeroDocumento, tipoDocumento, fechaIngreso, salario, correo, contrasena, hacerResponsable, codEstprog, procedencia, cargo } = formUsr;
     
     if (!nombre || !apellido || !numeroDocumento || !tipoDocumento || !fechaIngreso || !salario || !correo || !contrasena) {
       alert('Por favor complete todos los campos obligatorios (*).');
@@ -227,11 +228,12 @@ export default function Usuarios() {
     }
 
     if (hacerResponsable && !codEstprog) {
-      alert('Por favor especifique el código de programa para el responsable.');
+      alert('Debe especificar un Código de Programa para hacer responsable al usuario.');
       return;
     }
 
     try {
+      // 1. Crear Empleado y Usuario (amarrados por el backend)
       const res = await registrarEmpleadoUsuario({
         variables: {
           nombre,
@@ -242,7 +244,8 @@ export default function Usuarios() {
           salario: parseFloat(salario),
           correo,
           contrasena,
-          procedencia: procedencia || null
+          procedencia: procedencia || null,
+          cargo: cargo || null
         }
       });
 
@@ -273,7 +276,8 @@ export default function Usuarios() {
         contrasena: '',
         hacerResponsable: false,
         codEstprog: '',
-        procedencia: ''
+        procedencia: '',
+        cargo: ''
       });
       refetch();
       alert('✅ Empleado y usuario registrados exitosamente.');
@@ -1269,6 +1273,16 @@ export default function Usuarios() {
                   placeholder="Ej. 6500"
                   value={formUsr.salario}
                   onChange={e => setFormUsr({ ...formUsr, salario: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Cargo / Rol en la Institución *</label>
+                <input
+                  type="text"
+                  placeholder="Ej. Docente, Decano, Administrador"
+                  value={formUsr.cargo}
+                  onChange={e => setFormUsr({ ...formUsr, cargo: e.target.value })}
                 />
               </div>
 
