@@ -28,7 +28,7 @@
     "model": "activo.in_estado",
     "pk": 2,
     "fields": {
-        "des_estado": "En Almac閚"
+        "des_estado": "En Almac茅n"
     }
 },
 {
@@ -138,7 +138,7 @@
     "model": "activo.in_tipomat",
     "pk": 4,
     "fields": {
-        "des_mat": "Pl醩tico"
+        "des_mat": "Pl谩stico"
     }
 },
 {
@@ -752,7 +752,7 @@
     "pk": 6,
     "fields": {
         "cod_dpto": "2-01",
-        "des_dpto": "M骴ulo 236 - FICCT",
+        "des_dpto": "M贸dulo 236 - FICCT",
         "cod_padre": 5,
         "tipo_act": 1,
         "cod_activ": "",
@@ -766,7 +766,7 @@
     "pk": 7,
     "fields": {
         "cod_dpto": "2-02",
-        "des_dpto": "M骴ulo 214 - Facultad de Tecnolog韆",
+        "des_dpto": "M贸dulo 214 - Facultad de Tecnolog铆a",
         "cod_padre": 5,
         "tipo_act": 1,
         "cod_activ": "",
@@ -780,7 +780,7 @@
     "pk": 8,
     "fields": {
         "cod_dpto": "2-01-01",
-        "des_dpto": "Centro de C髆puto (Planta Baja)",
+        "des_dpto": "Centro de C贸mputo (Planta Baja)",
         "cod_padre": 6,
         "tipo_act": 1,
         "cod_activ": "",
@@ -808,7 +808,7 @@
     "pk": 10,
     "fields": {
         "cod_dpto": "1-01",
-        "des_dpto": "Facultad de Ciencias Econ髆icas",
+        "des_dpto": "Facultad de Ciencias Econ贸micas",
         "cod_padre": 4,
         "tipo_act": 1,
         "cod_activ": "",
@@ -822,7 +822,7 @@
     "pk": 11,
     "fields": {
         "cod_dpto": "1-02",
-        "des_dpto": "Facultad de Ciencias Jur韉icas",
+        "des_dpto": "Facultad de Ciencias Jur铆dicas",
         "cod_padre": 4,
         "tipo_act": 1,
         "cod_activ": "",
@@ -850,7 +850,7 @@
     "pk": 13,
     "fields": {
         "cod_dpto": "1-01-01",
-        "des_dpto": "Decanatura de Ciencias Econ髆icas",
+        "des_dpto": "Decanatura de Ciencias Econ贸micas",
         "cod_padre": 10,
         "tipo_act": 1,
         "cod_activ": "",
@@ -878,7 +878,7 @@
     "pk": 15,
     "fields": {
         "cod_dpto": "1-03-02",
-        "des_dpto": "Cajas y Tesorer韆",
+        "des_dpto": "Cajas y Tesorer铆a",
         "cod_padre": 12,
         "tipo_act": 1,
         "cod_activ": "",
@@ -1408,7 +1408,7 @@
     "pk": 6,
     "fields": {
         "nombre": "Inventario",
-        "descripcion": "Gesti髇 f韘ica de activos"
+        "descripcion": "Gesti贸n f铆sica de activos"
     }
 },
 {
@@ -6916,7 +6916,7 @@
         "fecha_ingreso": "2026-09-01",
         "salario": "5450.00",
         "telefono": null,
-        "cargo": "Encargado de C髆puto ",
+        "cargo": "Encargado de C贸mputo ",
         "foto": null,
         "fecha_nacimiento": null,
         "procedencia": "SC",
@@ -6934,7 +6934,7 @@
         "fecha_ingreso": "2026-08-31",
         "salario": "5600.00",
         "telefono": null,
-        "cargo": "Secretario Acad閙ica",
+        "cargo": "Secretario Acad茅mica",
         "foto": null,
         "fecha_nacimiento": null,
         "procedencia": "PT",
@@ -7114,7 +7114,7 @@
     "fields": {
         "cod_ofic": 6,
         "cod_dpto": "2-01",
-        "des_dpto": "M骴ulo 236 - FICCT",
+        "des_dpto": "M贸dulo 236 - FICCT",
         "cod_padre": 5,
         "tipo_act": 1,
         "cod_activ": "",
@@ -7133,7 +7133,7 @@
     "fields": {
         "cod_ofic": 7,
         "cod_dpto": "2-02",
-        "des_dpto": "M骴ulo 214 - Facultad de Tecnolog韆",
+        "des_dpto": "M贸dulo 214 - Facultad de Tecnolog铆a",
         "cod_padre": 5,
         "tipo_act": 1,
         "cod_activ": "",
@@ -7152,7 +7152,7 @@
     "fields": {
         "cod_ofic": 8,
         "cod_dpto": "2-01-",
-        "des_dpto": "Centro de C髆puto (Planta Baja)",
+        "des_dpto": "Centro de C贸mputo (Planta Baja)",
         "cod_padre": 6,
         "tipo_act": 1,
         "cod_activ": "",
@@ -7190,7 +7190,7 @@
     "fields": {
         "cod_ofic": 10,
         "cod_dpto": "1-01",
-        "des_dpto": "Facultad de Ciencias Econ髆icas",
+        "des_dpto": "Facultad de Ciencias Econ贸micas",
         "cod_padre": 4,
         "tipo_act": 1,
         "cod_activ": "",
@@ -7209,7 +7209,7 @@
     "fields": {
         "cod_ofic": 11,
         "cod_dpto": "1-02",
-        "des_dpto": "Facultad de Ciencias Jur韉icas",
+        "des_dpto": "Facultad de Ciencias Jur铆dicas",
         "cod_padre": 4,
         "tipo_act": 1,
         "cod_activ": "",
@@ -7247,7 +7247,7 @@
     "fields": {
         "cod_ofic": 13,
         "cod_dpto": "1-01-",
-        "des_dpto": "Decanatura de Ciencias Econ髆icas",
+        "des_dpto": "Decanatura de Ciencias Econ贸micas",
         "cod_padre": 10,
         "tipo_act": 1,
         "cod_activ": "",
@@ -7285,7 +7285,7 @@
     "fields": {
         "cod_ofic": 15,
         "cod_dpto": "1-03-",
-        "des_dpto": "Cajas y Tesorer韆",
+        "des_dpto": "Cajas y Tesorer铆a",
         "cod_padre": 12,
         "tipo_act": 1,
         "cod_activ": "",
