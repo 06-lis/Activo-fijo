@@ -159,14 +159,32 @@ class InIngresoType(DjangoObjectType):
         fields = '__all__'
 
 class InActivoType(DjangoObjectType):
+    vehiculo = graphene.Field(lambda: InVehicType)
+
     class Meta:
         model = in_activo
         fields = '__all__'
 
+    def resolve_vehiculo(self, info):
+        try:
+            return self.vehiculo
+        except Exception:
+            return None
+
 class InAsignadoType(DjangoObjectType):
+    empleado_responsable = graphene.Field(lambda: InEmpleadoType)
+
     class Meta:
         model = in_asignado
         fields = '__all__'
+
+    def resolve_empleado_responsable(self, info):
+        if self.cod_resp:
+            try:
+                return in_empleado.objects.filter(pk=self.cod_resp).first()
+            except Exception:
+                return None
+        return None
 
 class InDetAsigType(DjangoObjectType):
     class Meta:

@@ -5,8 +5,9 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@ap
 import App from './App';
 import './index.css';
 
+const backendHost = window.location.hostname || 'localhost';
 const httpLink = createHttpLink({
-  uri: 'http://localhost:8000/graphql/',
+  uri: `http://${backendHost}:8000/graphql/`,
   credentials: 'include',
 });
 

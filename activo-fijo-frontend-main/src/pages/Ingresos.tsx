@@ -62,6 +62,7 @@ const GET_INGRESOS = gql`
 
 const GET_CATALOGOS = gql`
   query {
+    todasGestiones { codGest gestIni }
     todosProvedores { codProv nombre }
     todasOficinas {
       codOfic
@@ -336,16 +337,28 @@ export default function Ingresos() {
       </div>
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="modal-overlay">
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">{editando ? 'Editar Ingreso' : 'Registrar Nuevo Ingreso'}</h2>
 
             <div className="form-grid">
               {!editando && <>
-                <div className="form-group">
-                  <label>Gestión (año)</label>
-                  <input type="number" value={form.gestion} onChange={e => setForm({...form, gestion: e.target.value})} placeholder="2025" />
-                </div>
+                  <div className="form-group">
+                    <label>Gestión (año)</label>
+                    <input 
+                      list="gestiones-lista" 
+                      type="text" 
+                      inputMode="numeric"
+                      value={form.gestion} 
+                      onChange={e => setForm({...form, gestion: e.target.value.replace(/[^0-9]/g, '')})} 
+                      placeholder="Ej. 2026" 
+                    />
+                    <datalist id="gestiones-lista">
+                      {cats?.todasGestiones?.map((g: any) => (
+                        <option key={g.codGest} value={g.gestIni} />
+                      ))}
+                    </datalist>
+                  </div>
                 <div className="form-group">
                   <label>Acta de Recepción</label>
                   <input value={form.actaRecep} onChange={e => setForm({...form, actaRecep: e.target.value})} placeholder="Nro. acta" />

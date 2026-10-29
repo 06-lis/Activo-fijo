@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 export interface AuthUser {
   email: string;
@@ -59,6 +59,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('esAdmin', String(esAdmin));
     setUser(prev => prev ? { ...prev, permisos, esAdmin } : null);
   }, []);
+
+  // Al arrancar: verificar con el backend que la cookie de sesión siga siendo válida.
+  // Si expiró (o el servidor se reinició), se limpia la sesión local y se muestra el Login.
+  const [checking, setChecking] = useState<boolean>(() => !!localStorage.getItem('userEmail'));
+
+  useEffect(() => {
+    if (!localStorage.getItem('userEmail')) return;
+    const clearLocal = () => {
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('permisos');
+      localStorage.removeItem('esAdmin');
+      setUser(null);
+    };
+    fetch('http://localhost:8000/graphql/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ query: '{ usuarioActual { idUsuario } }' })
+    })
+      .then(r => r.json())
+      .then(res => { if (!res?.data?.usuarioActual) clearLocal(); })
+      .catch(() => clearLocal())
+      .finally(() => setChecking(false));
+  }, []);
+
+  if (checking) return null;
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, updatePermisos }}>

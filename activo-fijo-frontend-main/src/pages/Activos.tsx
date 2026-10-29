@@ -37,6 +37,8 @@ const GET_VEHICULO = gql`
       minuta
       actaCoVe
       imagen
+      fechaVencimientoSoat
+      fotoConductor
     }
   }
 `;
@@ -906,37 +908,32 @@ export default function Activos() {
             </div>
             <div className="form-group">
               <label>Ingreso *</label>
-              <div className="autocomplete-container">
-                <input
-                  type="text"
-                  value={ingresoSearch}
-                  onChange={e => {
-                    setIngresoSearch(e.target.value);
+              <input
+                type="text"
+                list="ingresos-lista"
+                value={ingresoSearch}
+                onChange={e => {
+                  const val = e.target.value;
+                  setIngresoSearch(val);
+                  
+                  const found = cats?.todosIngresos?.find((i: any) => 
+                    `#${i.nroIngreso} - ${i.glosa || 'Sin glosa'}` === val
+                  );
+
+                  if (found) {
+                    setForm({ ...form, nroIngreso: String(found.nroIngreso) });
+                  } else {
                     setForm({ ...form, nroIngreso: '' });
-                    setShowIngresosDropdown(true);
-                  }}
-                  onFocus={() => { if (editId === null) setShowIngresosDropdown(true); }}
-                  onBlur={() => setTimeout(() => setShowIngresosDropdown(false), 200)}
-                  placeholder="Buscar nro o glosa..."
-                  disabled={editId !== null}
-                />
-                {showIngresosDropdown && editId === null && (
-                  <ul className="autocomplete-dropdown">
-                    {filteredIngresos.slice(0, 20).map((i: any, idx: number) => (
-                      <li
-                        key={`ing-${i.nroIngreso}-${idx}`}
-                        className="autocomplete-item"
-                        onClick={() => handleSelectIngreso(i)}
-                      >
-                        #{i.nroIngreso} - {i.glosa || 'Sin glosa'}
-                      </li>
-                    ))}
-                    {filteredIngresos.length === 0 && (
-                      <li className="autocomplete-no-results">No se encontraron ingresos</li>
-                    )}
-                  </ul>
-                )}
-              </div>
+                  }
+                }}
+                placeholder="Ej. #2 - Compra..."
+                disabled={editId !== null}
+              />
+              <datalist id="ingresos-lista">
+                {cats?.todosIngresos?.map((i: any) => (
+                  <option key={`ing-${i.nroIngreso}`} value={`#${i.nroIngreso} - ${i.glosa || 'Sin glosa'}`} />
+                ))}
+              </datalist>
             </div>
           </div>
 
@@ -962,40 +959,35 @@ export default function Activos() {
           <div className="form-grid">
             <div className="form-group">
               <label>Grupo *</label>
-              <div className="autocomplete-container">
-                <input
-                  type="text"
-                  value={grupoSearch}
-                  onChange={e => {
-                    setGrupoSearch(e.target.value);
+              <input
+                type="text"
+                list="grupos-lista"
+                value={grupoSearch}
+                onChange={e => {
+                  const val = e.target.value;
+                  setGrupoSearch(val);
+                  
+                  const found = cats?.todosGrupos?.find((g: any) => 
+                    `[${getGroupUnifiedCode(g)}] ${g.desGrupo}` === val
+                  );
+
+                  if (found) {
+                    setForm({ ...form, codGrupo: String(found.codGrupo) });
+                  } else {
                     setForm({ ...form, codGrupo: '' });
-                    setShowGruposDropdown(true);
-                  }}
-                  onFocus={() => { if (editId === null || form.estadoRegistro !== 'APROBADO') setShowGruposDropdown(true); }}
-                  onBlur={() => setTimeout(() => setShowGruposDropdown(false), 200)}
-                  placeholder="Buscar código o descripción..."
-                  disabled={editId !== null && form.estadoRegistro === 'APROBADO'}
-                />
-                {showGruposDropdown && (editId === null || form.estadoRegistro !== 'APROBADO') && (
-                  <ul className="autocomplete-dropdown">
-                    {filteredGrupos.slice(0, 20).map((g: any) => {
-                      const unified = getGroupUnifiedCode(g);
-                      return (
-                        <li
-                          key={g.codGrupo}
-                          className="autocomplete-item"
-                          onClick={() => handleSelectGrupo(g)}
-                        >
-                          [{unified}] {g.desGrupo}
-                        </li>
-                      );
-                    })}
-                    {filteredGrupos.length === 0 && (
-                      <li className="autocomplete-no-results">No se encontraron grupos</li>
-                    )}
-                  </ul>
-                )}
-              </div>
+                  }
+                }}
+                placeholder="Ej. [11-03] Silla"
+                disabled={editId !== null && form.estadoRegistro === 'APROBADO'}
+              />
+              <datalist id="grupos-lista">
+                {cats?.todosGrupos?.map((g: any) => {
+                  const unified = getGroupUnifiedCode(g);
+                  return (
+                    <option key={`grp-${g.codGrupo}`} value={`[${unified}] ${g.desGrupo}`} />
+                  );
+                })}
+              </datalist>
             </div>
             <div className="form-group">
               <label>Estado *</label>
@@ -1458,12 +1450,19 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
     docCompVen: '',
     minuta: '',
     actaCoVe: '',
-    imagen: ''
+    imagen: '',
+    fechaVencimientoSoat: '',
+    fotoConductor: ''
   });
 
   useEffect(() => {
     if (data?.vehiculoPorActivo) {
       const v = data.vehiculoPorActivo;
+      let soatAnio = '';
+      if (v.fechaVencimientoSoat) {
+        // Asumiendo formato YYYY-MM-DD
+        soatAnio = v.fechaVencimientoSoat.substring(0, 4);
+      }
       setForm({
         tipo: v.tipo || '',
         marca: v.marca || '',
@@ -1488,7 +1487,9 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
         docCompVen: v.docCompVen || '',
         minuta: v.minuta || '',
         actaCoVe: v.actaCoVe || '',
-        imagen: v.imagen || ''
+        imagen: v.imagen || '',
+        fechaVencimientoSoat: soatAnio,
+        fotoConductor: v.fotoConductor || ''
       });
     }
   }, [data]);
@@ -1526,6 +1527,35 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
     }
   };
 
+  const handleConductorUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('http://localhost:8000/upload_image/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Error al subir la imagen');
+      }
+
+      const result = await response.json();
+      setForm(prev => ({ ...prev, fotoConductor: result.filePath }));
+      alert('📸 Foto del conductor subida correctamente');
+    } catch (err: any) {
+      alert('⚠️ Error al subir la imagen: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -1555,7 +1585,9 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
           docCompVen: form.docCompVen,
           minuta: form.minuta,
           actaCoVe: form.actaCoVe,
-          imagen: form.imagen
+          imagen: form.imagen,
+          fechaVencimientoSoat: form.fechaVencimientoSoat ? `${form.fechaVencimientoSoat}-12-31` : null,
+          fotoConductor: form.fotoConductor
         }
       });
       alert('🚗 Ficha de vehículo guardada correctamente');
@@ -1586,10 +1618,10 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem' }}>
-              {/* Imagen y Carga */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 2.5fr', gap: '1.5rem' }}>
+              {/* Imagen del Vehículo */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center', background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Fotografía</span>
+                <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Foto Vehículo</span>
                 <div style={{ width: '100%', height: '140px', background: '#f1f5f9', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #cbd5e1', position: 'relative' }}>
                   {form.imagen ? (
                     <img 
@@ -1613,8 +1645,39 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
                   )}
                 </div>
                 <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', textAlign: 'center', width: '100%', display: 'block' }}>
-                  {form.imagen ? 'Cambiar Foto' : 'Subir Foto'}
+                  {form.imagen ? 'Cambiar Foto' : 'Subir Vehículo'}
                   <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                </label>
+              </div>
+
+              {/* Imagen del Conductor */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center', background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Foto Encargado</span>
+                <div style={{ width: '100%', height: '140px', background: '#f1f5f9', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #cbd5e1', position: 'relative' }}>
+                  {form.fotoConductor ? (
+                    <img 
+                      src={`http://localhost:8000${form.fotoConductor}`} 
+                      alt="Conductor" 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        if (img.src.includes('http://localhost:8000/media/')) {
+                          img.src = form.fotoConductor; 
+                        }
+                      }}
+                    />
+                  ) : (
+                    <span style={{ color: '#94a3b8', fontSize: '2.5rem' }}>👤</span>
+                  )}
+                  {uploading && (
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(241, 245, 249, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: '#1a3c6e' }}>
+                      Subiendo...
+                    </div>
+                  )}
+                </div>
+                <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', textAlign: 'center', width: '100%', display: 'block' }}>
+                  {form.fotoConductor ? 'Cambiar Foto' : 'Subir Encargado'}
+                  <input type="file" accept="image/*" onChange={handleConductorUpload} style={{ display: 'none' }} />
                 </label>
               </div>
 
@@ -1633,16 +1696,16 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
                   <input type="text" name="marca" value={form.marca} onChange={handleChange} placeholder="Ej: Toyota" />
                 </div>
                 <div className="form-group">
+                  <label>Gestión SOAT (Año)</label>
+                  <input type="number" name="fechaVencimientoSoat" value={form.fechaVencimientoSoat} onChange={handleChange} placeholder="Ej: 2026" style={{ borderColor: 'var(--primary)', borderWidth: '2px' }} />
+                </div>
+                <div className="form-group">
                   <label>Modelo</label>
                   <input type="text" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Ej: Hilux" />
                 </div>
                 <div className="form-group">
                   <label>Año</label>
                   <input type="number" name="anio" value={form.anio} onChange={handleChange} placeholder="Ej: 2020" />
-                </div>
-                <div className="form-group">
-                  <label>Color</label>
-                  <input type="text" name="color" value={form.color} onChange={handleChange} placeholder="Ej: Blanco" />
                 </div>
               </div>
             </div>
@@ -1819,19 +1882,13 @@ function LabelModal({ activo, onClose }: { activo: any; onClose: () => void }) {
   const location = getActivoLocationName(activo);
   const usefulLife = getActivoUsefulLife(activo);
 
-  // Construct highly informative QR payload
-  const qrString = [
-    `U.A.G.R.M. - VSIAF 2.0`,
-    `----------------------`,
-    `CÓDIGO: ${activo.codActivo}`,
-    `DETALLE: ${activo.descripcion}`,
-    `GRUPO: ${activo.codGrupo?.desGrupo || 'Sin Grupo'}`,
-    `UBICACIÓN: ${location}`,
-    `VIDA ÚTIL: ${usefulLife}`,
-    `COMPRA: ${values.montoCompra.toFixed(2)} Bs.`,
-    `DEP. ACUM.: ${values.depAcum.toFixed(2)} Bs.`,
-    `VALOR ACTUAL: ${values.valActual.toFixed(2)} Bs.`
-  ].join('\n');
+  // Construct Universal QR URL for instant light web consultation
+  // Si estamos en localhost, usar la IP de la red Wi-Fi local para que los celulares puedan escanearlo
+  const hostname = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? '192.168.0.104'
+    : window.location.hostname;
+  const portStr = window.location.port ? `:${window.location.port}` : '';
+  const qrString = `${window.location.protocol}//${hostname}${portStr}/consulta/${activo.codActivo}`;
 
   return (
     <div

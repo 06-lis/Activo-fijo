@@ -37,6 +37,8 @@ import Ufvs from './pages/Ufvs';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import MiCuenta from './pages/MiCuenta';
+import ConsultaActivo from './pages/ConsultaActivo';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import './App.css';
 
@@ -109,10 +111,29 @@ function AppInner() {
     }
   }, [authData, updatePermisos]);
 
+  const navigate = useNavigate();
+
   const handleLoginSuccess = (token: string, email: string) => {
     const isSuperAdmin = email === 'admin@activo.com';
     login(token, email, [], isSuperAdmin);
+
+    const returnUrl = sessionStorage.getItem('returnUrl');
+    if (returnUrl) {
+      sessionStorage.removeItem('returnUrl');
+      navigate(returnUrl, { replace: true });
+    }
   };
+
+  const location = useLocation();
+
+  // Si la ruta es la consulta pública de activo (/consulta/:codActivo), permitir verla sin login
+  if (location.pathname.startsWith('/consulta/')) {
+    return (
+      <Routes>
+        <Route path="/consulta/:codActivo" element={<ConsultaActivo />} />
+      </Routes>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Login onLoginSuccess={handleLoginSuccess} />;

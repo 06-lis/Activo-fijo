@@ -138,6 +138,9 @@ export default function Atributos() {
   const [selectedGrupoId, setSelectedGrupoId] = useState<string>('');
   const [selectedAtrib, setSelectedAtrib] = useState<any>(null);
 
+  const [searchGrupo, setSearchGrupo] = useState('');
+  const [showGrupoDropdown, setShowGrupoDropdown] = useState(false);
+
   // Modal states
   const [showAtribModal, setShowAtribModal] = useState(false);
   const [editAtribObj, setEditAtribObj] = useState<any>(null);
@@ -279,28 +282,45 @@ export default function Atributos() {
 
 
       {/* Selector de Grupo */}
-      <div style={{ background: 'white', padding: '1.25rem', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1.5rem', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <div style={{ position: 'relative', zIndex: 9999, overflow: 'visible', background: 'white', padding: '1.25rem', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1.5rem', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <label style={{ fontWeight: 600, color: '#334155', margin: 0 }}>Grupo de Activos:</label>
-          <select
-            value={selectedGrupoId}
-            onChange={e => {
-              setSelectedGrupoId(e.target.value);
-              setSelectedAtrib(null);
-            }}
-            style={{ padding: '0.45rem', borderRadius: '6px', border: '1px solid #cbd5e1', width: '320px', maxWidth: '100%' }}
-          >
-            <option value="">Seleccione un grupo...</option>
-            {groupsData?.todosGrupos?.map((g: any) => {
-              const code = getGroupUnifiedCode(g, groupsData.todosGrupos);
-              const sangria = '   '.repeat(g.nivel - 1);
-              return (
-                <option key={g.codGrupo} value={g.codGrupo}>
-                  {sangria}[{code}] {g.desGrupo}
-                </option>
-              );
-            })}
-          </select>
+          
+          <div style={{ position: 'relative', width: '400px', maxWidth: '100%', zIndex: 9999 }}>
+            <input
+              type="text"
+              list="grupos-lista"
+              placeholder="Buscar por código o nombre..."
+              value={searchGrupo}
+              onChange={e => {
+                const val = e.target.value;
+                setSearchGrupo(val);
+                
+                const found = groupsData?.todosGrupos?.find((g: any) => {
+                  const code = getGroupUnifiedCode(g, groupsData.todosGrupos);
+                  return `[${code}] ${g.desGrupo}` === val;
+                });
+
+                if (found) {
+                  setSelectedGrupoId(found.codGrupo);
+                  setSelectedAtrib(null);
+                } else {
+                  setSelectedGrupoId('');
+                  setSelectedAtrib(null);
+                }
+              }}
+              style={{ padding: '0.55rem', borderRadius: '6px', border: '1px solid #cbd5e1', width: '100%', boxSizing: 'border-box' }}
+            />
+            <datalist id="grupos-lista">
+              {groupsData?.todosGrupos?.map((g: any) => {
+                const code = getGroupUnifiedCode(g, groupsData.todosGrupos);
+                return (
+                  <option key={g.codGrupo} value={`[${code}] ${g.desGrupo}`} />
+                );
+              })}
+            </datalist>
+          </div>
+
         </div>
       </div>
 

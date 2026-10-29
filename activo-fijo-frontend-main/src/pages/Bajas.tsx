@@ -240,25 +240,17 @@ export default function Bajas() {
       title="Baja de Activos"
       actions={pageActions}
     >
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 bg-slate-900/50 p-1.5 rounded-xl border border-slate-700/50 w-fit">
+      {/* Tabs Institucionales */}
+      <div className="tabs" style={{ marginBottom: '16px' }}>
         <button
           onClick={() => setActiveTab('bajas')}
-          className={`px-6 py-2.5 font-semibold text-sm rounded-lg transition-all duration-200 ${
-            activeTab === 'bajas'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-          }`}
+          className={`tab-btn ${activeTab === 'bajas' ? 'active' : ''}`}
         >
           Bajas de Activos
         </button>
         <button
           onClick={() => setActiveTab('motivos')}
-          className={`px-6 py-2.5 font-semibold text-sm rounded-lg transition-all duration-200 ${
-            activeTab === 'motivos'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-          }`}
+          className={`tab-btn ${activeTab === 'motivos' ? 'active' : ''}`}
         >
           Motivos de Baja
         </button>

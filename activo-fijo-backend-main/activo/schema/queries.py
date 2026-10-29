@@ -445,7 +445,8 @@ class Query(graphene.ObjectType):
     def resolve_activo(root, info, nro_activo):
         return in_activo.objects.get(pk=nro_activo)
     def resolve_activo_por_codigo(root, info, cod_activo):
-        return in_activo.objects.get(cod_activo=cod_activo)
+        codigo = cod_activo.strip()
+        return in_activo.objects.filter(cod_activo__iexact=codigo).first()
     def resolve_activos_por_grupo(root, info, cod_grupo, solo_activos=True):
         qs = in_activo.objects.filter(cod_grupo_id=cod_grupo)
         if solo_activos:

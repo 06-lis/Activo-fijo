@@ -1055,23 +1055,25 @@ tbody td:last-child { border-right: none; }
    ═══════════════════════════════════════════════════════════════ */
 .tabs {
   display: flex;
-  gap: 0;
-  border-bottom: 2px solid var(--blue);
-  margin-bottom: 12px;
+  gap: 6px;
+  border-bottom: 3px solid var(--blue);
+  margin-bottom: 14px;
+  padding-top: 4px;
 }
 .tab-btn {
-  padding: 5px 14px;
+  padding: 10px 22px;
   background: var(--blue-pale);
   border: 1px solid var(--border);
   border-bottom: none;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.88rem;
+  font-weight: 700;
   font-family: inherit;
-  color: var(--text-secondary);
+  color: var(--text-label);
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
   transition: all var(--transition);
+  border-radius: 4px 4px 0 0;
 }
 .tab-btn:hover { background: var(--blue-light); color: var(--navy); }
 .tab-btn.active {

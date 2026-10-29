@@ -2433,6 +2433,8 @@ class GuardarVehiculo(graphene.Mutation):
         minuta = graphene.String()
         acta_co_ve = graphene.String()
         imagen = graphene.String()
+        fecha_vencimiento_soat = graphene.Date()
+        foto_conductor = graphene.String()
 
     vehiculo = graphene.Field(InVehicType)
 

@@ -42,6 +42,8 @@ const GET_VEHICULOS_AND_ACTIVOS = gql`
         minuta
         actaCoVe
         imagen
+        fechaVencimientoSoat
+        fotoConductor
       }
     }
     todosActivos {
@@ -50,6 +52,10 @@ const GET_VEHICULOS_AND_ACTIVOS = gql`
       descripcion
       nroSerie
       fecAdqui
+      codGrupo {
+        codGrupo
+        desGrupo
+      }
       codMarca {
         codMarca
         desMarca
@@ -69,7 +75,8 @@ const GUARDAR_VEHICULO = gql`
     $cilindrada: Int, $industria: String, $ruat: String, $carnetProp: String,
     $poliza: String, $factura: Int, $resMin: String, $resAdm: String,
     $infTec: String, $leyEstado: String, $ds: String, $docTransf: String,
-    $docCompVen: String, $minuta: String, $actaCoVe: String, $imagen: String
+    $docCompVen: String, $minuta: String, $actaCoVe: String, $imagen: String,
+    $fechaVencimientoSoat: Date, $fotoConductor: String
   ) {
     guardarVehiculo(
       nroActivo: $nroActivo, tipo: $tipo, marca: $marca, modelo: $modelo,
@@ -77,7 +84,8 @@ const GUARDAR_VEHICULO = gql`
       cilindrada: $cilindrada, industria: $industria, ruat: $ruat, carnetProp: $carnetProp,
       poliza: $poliza, factura: $factura, resMin: $resMin, resAdm: $resAdm,
       infTec: $infTec, leyEstado: $leyEstado, ds: $ds, docTransf: $docTransf,
-      docCompVen: $docCompVen, minuta: $minuta, actaCoVe: $actaCoVe, imagen: $imagen
+      docCompVen: $docCompVen, minuta: $minuta, actaCoVe: $actaCoVe, imagen: $imagen,
+      fechaVencimientoSoat: $fechaVencimientoSoat, fotoConductor: $fotoConductor
     ) {
       vehiculo {
         nroActivo {
@@ -98,12 +106,34 @@ export default function Vehiculos() {
   const [paginaActual, setPaginaActual] = useState(1);
   const ITEMS_POR_PAGINA = 15;
 
+  const getSoatBadge = (soatDateStr: string) => {
+    if (!soatDateStr) return <span style={{ padding: '3px 6px', borderRadius: '12px', background: '#e2e8f0', color: '#475569', fontSize: '0.7rem', fontWeight: 'bold' }}>S/D</span>;
+    
+    const soatYear = parseInt(soatDateStr.substring(0, 4));
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth(); // 0-11
+    
+    if (soatYear < currentYear) {
+      return <span style={{ padding: '3px 6px', borderRadius: '12px', background: '#fee2e2', color: '#b91c1c', fontSize: '0.7rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#ef4444'}}></span>VENCIDO</span>;
+    } else if (soatYear === currentYear) {
+      // Si estamos en Noviembre (10) o Diciembre (11) del año que vence
+      if (currentMonth >= 10) {
+        return <span style={{ padding: '3px 6px', borderRadius: '12px', background: '#fef3c7', color: '#b45309', fontSize: '0.7rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#f59e0b'}}></span>PRÓX. A VENCER</span>;
+      }
+      return <span style={{ padding: '3px 6px', borderRadius: '12px', background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#22c55e'}}></span>ACTIVO</span>;
+    } else {
+      return <span style={{ padding: '3px 6px', borderRadius: '12px', background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#22c55e'}}></span>ACTIVO</span>;
+    }
+  };
+
   const { data, loading, error, refetch } = useQuery(GET_VEHICULOS_AND_ACTIVOS, {
     variables: {
       limit: ITEMS_POR_PAGINA,
       offset: (paginaActual - 1) * ITEMS_POR_PAGINA,
       search: busqueda.trim() || ""
-    }
+    },
+    fetchPolicy: 'network-only'
   });
   const [guardarVehiculo] = useMutation(GUARDAR_VEHICULO);
 
@@ -143,7 +173,9 @@ export default function Vehiculos() {
     docCompVen: '',
     minuta: '',
     actaCoVe: '',
-    imagen: ''
+    imagen: '',
+    fechaVencimientoSoat: '',
+    fotoConductor: ''
   });
 
   const [uploading, setUploading] = useState(false);
@@ -180,7 +212,11 @@ export default function Vehiculos() {
   const availableAssets = useMemo(() => {
     const all = data?.todosActivos || [];
     const usedIds = new Set(data?.todosVehiculosPaginados?.results?.map((v: any) => v.nroActivo?.nroActivo) || []);
-    return all.filter((a: any) => !usedIds.has(a.nroActivo));
+    return all.filter((a: any) => {
+      if (usedIds.has(a.nroActivo)) return false;
+      const grupo = (a.codGrupo?.desGrupo || '').toLowerCase();
+      return grupo.includes('vehiculo') || grupo.includes('vehículo') || grupo.includes('transporte') || grupo.includes('traccion') || grupo.includes('tracción') || grupo.includes('motor') || grupo.includes('camion');
+    });
   }, [data]);
 
   // Auto-fill values from the selected asset
@@ -266,7 +302,9 @@ export default function Vehiculos() {
           docCompVen: form.docCompVen,
           minuta: form.minuta,
           actaCoVe: form.actaCoVe,
-          imagen: form.imagen
+          imagen: form.imagen,
+          fechaVencimientoSoat: form.fechaVencimientoSoat ? `${form.fechaVencimientoSoat}-12-31` : null,
+          fotoConductor: form.fotoConductor
         }
       });
       alert('Ficha de vehículo guardada correctamente');
@@ -506,6 +544,7 @@ export default function Vehiculos() {
                   <th style={{ width: '120px' }}>Año / Color</th>
                   <th style={{ width: '150px' }}>Chasis / Motor</th>
                   <th style={{ width: '110px' }}>RUAT</th>
+                  <th style={{ width: '120px' }}>Estado SOAT</th>
                   <th style={{ width: '160px', textAlign: 'center' }}>Acciones</th>
                 </tr>
               </thead>
@@ -562,6 +601,7 @@ export default function Vehiculos() {
                       M: {v.motor || '-'}
                     </td>
                     <td style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{v.ruat || '-'}</td>
+                    <td>{getSoatBadge(v.fechaVencimientoSoat)}</td>
                     <td style={{ textAlign: 'center' }}>
                       <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
                         <button
@@ -702,19 +742,23 @@ export default function Vehiculos() {
               <div className="form-group">
                 <label>Activo Fijo Relacionado *</label>
                 {isCreating ? (
-                  <select 
-                    name="nroActivo" 
-                    value={form.nroActivo} 
-                    onChange={handleChange}
-                    style={{ width: '100%' }}
-                  >
-                    <option value="">Seleccionar activo...</option>
-                    {availableAssets.map((a: any) => (
-                      <option key={a.nroActivo} value={a.nroActivo}>
-                        [{a.codActivo}] {a.descripcion}
-                      </option>
-                    ))}
-                  </select>
+                  <>
+                    <input
+                      list="activos-list"
+                      name="nroActivo"
+                      value={form.nroActivo}
+                      onChange={handleChange}
+                      placeholder="Escribe para buscar..."
+                      style={{ width: '100%' }}
+                    />
+                    <datalist id="activos-list">
+                      {availableAssets.map((a: any) => (
+                        <option key={a.nroActivo} value={a.nroActivo}>
+                          [{a.codActivo}] {a.descripcion}
+                        </option>
+                      ))}
+                    </datalist>
+                  </>
                 ) : (
                   <div style={{ background: 'var(--blue-pale)', padding: '6px 10px', border: '1px solid var(--border-light)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy)' }}>
                     [{editingVehiculo?.nroActivo?.codActivo}] {editingVehiculo?.nroActivo?.descripcion}
@@ -722,7 +766,7 @@ export default function Vehiculos() {
                 )}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 2fr', gap: '1rem' }}>
                 {/* Image and Upload */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', background: 'var(--bg-panel)', padding: '8px', border: '1px solid var(--border-light)' }}>
                   <span style={{ fontSize: '0.7rem', color: 'var(--text-label)', fontWeight: 700, textTransform: 'uppercase' }}>Fotografía <span style={{ color: 'var(--text-muted)', fontWeight: 'normal' }}>(Opcional)</span></span>
@@ -749,8 +793,51 @@ export default function Vehiculos() {
                     )}
                   </div>
                   <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', textAlign: 'center', width: '100%', display: 'block', padding: '4px' }}>
-                    {form.imagen ? 'Cambiar Foto' : 'Subir Foto'}
+                    {form.imagen ? 'Cambiar Foto' : 'Subir Vehículo'}
                     <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                  </label>
+                </div>
+                
+                {/* Foto Encargado */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', background: 'var(--bg-panel)', padding: '8px', border: '1px solid var(--border-light)' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-label)', fontWeight: 700, textTransform: 'uppercase' }}>Foto Encargado</span>
+                  <div style={{ width: '100%', height: '120px', background: 'var(--bg-white)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed var(--border)', position: 'relative' }}>
+                    {form.fotoConductor ? (
+                      <img 
+                        src={`http://localhost:8000${form.fotoConductor}`} 
+                        alt="Conductor" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                          const img = e.currentTarget as HTMLImageElement;
+                          if (img.src.includes('http://localhost:8000/media/')) {
+                            img.src = form.fotoConductor; 
+                          }
+                        }}
+                      />
+                    ) : (
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 'bold' }}>SIN FOTO</span>
+                    )}
+                    {uploading && (
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', color: 'var(--navy)', fontWeight: 'bold' }}>
+                        Subiendo...
+                      </div>
+                    )}
+                  </div>
+                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', textAlign: 'center', width: '100%', display: 'block', padding: '4px' }}>
+                    {form.fotoConductor ? 'Cambiar Foto' : 'Subir Encargado'}
+                    <input type="file" accept="image/*" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      try {
+                        const res = await fetch('http://localhost:8000/upload_image/', { method: 'POST', body: formData });
+                        if (!res.ok) throw new Error('Error al subir');
+                        const r = await res.json();
+                        setForm((prev: any) => ({ ...prev, fotoConductor: r.filePath }));
+                        alert('📸 Foto del conductor subida correctamente');
+                      } catch (err: any) { alert('⚠️ Error: ' + err.message); }
+                    }} style={{ display: 'none' }} />
                   </label>
                 </div>
 
@@ -779,6 +866,10 @@ export default function Vehiculos() {
                   <div className="form-group">
                     <label>Color <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
                     <input type="text" name="color" value={form.color} onChange={handleChange} placeholder="Ej: Blanco" />
+                  </div>
+                  <div className="form-group">
+                    <label>Gestión SOAT (Año)</label>
+                    <input type="number" name="fechaVencimientoSoat" value={form.fechaVencimientoSoat} onChange={handleChange} placeholder="Ej: 2026" style={{ borderColor: 'var(--primary)', borderWidth: '2px' }} />
                   </div>
                 </div>
               </div>
@@ -959,30 +1050,57 @@ function PrintableSheet({ vehicle }: { vehicle: any }) {
                 <td style={{ padding: '3px 0', fontWeight: 'bold' }}>Año / Color:</td>
                 <td style={{ padding: '3px 0' }}>{v.anio || 'S/A'} / {v.color || 'S/C'}</td>
               </tr>
+              <tr>
+                <td style={{ padding: '3px 0', fontWeight: 'bold' }}>Gestión SOAT:</td>
+                <td style={{ padding: '3px 0' }}>{v.fechaVencimientoSoat ? v.fechaVencimientoSoat.substring(0,4) : 'S/D'}</td>
+              </tr>
             </tbody>
           </table>
         </div>
 
-        {/* Right Side: Vehicle Image */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ width: '100%', height: '150px', border: '1.5px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', marginBottom: '5px' }}>
-            {v.imagen ? (
-              <img 
-                src={`http://localhost:8000${v.imagen}`} 
-                alt="Vehículo" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                onError={(e) => {
-                  const img = e.currentTarget;
-                  if (img.src.includes('http://localhost:8000/media/')) {
-                    img.src = v.imagen; 
-                  }
-                }}
-              />
-            ) : (
-              <div style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 'bold' }}>SIN FOTO</div>
-            )}
+                {/* Right Side: Images */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ width: '100%', height: '140px', border: '1.5px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', marginBottom: '5px' }}>
+              {v.imagen ? (
+                <img 
+                  src={`http://localhost:8000${v.imagen}`} 
+                  alt="Vehículo" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (img.src.includes('http://localhost:8000/media/')) {
+                      img.src = v.imagen; 
+                    }
+                  }}
+                />
+              ) : (
+                <div style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 'bold' }}>SIN FOTO</div>
+              )}
+            </div>
+            <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>FOTOGRAFÍA VEHÍCULO</span>
           </div>
-          <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>FOTOGRAFÍA REGISTRADA</span>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ width: '110px', height: '120px', border: '1.5px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', marginBottom: '5px' }}>
+              {v.fotoConductor ? (
+                <img 
+                  src={`http://localhost:8000${v.fotoConductor}`} 
+                  alt="Conductor" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (img.src.includes('http://localhost:8000/media/')) {
+                      img.src = v.fotoConductor; 
+                    }
+                  }}
+                />
+              ) : (
+                <div style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 'bold', textAlign: 'center' }}>SIN FOTO<br/>ENCARGADO</div>
+              )}
+            </div>
+            <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>FOTO ENCARGADO</span>
+          </div>
         </div>
       </div>
 

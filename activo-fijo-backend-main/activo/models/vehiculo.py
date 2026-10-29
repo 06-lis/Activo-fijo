@@ -32,6 +32,10 @@ class in_vehic(models.Model):
     minuta = models.CharField(max_length=20, null=True, blank=True)
     acta_co_ve = models.CharField(max_length=20, null=True, blank=True)
     imagen = models.FileField(upload_to='vehiculos/', null=True, blank=True)
+    
+    # Nuevos campos solicitados por Jefatura
+    fecha_vencimiento_soat = models.DateField(null=True, blank=True)
+    foto_conductor = models.FileField(upload_to='conductores/', null=True, blank=True)
 
     class Meta:
         db_table = 'in_vehic'
