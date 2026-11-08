@@ -5,6 +5,7 @@ import { CREAR_ACTIVO, EDITAR_ACTIVO, APROBAR_ACTIVO } from '../graphql/mutation
 import PageLayout from '../components/ui/PageLayout';
 import { useAuth } from '../context/AuthContext';
 import { Code39Barcode, QRCodeImage } from '../utils/barcodes';
+import FichaTecnicaModal from '../components/activos/FichaTecnicaModal';
 
 
 const GET_VEHICULO = gql`
@@ -207,6 +208,8 @@ export default function Activos() {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [selectedActivoLabel, setSelectedActivoLabel] = useState<any>(null);
+  const [showFichaModal, setShowFichaModal] = useState(false);
+  const [selectedActivoFicha, setSelectedActivoFicha] = useState<any>(null);
 
   // Estados para filtro y selección masiva
   const [soloPendientes, setSoloPendientes] = useState(false);
@@ -830,6 +833,17 @@ export default function Activos() {
                         <button
                           style={{
                             background: 'none', border: 'none', padding: '8px 16px',
+                            textAlign: 'left', fontSize: '0.85rem', color: '#b45309', cursor: 'pointer'
+                          }}
+                          onClick={() => { setOpenDropdownId(null); setSelectedActivoFicha(a); setShowFichaModal(true); }}
+                          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          Ficha Técnica / Hoja de Vida
+                        </button>
+                        <button
+                          style={{
+                            background: 'none', border: 'none', padding: '8px 16px',
                             textAlign: 'left', fontSize: '0.85rem', color: '#9333ea', cursor: 'pointer'
                           }}
                           onClick={() => { setOpenDropdownId(null); setSelectedActivoLabel(a); setShowLabelModal(true); }}
@@ -1168,6 +1182,15 @@ export default function Activos() {
           onClose={() => {
             setShowLabelModal(false);
             setSelectedActivoLabel(null);
+          }}
+        />
+      )}
+      {showFichaModal && selectedActivoFicha && (
+        <FichaTecnicaModal
+          activo={selectedActivoFicha}
+          onClose={() => {
+            setShowFichaModal(false);
+            setSelectedActivoFicha(null);
           }}
         />
       )}

@@ -509,6 +509,161 @@ export const GET_ACTIVOS_PAGINADOS = gql`
   }
 `;
 
+// ==================== FICHA TÉCNICA / HOJA DE VIDA ====================
+export const GET_FICHA_TECNICA_ACTIVO = gql`
+  query GetFichaTecnicaActivo($nroActivo: Int!, $codGrupo: Int!) {
+    activo(nroActivo: $nroActivo) {
+      nroActivo
+      codActivo
+      descripcion
+      nroSerie
+      fecAdqui
+      monto
+      organismoFinanciador
+      codRube
+      nroConvenio
+      estadoRegistro
+      codGest {
+        codGest
+        gestIni
+      }
+      codGrupo {
+        codGrupo
+        codHijo
+        desGrupo
+        vidaUtilDefault
+        codPadre {
+          codHijo
+          desGrupo
+          codPadre {
+            codHijo
+            desGrupo
+            codPadre {
+              codHijo
+              desGrupo
+            }
+          }
+        }
+      }
+      codMarca {
+        desMarca
+      }
+      codModelo {
+        desModelo
+      }
+      codUnidad {
+        codUnidad
+        desUnidad
+      }
+      codCond {
+        desCond
+      }
+      codEstado {
+        desEstado
+      }
+      codProve {
+        nombre
+      }
+      nroIngreso {
+        nroIngreso
+        glosa
+        gestion
+        fechaRecep
+      }
+      vehiculo {
+        tipo
+        marca
+        modelo
+        anio
+        color
+        placa
+        motor
+        chasis
+        cilindrada
+        industria
+        ruat
+        fechaVencimientoSoat
+      }
+      inDetAsigSet {
+        cantidad
+        fechaTrans
+        codAsig {
+          codAsig
+          estado
+          fechaAsig
+          fechaFin
+          tipoResp
+          codResp
+          empleadoResponsable {
+            idEmpleado
+            nombre
+            apellido
+            cargo
+            numeroDocumento
+          }
+          codOfic {
+            codOfic
+            codDpto
+            desDpto
+            codPadre {
+              codDpto
+              desDpto
+              codPadre {
+                codDpto
+                desDpto
+                codPadre {
+                  codDpto
+                  desDpto
+                }
+              }
+            }
+          }
+        }
+      }
+      inDetRevalSet {
+        vidaUtilAno
+        vidaUtilMes
+        estado
+        fechaReval
+        costo
+      }
+      inDepAcumuladaSet {
+        nroSerie
+        depresiacion
+        acumulada
+        valorActual
+        valorRevaluo
+      }
+    }
+    atributosPorGrupo(codGrupo: $codGrupo, soloActivos: true) {
+      codAtrib
+      des
+    }
+    atribActivosPorActivo(nroActivo: $nroActivo) {
+      ok
+      valor
+      codDetAtrib {
+        codDetAtrib
+        des
+        codAtrib {
+          codAtrib
+          des
+        }
+      }
+    }
+    todosResponsables {
+      codResp
+      codEmp {
+        idEmpleado
+        nombre
+        apellido
+        cargo
+        numeroDocumento
+      }
+    }
+  }
+`;
+
 export const GET_VEHICULOS_PAGINADOS = gql`
   query GetVehiculosPaginados($limit: Int, $offset: Int, $search: String) {
     todosVehiculosPaginados(limit: $limit, offset: $offset, search: $search) {
