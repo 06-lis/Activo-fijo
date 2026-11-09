@@ -33,7 +33,15 @@ class in_ingreso(models.Model):
     cod_emp_recep = models.IntegerField(null=True, blank=True)
     tipo_emp_dest = models.IntegerField(null=True, blank=True)
     cod_emp_dest = models.IntegerField(null=True, blank=True)
-    
+
+    # ── Mejoras UAGRM: fotografías y visto bueno de autoridad ──────────
+    foto_bien = models.URLField(max_length=500, null=True, blank=True, verbose_name='Fotografía del bien físico')
+    foto_placa = models.URLField(max_length=500, null=True, blank=True, verbose_name='Fotografía de placa / número de serie')
+    vo_bo_nombre = models.CharField(max_length=200, null=True, blank=True, verbose_name='Nombre autoridad Vo.Bo.')
+    vo_bo_cargo = models.CharField(max_length=150, null=True, blank=True, verbose_name='Cargo autoridad Vo.Bo.')
+    vo_bo_fecha = models.DateField(null=True, blank=True, verbose_name='Fecha visto bueno')
+    vo_bo_aprobado_por = models.IntegerField(null=True, blank=True, verbose_name='ID empleado que aprueba')
+    # ───────────────────────────────────────────────────────────────────
 
     class Meta:
         db_table = 'in_ingreso'

@@ -580,6 +580,8 @@ export const GET_FICHA_TECNICA_ACTIVO = gql`
         glosa
         gestion
         fechaRecep
+        fotoBien
+        fotoPlaca
       }
       vehiculo {
         tipo
@@ -909,6 +911,238 @@ export const GET_LOGS_BAJA_ACT_PAGINADOS = gql`
         fechaTrans
         valorFinal
       }
+    }
+  }
+`;
+
+// ==================== MIS ACTIVOS / INCIDENCIAS ====================
+export const MIS_ACTIVOS = gql`
+  query MisActivos {
+    misActivos {
+      nroActivo
+      codActivo
+      descripcion
+      monto
+      fecAdqui
+      nroSerie
+      estadoRegistro
+      codGrupo {
+        codGrupo
+        codHijo
+        desGrupo
+      }
+      codMarca {
+        desMarca
+      }
+      codModelo {
+        desModelo
+      }
+      codCond {
+        desCond
+      }
+      codEstado {
+        desEstado
+      }
+      codUnidad {
+        desUnidad
+      }
+      vehiculo {
+        placa
+        color
+        anio
+        imagen
+      }
+      inDetAsigSet {
+        codAsig {
+          codAsig
+          fechaAsig
+          codOfic {
+            codOfic
+            desDpto
+            codPadre {
+              desDpto
+              codPadre {
+                desDpto
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const MIS_INCIDENCIAS = gql`
+  query MisIncidencias {
+    misIncidencias {
+      nroIncidencia
+      nroActivo {
+        nroActivo
+        codActivo
+        descripcion
+      }
+      descripcion
+      fechaReporte
+      evidenciaFoto
+      estado
+      fechaResolucion
+      observacionAtencion
+    }
+  }
+`;
+
+export const TODAS_INCIDENCIAS = gql`
+  query TodasIncidencias {
+    todasIncidencias {
+      nroIncidencia
+      nroActivo {
+        nroActivo
+        codActivo
+        descripcion
+      }
+      idEmpleado {
+        idEmpleado
+        nombre
+        apellido
+        numeroDocumento
+        cargo
+      }
+      descripcion
+      fechaReporte
+      evidenciaFoto
+      estado
+      fechaResolucion
+      observacionAtencion
+    }
+  }
+`;
+
+// ==================== DEVOLUCIÓN Y CERTIFICADO ====================
+export const TODAS_DEVOLUCIONES = gql`
+  query TodasDevoluciones {
+    todasDevoluciones {
+      nroDevolucion
+      codAsig {
+        codAsig
+        fechaAsig
+        codOfic {
+          desDpto
+        }
+      }
+      nroActivo {
+        nroActivo
+        codActivo
+        descripcion
+      }
+      idEmpleadoRecibe {
+        idEmpleado
+        nombre
+        apellido
+        numeroDocumento
+      }
+      fechaDevolucion
+      observaciones
+      estado
+    }
+  }
+`;
+
+export const DEVOLUCION_POR_ID = gql`
+  query DevolucionPorId($nroDevolucion: Int!) {
+    devolucion(nroDevolucion: $nroDevolucion) {
+      nroDevolucion
+      codAsig {
+        codAsig
+      }
+      nroActivo {
+        nroActivo
+        codActivo
+        descripcion
+      }
+      idEmpleadoRecibe {
+        idEmpleado
+        nombre
+        apellido
+      }
+      fechaDevolucion
+      observaciones
+      estado
+    }
+  }
+`;
+
+export const TODOS_CERTIFICADOS = gql`
+  query TodosCertificados {
+    todasCertificados {
+      nroCertificado
+      idEmpleado {
+        idEmpleado
+        nombre
+        apellido
+        numeroDocumento
+        cargo
+      }
+      fechaEmision
+      idUsuarioGenera {
+        correo
+      }
+      nroDevolucion {
+        nroDevolucion
+      }
+      estado
+    }
+  }
+`;
+
+export const CERTIFICADO_POR_ID = gql`
+  query CertificadoPorId($nroCertificado: Int!) {
+    certificado(nroCertificado: $nroCertificado) {
+      nroCertificado
+      idEmpleado {
+        idEmpleado
+        nombre
+        apellido
+        numeroDocumento
+        cargo
+      }
+      fechaEmision
+      idUsuarioGenera {
+        correo
+      }
+      nroDevolucion {
+        nroDevolucion
+      }
+      estado
+    }
+  }
+`;
+
+export const VALIDAR_SOLVENCIA = gql`
+  query ValidarSolvencia($idEmpleado: Int!) {
+    validarSolvencia(idEmpleado: $idEmpleado)
+  }
+`;
+
+export const INCIDENCIA_POR_ID = gql`
+  query IncidenciaPorId($nroIncidencia: Int!) {
+    incidencia(nroIncidencia: $nroIncidencia) {
+      nroIncidencia
+      nroActivo {
+        nroActivo
+        codActivo
+        descripcion
+      }
+      idEmpleado {
+        idEmpleado
+        nombre
+        apellido
+      }
+      descripcion
+      fechaReporte
+      evidenciaFoto
+      estado
+      fechaResolucion
+      observacionAtencion
     }
   }
 `;

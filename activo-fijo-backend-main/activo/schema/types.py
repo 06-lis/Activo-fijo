@@ -16,7 +16,9 @@ from ..models import (
     in_rol, in_permiso, in_rol_permiso, in_empleado, in_usuario, in_rol_permiso_usuario,
     in_motivo, in_baja_act, in_vehic, in_tasa_rev,
     in_log_activo, in_log_ingreso, in_log_asignado, in_log_det_asig,
-    in_log_oficina, in_log_det_reval, in_log_baja_act
+    in_log_oficina, in_log_det_reval, in_log_baja_act,
+    in_incidencia,
+    in_devolucion, in_certificado_liberacion,
 )
 
 
@@ -307,6 +309,24 @@ class InBajaActType(DjangoObjectType):
 class InVehicType(DjangoObjectType):
     class Meta:
         model = in_vehic
+        fields = '__all__'
+
+
+class InIncidenciaType(DjangoObjectType):
+    class Meta:
+        model = in_incidencia
+        fields = '__all__'
+
+
+class InDevolucionType(DjangoObjectType):
+    class Meta:
+        model = in_devolucion
+        fields = '__all__'
+
+
+class InCertificadoLiberacionType(DjangoObjectType):
+    class Meta:
+        model = in_certificado_liberacion
         fields = '__all__'
 
 

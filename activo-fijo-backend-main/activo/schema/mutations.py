@@ -17,7 +17,9 @@ from ..models import (
     in_transferido, in_det_tranf,
     in_rol, in_permiso, in_rol_permiso, in_empleado, in_usuario, in_rol_permiso_usuario,
     in_vehic, in_tasa_rev, in_baja_act, in_motivo, in_log_baja_act,
-    in_log_activo, in_log_ingreso, in_log_asignado, in_log_det_asig, in_log_oficina, in_log_det_reval
+    in_log_activo, in_log_ingreso, in_log_asignado, in_log_det_asig, in_log_oficina, in_log_det_reval,
+    in_incidencia,
+    in_devolucion, in_certificado_liberacion,
 )
 from .types import (
     InEstadoType, InCondicionType, InUnidadType, InTipoAsigType, InTipomatType, InTipoType,
@@ -28,7 +30,7 @@ from .types import (
     InDetAtribType, InAtribActivoType, InParteGrupoType, InModGrpType, InDetGrpType, InDetParteType,
     InTransferidoType, InDetTranfType,
     InRolType, InPermisoType, InRolPermisoType, InEmpleadoType, InUsuarioType, InRolPermisoUsuarioType,
-    InVehicType, InTasaRevType, InBajaActType, InMotivoType
+    InVehicType, InTasaRevType, InBajaActType, InMotivoType, InIncidenciaType, InDevolucionType, InCertificadoLiberacionType
 )
 
 
@@ -961,6 +963,14 @@ class CrearIngreso(graphene.Mutation):
         tipo_emp_dest  = graphene.Int()
         cod_emp_dest   = graphene.Int()
         estado         = graphene.String()
+        # ── Mejoras UAGRM: fotografías y visto bueno ─────────────────
+        foto_bien      = graphene.String()
+        foto_placa     = graphene.String()
+        vo_bo_nombre   = graphene.String()
+        vo_bo_cargo    = graphene.String()
+        vo_bo_fecha    = graphene.Date()
+        vo_bo_aprobado_por = graphene.Int()
+        # ─────────────────────────────────────────────────────────────
     ingreso = graphene.Field(InIngresoType)
     def mutate(root, info, estado='E', cod_prov=None, cod_ofic_dest=None, **kwargs):
         obj = in_ingreso.objects.create(
@@ -978,12 +988,28 @@ class EditarIngreso(graphene.Mutation):
         glosa         = graphene.String()
         cod_ofic_dest = graphene.Int()
         cod_prov      = graphene.Int()
+        # ── Mejoras UAGRM: fotografías y visto bueno ─────────────────
+        foto_bien      = graphene.String()
+        foto_placa     = graphene.String()
+        vo_bo_nombre   = graphene.String()
+        vo_bo_cargo    = graphene.String()
+        vo_bo_fecha    = graphene.Date()
+        vo_bo_aprobado_por = graphene.Int()
+        # ─────────────────────────────────────────────────────────────
     ingreso = graphene.Field(InIngresoType)
-    def mutate(root, info, nro_ingreso, glosa=None, cod_ofic_dest=None, cod_prov=None):
+    def mutate(root, info, nro_ingreso, glosa=None, cod_ofic_dest=None, cod_prov=None,
+               foto_bien=None, foto_placa=None, vo_bo_nombre=None, vo_bo_cargo=None,
+               vo_bo_fecha=None, vo_bo_aprobado_por=None):
         obj = in_ingreso.objects.get(pk=nro_ingreso)
         if glosa         is not None: obj.glosa = glosa
         if cod_ofic_dest is not None: obj.cod_ofic_dest_id = cod_ofic_dest
         if cod_prov      is not None: obj.cod_prov_id = cod_prov
+        if foto_bien     is not None: obj.foto_bien = foto_bien
+        if foto_placa    is not None: obj.foto_placa = foto_placa
+        if vo_bo_nombre  is not None: obj.vo_bo_nombre = vo_bo_nombre
+        if vo_bo_cargo   is not None: obj.vo_bo_cargo = vo_bo_cargo
+        if vo_bo_fecha   is not None: obj.vo_bo_fecha = vo_bo_fecha
+        if vo_bo_aprobado_por is not None: obj.vo_bo_aprobado_por = vo_bo_aprobado_por
         obj.save()
         registrar_log_ingreso(obj, 'U', 2)
         return EditarIngreso(ingreso=obj)
@@ -2541,6 +2567,167 @@ class EliminarModelo(graphene.Mutation):
 # MUTATION ROOT
 # ═══════════════════════════════════════════════════════════════
 
+class ReportarIncidencia(graphene.Mutation):
+    """Registra una incidencia reportada por un funcionario sobre un activo bajo su custodia."""
+    class Arguments:
+        nro_activo     = graphene.Int(required=True)
+        descripcion    = graphene.String(required=True)
+        evidencia_foto = graphene.String()
+
+    incidencia = graphene.Field(InIncidenciaType)
+
+    def mutate(root, info, nro_activo, descripcion, evidencia_foto=None):
+        user = getattr(info.context, 'user', None)
+        if not user or not hasattr(user, 'id_empleado') or not user.id_empleado:
+            raise Exception("Autenticación requerida para reportar incidencias.")
+        id_empleado = user.id_empleado.id_empleado
+
+        # Verificar que el empleado tenga el activo asignado (custodia vigente)
+        responsable = in_responsable.objects.filter(cod_emp_id=id_empleado, a_b='A').first()
+        if not responsable:
+            raise Exception("El empleado no tiene un registro de responsable vigente.")
+        asigs = in_asignado.objects.filter(cod_resp=responsable.cod_resp, estado='A').values_list('cod_asig', flat=True)
+        nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
+        if nro_activo not in list(nros):
+            raise Exception("El activo no está bajo la custodia del funcionario autenticado.")
+
+        obj = in_incidencia.objects.create(
+            nro_activo_id=nro_activo,
+            id_empleado_id=id_empleado,
+            descripcion=descripcion,
+            evidencia_foto=evidencia_foto,
+            estado='P',
+            a_b='A'
+        )
+        return ReportarIncidencia(incidencia=obj)
+
+
+class AtenderIncidencia(graphene.Mutation):
+    """Permite al personal de Activo Fijo atender una incidencia (cambiar estado y observaciones)."""
+    class Arguments:
+        nro_incidencia    = graphene.Int(required=True)
+        estado            = graphene.String(required=True)
+        observacion_atencion = graphene.String()
+
+    incidencia = graphene.Field(InIncidenciaType)
+
+    def mutate(root, info, nro_incidencia, estado, observacion_atencion=None):
+        user = getattr(info.context, 'user', None)
+        if not user:
+            raise Exception("Autenticación requerida.")
+        # Solo personal autorizado (se valida por permiso en el resolver/middleware)
+        obj = in_incidencia.objects.filter(pk=nro_incidencia, a_b='A').first()
+        if not obj:
+            raise Exception("Incidencia no encontrada.")
+        if estado not in ('P', 'E', 'A', 'C'):
+            raise Exception("Estado inválido.")
+        obj.estado = estado
+        if observacion_atencion is not None:
+            obj.observacion_atencion = observacion_atencion
+        if estado in ('A', 'C'):
+            from django.utils import timezone
+            obj.fecha_resolucion = timezone.now().date()
+        obj.save()
+        return AtenderIncidencia(incidencia=obj)
+
+
+class RegistrarDevolucion(graphene.Mutation):
+    class Arguments:
+        cod_asig             = graphene.Int(required=True)
+        nro_activo           = graphene.Int(required=True)
+        id_empleado_recibe   = graphene.Int(required=True)
+        fecha_devolucion     = graphene.Date()
+        observaciones        = graphene.String()
+
+    devolucion = graphene.Field(InDevolucionType)
+
+    def mutate(root, info, cod_asig, nro_activo, id_empleado_recibe, fecha_devolucion=None, observaciones=None):
+        user = getattr(info.context, 'user', None)
+        if not user:
+            raise Exception("Autenticacion requerida.")
+        from django.utils import timezone
+        fecha = fecha_devolucion or timezone.now().date()
+        det = in_det_asig.objects.filter(cod_asig_id=cod_asig, nro_activo_id=nro_activo).first()
+        if not det:
+            raise Exception("El activo no está asignado en la asignación indicada.")
+        asig = in_asignado.objects.filter(pk=cod_asig, estado='A').first()
+        if not asig:
+            raise Exception("La asignación no existe o no está vigente.")
+        asig.fecha_fin = fecha
+        asig.estado = 'C'
+        asig.save()
+        in_log_asignado.objects.create(
+            cod_asig=asig.cod_asig,
+            tipo_asig=asig.tipo_asig_id,
+            tipo_resp=asig.tipo_resp,
+            cod_resp=asig.cod_resp,
+            cod_ofic=asig.cod_ofic_id,
+            fecha_asig=asig.fecha_asig,
+            fecha_fin=asig.fecha_fin,
+            obs='Devolución de activo registrada',
+            tipo_trans_ant=1,
+            cod_trans_ant=asig.cod_asig,
+            tipo_trans_act=2,
+            cod_trans_act=asig.cod_asig,
+            fecha_act=timezone.now(),
+            tipo_log='U',
+            tipo_inv=0,
+            cod_inv=0
+        )
+        obj = in_devolucion.objects.create(
+            cod_asig_id=cod_asig,
+            nro_activo_id=nro_activo,
+            id_empleado_recibe_id=id_empleado_recibe,
+            fecha_devolucion=fecha,
+            observaciones=observaciones,
+            estado='C',
+            a_b='A'
+        )
+        return RegistrarDevolucion(devolucion=obj)
+
+
+class GenerarCertificadoLiberacion(graphene.Mutation):
+    class Arguments:
+        id_empleado     = graphene.Int(required=True)
+        nro_devolucion  = graphene.Int()
+
+    certificado = graphene.Field(InCertificadoLiberacionType)
+
+    def mutate(root, info, id_empleado, nro_devolucion=None):
+        user = getattr(info.context, 'user', None)
+        if not user:
+            raise Exception("Autenticación requerida.")
+        responsable = in_responsable.objects.filter(cod_emp_id=id_empleado, a_b='A').first()
+        if not responsable:
+            raise Exception("El empleado no tiene registro de responsable vigente.")
+        asigs = in_asignado.objects.filter(cod_resp=responsable.cod_resp, estado='A').values_list('cod_asig', flat=True)
+        nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
+        pendientes = in_activo.objects.filter(nro_activo__in=nros, a_b='A')
+        if pendientes.exists():
+            lista = ', '.join([a.cod_activo for a in pendientes[:5]])
+            raise Exception(f"El funcionario aún tiene activos pendientes: {lista}")
+        devolucion_obj = None
+        if nro_devolucion:
+            devolucion_obj = in_devolucion.objects.filter(pk=nro_devolucion, a_b='A').first()
+            if not devolucion_obj:
+                raise Exception("La devolución indicada no existe.")
+        ya_existe = in_certificado_liberacion.objects.filter(
+            id_empleado_id=id_empleado, a_b='A', estado__in=('E', 'V')
+        ).exists()
+        if ya_existe:
+            raise Exception("Ya existe un certificado de liberación vigente para este funcionario.")
+        from django.utils import timezone
+        obj = in_certificado_liberacion.objects.create(
+            id_empleado_id=id_empleado,
+            fecha_emision=timezone.now().date(),
+            id_usuario_genera_id=user.id_usuario if hasattr(user, 'id_usuario') else None,
+            nro_devolucion_id=nro_devolucion if devolucion_obj else None,
+            estado='E',
+            a_b='A'
+        )
+        return GenerarCertificadoLiberacion(certificado=obj)
+
+
 class Mutation(graphene.ObjectType):
     eliminar_provedor = EliminarProvedor.Field()
     eliminar_marca = EliminarMarca.Field()
@@ -2690,3 +2877,11 @@ class Mutation(graphene.ObjectType):
     crear_usuario                = CrearUsuario.Field()
     editar_usuario               = EditarUsuario.Field()
     asignar_rol_permiso_usuario  = AsignarRolPermisoUsuario.Field()
+
+    # ── Portal Mis Activos / Incidencias ────────────────────────
+    reportar_incidencia   = ReportarIncidencia.Field()
+    atender_incidencia    = AtenderIncidencia.Field()
+
+    # ── Devolución y Certificado ────────────────────────────────
+    registrar_devolucion  = RegistrarDevolucion.Field()
+    generar_certificado_liberacion = GenerarCertificadoLiberacion.Field()

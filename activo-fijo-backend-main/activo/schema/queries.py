@@ -15,7 +15,9 @@ from ..models import (
     in_rol, in_permiso, in_rol_permiso, in_empleado, in_usuario, in_rol_permiso_usuario,
     in_motivo, in_baja_act, in_vehic, in_tasa_rev,
     in_log_activo, in_log_ingreso, in_log_asignado, in_log_det_asig,
-    in_log_oficina, in_log_det_reval, in_log_baja_act
+    in_log_oficina, in_log_det_reval, in_log_baja_act,
+    in_incidencia,
+    in_devolucion, in_certificado_liberacion,
 )
 from .types import (
     InEstadoType, InCondicionType, InUnidadType, InTipoAsigType, InTipomatType, InTipoType,
@@ -26,7 +28,7 @@ from .types import (
     InDetAtribType, InAtribActivoType, InParteGrupoType, InModGrpType, InDetGrpType, InDetParteType,
     InTransferidoType, InDetTranfType,
     InRolType, InPermisoType, InRolPermisoType, InEmpleadoType, InUsuarioType, InRolPermisoUsuarioType,
-    InMotivoType, InBajaActType, InVehicType, InTasaRevType,
+    InMotivoType, InBajaActType, InVehicType, InTasaRevType, InIncidenciaType, InDevolucionType, InCertificadoLiberacionType,
     InLogActivoType, InLogIngresoType, InLogAsignadoType, InLogDetAsigType,
     InLogOficinaType, InLogDetRevalType, InLogBajaActType,
     InActivoPaginatedType, InVehicPaginatedType, InAsignadoPaginatedType,
@@ -166,6 +168,22 @@ class Query(graphene.ObjectType):
     usuario_actual      = graphene.Field(InUsuarioType)
     mis_permisos        = graphene.List(graphene.String)
     oficinas_a_cargo             = graphene.List(InOficinaType)
+
+    # ── Portal Mis Activos ──────────────────────────────────────
+    mis_activos         = graphene.List(InActivoType)
+    mis_incidencias     = graphene.List(InIncidenciaType)
+
+    # ── Gestión de incidencias (Activo Fijo) ────────────────────
+    todas_incidencias   = graphene.List(InIncidenciaType)
+    incidencia          = graphene.Field(InIncidenciaType, nro_incidencia=graphene.Int(required=True))
+
+    # ── Devolución y Certificado de Liberación ──────────────────
+    todas_devoluciones  = graphene.List(InDevolucionType)
+    devolucion          = graphene.Field(InDevolucionType, nro_devolucion=graphene.Int(required=True))
+    todas_certificados  = graphene.List(InCertificadoLiberacionType)
+    certificado         = graphene.Field(InCertificadoLiberacionType, nro_certificado=graphene.Int(required=True))
+    validar_solvencia   = graphene.Field(graphene.String, id_empleado=graphene.Int(required=True))
+
     todos_roles         = graphene.List(InRolType)
     rol                 = graphene.Field(InRolType, id_rol=graphene.Int(required=True))
 
@@ -489,6 +507,66 @@ class Query(graphene.ObjectType):
         encargado_oficinas_ids = in_encargado.objects.filter(cod_resp=id_empleado, cod_asig__estado='A').values_list('cod_asig__cod_ofic_id', flat=True)
         all_ofic_ids = set(list(asig_oficinas_ids) + list(encargado_oficinas_ids))
         return in_oficina.objects.filter(pk__in=all_ofic_ids)
+    # ── Resolvers — Portal Mis Activos ──────────────────────────
+    def resolve_mis_activos(root, info):
+        user = getattr(info.context, 'user', None)
+        if not user or not hasattr(user, 'id_empleado') or not user.id_empleado:
+            return []
+        id_empleado = user.id_empleado.id_empleado
+        try:
+            responsable = in_responsable.objects.filter(cod_emp_id=id_empleado, a_b='A').first()
+            if not responsable:
+                return []
+            asigs = in_asignado.objects.filter(cod_resp=responsable.cod_resp, estado='A').values_list('cod_asig', flat=True)
+            nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
+            return in_activo.objects.filter(nro_activo__in=nros, a_b='A').select_related(
+                'cod_grupo', 'cod_marca', 'cod_modelo', 'cod_cond', 'cod_estado', 'nro_ingreso'
+            )
+        except Exception:
+            return []
+
+    def resolve_mis_incidencias(root, info):
+        user = getattr(info.context, 'user', None)
+        if not user or not hasattr(user, 'id_empleado') or not user.id_empleado:
+            return []
+        id_empleado = user.id_empleado.id_empleado
+        return in_incidencia.objects.filter(id_empleado_id=id_empleado, a_b='A').order_by('-nro_incidencia')
+
+    def resolve_todas_incidencias(root, info):
+        return in_incidencia.objects.filter(a_b='A').order_by('-nro_incidencia')
+
+    def resolve_incidencia(root, info, nro_incidencia):
+        return in_incidencia.objects.filter(pk=nro_incidencia, a_b='A').first()
+
+    # ── Resolvers — Devolución y Certificado ────────────────────
+    def resolve_todas_devoluciones(root, info):
+        return in_devolucion.objects.filter(a_b='A').order_by('-nro_devolucion')
+
+    def resolve_devolucion(root, info, nro_devolucion):
+        return in_devolucion.objects.filter(pk=nro_devolucion, a_b='A').first()
+
+    def resolve_todas_certificados(root, info):
+        return in_certificado_liberacion.objects.filter(a_b='A').order_by('-nro_certificado')
+
+    def resolve_certificado(root, info, nro_certificado):
+        return in_certificado_liberacion.objects.filter(pk=nro_certificado, a_b='A').first()
+
+    def resolve_validar_solvencia(root, info, id_empleado):
+        """Devuelve 'OK' si el empleado no tiene activos pendientes, o lista los activos pendientes."""
+        try:
+            responsable = in_responsable.objects.filter(cod_emp_id=id_empleado, a_b='A').first()
+            if not responsable:
+                return 'OK'
+            asigs = in_asignado.objects.filter(cod_resp=responsable.cod_resp, estado='A').values_list('cod_asig', flat=True)
+            nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
+            activos_pendientes = in_activo.objects.filter(nro_activo__in=nros, a_b='A')
+            if activos_pendientes.exists():
+                lista = ', '.join([f"{a.cod_activo}: {a.descripcion[:40]}" for a in activos_pendientes[:5]])
+                return f'PENDIENTE:{lista}'
+            return 'OK'
+        except Exception:
+            return 'ERROR'
+
     def resolve_det_asig_por_asignacion(root, info, cod_asig):
         return in_det_asig.objects.filter(cod_asig_id=cod_asig).select_related('nro_activo')
     def resolve_encargados_por_asignacion(root, info, cod_asig):

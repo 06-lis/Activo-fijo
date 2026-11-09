@@ -59,6 +59,14 @@ export const PERMISOS_METADATA: ModulePermissions[] = [
         ],
       },
       {
+        id: 'mis_activos',
+        label: 'Mis Activos',
+        actions: [
+          { name: 'ver_mis_activos', type: 'ver', label: 'Ver Mis Activos' },
+          { name: 'reportar_incidencia', type: 'otro', label: 'Reportar Incidencia' },
+        ],
+      },
+      {
         id: 'transferencias',
         label: 'Transferencias',
         actions: [
@@ -155,6 +163,22 @@ export const PERMISOS_METADATA: ModulePermissions[] = [
         actions: [
           { name: 'ver_reportes', type: 'ver', label: 'Ver' },
           { name: 'exportar_reportes', type: 'otro', label: 'Exportar' },
+        ],
+      },
+      {
+        id: 'incidencias',
+        label: 'Incidencias de Activos',
+        actions: [
+          { name: 'ver_incidencias', type: 'ver', label: 'Ver Incidencias' },
+          { name: 'atender_incidencia', type: 'otro', label: 'Atender Incidencia' },
+        ],
+      },
+      {
+        id: 'devoluciones',
+        label: 'Devoluciones y Certificados',
+        actions: [
+          { name: 'gestionar_devoluciones', type: 'otro', label: 'Gestionar Devoluciones' },
+          { name: 'emitir_certificado', type: 'otro', label: 'Emitir Certificado' },
         ],
       },
       {

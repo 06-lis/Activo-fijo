@@ -426,3 +426,102 @@ export const DESACTIVAR_2FA = gql`
   }
 `;
 
+// ==================== INCIDENCIAS (MIS ACTIVOS) ====================
+export const REPORTAR_INCIDENCIA = gql`
+  mutation ReportarIncidencia($nroActivo: Int!, $descripcion: String!, $evidenciaFoto: String) {
+    reportarIncidencia(
+      nroActivo: $nroActivo,
+      descripcion: $descripcion,
+      evidenciaFoto: $evidenciaFoto
+    ) {
+      incidencia {
+        nroIncidencia
+        nroActivo {
+          nroActivo
+          codActivo
+          descripcion
+        }
+        descripcion
+        fechaReporte
+        estado
+      }
+    }
+  }
+`;
+
+export const ATENDER_INCIDENCIA = gql`
+  mutation AtenderIncidencia($nroIncidencia: Int!, $estado: String!, $observacionAtencion: String) {
+    atenderIncidencia(
+      nroIncidencia: $nroIncidencia,
+      estado: $estado,
+      observacionAtencion: $observacionAtencion
+    ) {
+      incidencia {
+        nroIncidencia
+        estado
+        fechaResolucion
+        observacionAtencion
+      }
+    }
+  }
+`;
+
+export const REGISTRAR_DEVOLUCION = gql`
+  mutation RegistrarDevolucion(
+    $codAsig: Int!,
+    $nroActivo: Int!,
+    $idEmpleadoRecibe: Int!,
+    $fechaDevolucion: Date,
+    $observaciones: String
+  ) {
+    registrarDevolucion(
+      codAsig: $codAsig,
+      nroActivo: $nroActivo,
+      idEmpleadoRecibe: $idEmpleadoRecibe,
+      fechaDevolucion: $fechaDevolucion,
+      observaciones: $observaciones
+    ) {
+      devolucion {
+        nroDevolucion
+        nroActivo {
+          codActivo
+          descripcion
+        }
+        idEmpleadoRecibe {
+          nombre
+          apellido
+        }
+        fechaDevolucion
+        observaciones
+      }
+    }
+  }
+`;
+
+export const GENERAR_CERTIFICADO_LIBERACION = gql`
+  mutation GenerarCertificadoLiberacion(
+    $idEmpleado: Int!,
+    $nroDevolucion: Int
+  ) {
+    generarCertificadoLiberacion(
+      idEmpleado: $idEmpleado,
+      nroDevolucion: $nroDevolucion
+    ) {
+      certificado {
+        nroCertificado
+        idEmpleado {
+          nombre
+          apellido
+          numeroDocumento
+          cargo
+        }
+        fechaEmision
+        estado
+        nroDevolucion {
+          nroDevolucion
+        }
+      }
+    }
+  }
+`;
+

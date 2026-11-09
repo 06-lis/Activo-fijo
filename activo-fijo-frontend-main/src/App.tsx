@@ -38,6 +38,12 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import MiCuenta from './pages/MiCuenta';
 import ConsultaActivo from './pages/ConsultaActivo';
+import MisActivos from './pages/MisActivos';
+import MisActivosDetalle from './pages/MisActivosDetalle';
+import ReportarIncidencia from './pages/ReportarIncidencia';
+import GestionarIncidencias from './pages/GestionarIncidencias';
+import Devoluciones from './pages/Devoluciones';
+import CertificadoLiberacion from './pages/CertificadoLiberacion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import './App.css';
@@ -198,6 +204,16 @@ function AppInner() {
             <Route path="/logs"          element={<ProtectedRoute element={<Logs />} requiredPermission="ver_auditoria" />} />
             <Route path="/atributos"     element={<ProtectedRoute element={<Atributos />} requiredPermission="ver_atributos" />} />
             <Route path="/ufvs"          element={<ProtectedRoute element={<Ufvs />} requiredPermission="ver_tipo_cambio" />} />
+
+            {/* Mis Activos / Portal del funcionario */}
+            <Route path="/mis-activos"                    element={<ProtectedRoute element={<MisActivos />} requiredPermission="ver_mis_activos" />} />
+            <Route path="/mis-activos/:nroActivo"         element={<ProtectedRoute element={<MisActivosDetalle />} requiredPermission="ver_mis_activos" />} />
+            <Route path="/reportar-incidencia"            element={<ProtectedRoute element={<ReportarIncidencia />} requiredPermission="ver_mis_activos" />} />
+            <Route path="/gestionar-incidencias"          element={<ProtectedRoute element={<GestionarIncidencias />} requiredPermission="ver_incidencias" />} />
+
+            {/* Devolución y Certificado de Liberación */}
+            <Route path="/devoluciones"                   element={<ProtectedRoute element={<Devoluciones />} requiredPermission="gestionar_devoluciones" />} />
+            <Route path="/certificado-liberacion"         element={<ProtectedRoute element={<CertificadoLiberacion />} requiredPermission="emitir_certificado" />} />
             
             {/* Fallback route for unknown paths or successful logins originating from /login */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

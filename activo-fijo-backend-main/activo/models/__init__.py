@@ -17,6 +17,8 @@ from .rbac import in_rol, in_permiso, in_rol_permiso, in_empleado, in_usuario, i
 from .bajas import in_motivo, in_baja_act
 from .vehiculo import in_vehic
 from .ufv import in_tasa_rev
+from .incidencias import in_incidencia
+from .devolucion import in_devolucion, in_certificado_liberacion
 from .logs import (
     in_log_activo, in_log_ingreso, in_log_asignado, in_log_det_asig,
     in_log_oficina, in_log_det_reval, in_log_baja_act
@@ -40,6 +42,9 @@ __all__ = [
     'in_motivo', 'in_baja_act',
     'in_vehic',
     'in_tasa_rev',
+    'in_incidencia',
+    'in_devolucion',
+    'in_certificado_liberacion',
     'in_log_activo', 'in_log_ingreso', 'in_log_asignado', 'in_log_det_asig',
     'in_log_oficina', 'in_log_det_reval', 'in_log_baja_act'
 ]

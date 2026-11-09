@@ -29,6 +29,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Transferencias',  to: '/transferencias', icon: '⇄', permission: 'ver_transferencias' },
       { label: 'Bajas',           to: '/bajas',          icon: '↥', permission: 'ver_bajas' },
       { label: 'Vehículos',       to: '/vehiculos',      icon: '◻', permission: 'ver_vehiculos' },
+      { label: 'Mis Activos',     to: '/mis-activos',    icon: '⍥', permission: 'ver_mis_activos' },
     ],
   },
   {
@@ -55,7 +56,10 @@ const NAV_GROUPS: NavGroup[] = [
     icon: '▤',
     items: [
       { label: 'Reportes',        to: '/reportes',       icon: '▤', permission: 'ver_reportes' },
-      { label: 'Bitácora',        to: '/logs',           icon: '≣', permission: 'ver_auditoria' },
+      { label: 'Gestión Incidencias', to: '/gestionar-incidencias', icon: '≣', permission: 'ver_incidencias' },
+      { label: 'Devoluciones',        to: '/devoluciones',          icon: '↥', permission: 'gestionar_devoluciones' },
+      { label: 'Certificado Lib.',    to: '/certificado-liberacion',icon: '📄', permission: 'emitir_certificado' },
+      { label: 'Bitácora',            to: '/logs',                  icon: '≣', permission: 'ver_auditoria' },
     ],
   },
   {
