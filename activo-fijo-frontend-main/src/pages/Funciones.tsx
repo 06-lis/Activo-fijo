@@ -37,7 +37,7 @@ const EDITAR_FUNCION_ADM = gql`
   }
 `;
 
-export default function Funciones() {
+export default function Funciones({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_funcion');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_funcion');
@@ -103,7 +103,7 @@ export default function Funciones() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Funciones Administrativas"
       actions={
         puedeCrear ? [

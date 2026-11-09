@@ -17,3 +17,18 @@ dist/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Workspace dev folders
+activo-fijo-backend/
+activo-fijo-frontend/
+activo-fijo-infraestructura/
+*.docx
+~$*.docx
+*.vbs
+*.jsonl
+*.txt
+!comandos_activo_fijo.txt
+pdf_docs/
+uagrm_info/
+all_docs.json
+check_modal_footer.py

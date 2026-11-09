@@ -51,7 +51,7 @@ const DAR_DE_BAJA_GESTION = gql`
   }
 `;
 
-export default function Gestiones() {
+export default function Gestiones({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_gestion');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_gestion');
@@ -131,7 +131,7 @@ export default function Gestiones() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Gestiones"
       actions={
         puedeCrear ? [

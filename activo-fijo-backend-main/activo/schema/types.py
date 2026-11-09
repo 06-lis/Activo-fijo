@@ -181,6 +181,10 @@ class InAsignadoType(DjangoObjectType):
     def resolve_empleado_responsable(self, info):
         if self.cod_resp:
             try:
+                # Primero buscar en in_responsable que enlaza cod_emp (in_empleado)
+                resp = in_responsable.objects.select_related('cod_emp').filter(pk=self.cod_resp).first()
+                if resp and resp.cod_emp:
+                    return resp.cod_emp
                 return in_empleado.objects.filter(pk=self.cod_resp).first()
             except Exception:
                 return None

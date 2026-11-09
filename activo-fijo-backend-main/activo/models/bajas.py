@@ -34,6 +34,10 @@ class in_baja_act(models.Model):
     tipo_per_resp = models.SmallIntegerField(null=True, blank=True)
     cod_emp_resp = models.IntegerField(null=True, blank=True)
     valor_final = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True)
+    unidad_tecnica = models.CharField(max_length=50, null=True, blank=True)
+    nro_informe = models.CharField(max_length=50, null=True, blank=True)
+    fecha_informe = models.DateField(null=True, blank=True)
+    destino_final = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         db_table = 'in_baja_act'

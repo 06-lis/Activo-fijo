@@ -15,6 +15,10 @@ export const CREAR_BAJA_ACT = gql`
     $tipoPerResp: Int
     $codEmpResp: Int
     $valorFinal: Float
+    $unidadTecnica: String
+    $nroInforme: String
+    $fechaInforme: Date
+    $destinoFinal: String
   ) {
     crearBajaAct(
       nroActivo: $nroActivo
@@ -29,11 +33,18 @@ export const CREAR_BAJA_ACT = gql`
       tipoPerResp: $tipoPerResp
       codEmpResp: $codEmpResp
       valorFinal: $valorFinal
+      unidadTecnica: $unidadTecnica
+      nroInforme: $nroInforme
+      fechaInforme: $fechaInforme
+      destinoFinal: $destinoFinal
     ) {
       baja {
         nro
         fechaBajaTe
         valorFinal
+        unidadTecnica
+        nroInforme
+        destinoFinal
         nroActivo {
           nroActivo
           codActivo

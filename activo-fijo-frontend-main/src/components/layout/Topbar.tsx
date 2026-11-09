@@ -22,6 +22,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/grupos':        'Grupos de Activos',
   '/oficinas':      'Oficinas / Dependencias',
   '/proveedores':   'Proveedores',
+  '/catalogos':     'Catálogos y Parámetros',
   '/marcas':        'Marcas',
   '/condiciones':   'Condiciones',
   '/estados':       'Estados de Activo',

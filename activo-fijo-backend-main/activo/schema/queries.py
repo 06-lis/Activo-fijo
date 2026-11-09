@@ -35,6 +35,8 @@ from .types import (
     InLogBajaActPaginatedType
 )
 
+from .dashboard import DashboardResumenType, resolver_dashboard_resumen
+
 # ═══════════════════════════════════════════════════════════════
 # QUERIES
 # ═══════════════════════════════════════════════════════════════
@@ -119,6 +121,7 @@ class Query(graphene.ObjectType):
 
     # ── Activos ─────────────────────────────────────────────────
     todos_activos          = graphene.List(InActivoType, solo_activos=graphene.Boolean(), solo_aprobados=graphene.Boolean())
+    dashboard_resumen      = graphene.Field(DashboardResumenType)
     activo                 = graphene.Field(InActivoType, nro_activo=graphene.Int(required=True))
     activo_por_codigo      = graphene.Field(InActivoType, cod_activo=graphene.String(required=True))
     activos_por_grupo      = graphene.List(InActivoType, cod_grupo=graphene.Int(required=True), solo_activos=graphene.Boolean())
@@ -461,6 +464,10 @@ class Query(graphene.ObjectType):
         asigs = in_asignado.objects.filter(cod_ofic_id=cod_ofic, estado='A').values_list('cod_asig', flat=True)
         nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
         return in_activo.objects.filter(nro_activo__in=nros).exclude(a_b='B')
+
+    # ── Resolvers — Dashboard ───────────────────────────────────
+    def resolve_dashboard_resumen(root, info):
+        return resolver_dashboard_resumen(root, info)
 
     # ── Resolvers — Asignaciones ────────────────────────────────
     def resolve_todas_asignaciones(root, info, estado=None):

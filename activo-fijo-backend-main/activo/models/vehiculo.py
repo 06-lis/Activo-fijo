@@ -37,6 +37,27 @@ class in_vehic(models.Model):
     fecha_vencimiento_soat = models.DateField(null=True, blank=True)
     foto_conductor = models.FileField(upload_to='conductores/', null=True, blank=True)
 
+    # Requerimientos UAGRM (RR 150/2005, Circular 010/2025 ITV y SIPAP)
+    chofer_asignado = models.ForeignKey(
+        'in_empleado',
+        on_delete=models.SET_NULL,
+        db_column='cod_chofer',
+        null=True,
+        blank=True,
+        related_name='vehiculos_asignados'
+    )
+    nombre_chofer = models.CharField(max_length=120, null=True, blank=True)
+    licencia_conducir = models.CharField(max_length=40, null=True, blank=True)
+    telefono_chofer = models.CharField(max_length=30, null=True, blank=True)
+    kilometraje_actual = models.IntegerField(null=True, blank=True)
+    itv_gestion = models.IntegerField(null=True, blank=True)
+    itv_estado = models.CharField(max_length=20, default='VIGENTE')
+    itv_certificado = models.CharField(max_length=50, null=True, blank=True)
+    soat_nro = models.CharField(max_length=50, null=True, blank=True)
+    soat_aseguradora = models.CharField(max_length=60, null=True, blank=True)
+    codigo_sipap = models.CharField(max_length=50, null=True, blank=True)
+    estado_mecanico = models.CharField(max_length=20, default='OPERATIVO')
+
     class Meta:
         db_table = 'in_vehic'
         managed = True

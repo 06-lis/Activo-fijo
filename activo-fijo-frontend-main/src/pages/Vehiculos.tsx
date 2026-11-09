@@ -44,7 +44,32 @@ const GET_VEHICULOS_AND_ACTIVOS = gql`
         imagen
         fechaVencimientoSoat
         fotoConductor
+        choferAsignado {
+          idEmpleado
+          nombre
+          apellido
+          numeroDocumento
+          cargo
+        }
+        nombreChofer
+        licenciaConducir
+        telefonoChofer
+        kilometrajeActual
+        itvGestion
+        itvEstado
+        itvCertificado
+        soatNro
+        soatAseguradora
+        codigoSipap
+        estadoMecanico
       }
+    }
+    todosEmpleados {
+      idEmpleado
+      nombre
+      apellido
+      numeroDocumento
+      cargo
     }
     todosActivos {
       nroActivo
@@ -76,7 +101,11 @@ const GUARDAR_VEHICULO = gql`
     $poliza: String, $factura: Int, $resMin: String, $resAdm: String,
     $infTec: String, $leyEstado: String, $ds: String, $docTransf: String,
     $docCompVen: String, $minuta: String, $actaCoVe: String, $imagen: String,
-    $fechaVencimientoSoat: Date, $fotoConductor: String
+    $fechaVencimientoSoat: Date, $fotoConductor: String,
+    $choferAsignadoId: Int, $nombreChofer: String, $licenciaConducir: String,
+    $telefonoChofer: String, $kilometrajeActual: Int, $itvGestion: Int,
+    $itvEstado: String, $itvCertificado: String, $soatNro: String,
+    $soatAseguradora: String, $codigoSipap: String, $estadoMecanico: String
   ) {
     guardarVehiculo(
       nroActivo: $nroActivo, tipo: $tipo, marca: $marca, modelo: $modelo,
@@ -85,7 +114,13 @@ const GUARDAR_VEHICULO = gql`
       poliza: $poliza, factura: $factura, resMin: $resMin, resAdm: $resAdm,
       infTec: $infTec, leyEstado: $leyEstado, ds: $ds, docTransf: $docTransf,
       docCompVen: $docCompVen, minuta: $minuta, actaCoVe: $actaCoVe, imagen: $imagen,
-      fechaVencimientoSoat: $fechaVencimientoSoat, fotoConductor: $fotoConductor
+      fechaVencimientoSoat: $fechaVencimientoSoat, fotoConductor: $fotoConductor,
+      choferAsignadoId: $choferAsignadoId, nombreChofer: $nombreChofer,
+      licenciaConducir: $licenciaConducir, telefonoChofer: $telefonoChofer,
+      kilometrajeActual: $kilometrajeActual,
+      itvGestion: $itvGestion, itvEstado: $itvEstado, itvCertificado: $itvCertificado,
+      soatNro: $soatNro, soatAseguradora: $soatAseguradora, codigoSipap: $codigoSipap,
+      estadoMecanico: $estadoMecanico
     ) {
       vehiculo {
         nroActivo {
@@ -96,6 +131,13 @@ const GUARDAR_VEHICULO = gql`
     }
   }
 `;
+
+const getMediaUrl = (path?: string) => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const clean = path.startsWith('/') ? path : `/${path}`;
+  return `http://localhost:8000${clean}`;
+};
 
 export default function Vehiculos() {
   const { user } = useAuth();
@@ -175,7 +217,19 @@ export default function Vehiculos() {
     actaCoVe: '',
     imagen: '',
     fechaVencimientoSoat: '',
-    fotoConductor: ''
+    fotoConductor: '',
+    choferAsignadoId: '',
+    nombreChofer: '',
+    licenciaConducir: '',
+    telefonoChofer: '',
+    kilometrajeActual: '',
+    itvGestion: new Date().getFullYear().toString(),
+    itvEstado: 'VIGENTE',
+    itvCertificado: '',
+    soatNro: '',
+    soatAseguradora: '',
+    codigoSipap: '',
+    estadoMecanico: 'OPERATIVO'
   });
 
   const [uploading, setUploading] = useState(false);
@@ -304,7 +358,19 @@ export default function Vehiculos() {
           actaCoVe: form.actaCoVe,
           imagen: form.imagen,
           fechaVencimientoSoat: form.fechaVencimientoSoat ? `${form.fechaVencimientoSoat}-12-31` : null,
-          fotoConductor: form.fotoConductor
+          fotoConductor: form.fotoConductor,
+          choferAsignadoId: form.choferAsignadoId ? parseInt(form.choferAsignadoId) : null,
+          nombreChofer: form.nombreChofer || null,
+          licenciaConducir: form.licenciaConducir || null,
+          telefonoChofer: form.telefonoChofer || null,
+          kilometrajeActual: form.kilometrajeActual ? parseInt(form.kilometrajeActual) : null,
+          itvGestion: form.itvGestion ? parseInt(form.itvGestion) : null,
+          itvEstado: form.itvEstado || 'VIGENTE',
+          itvCertificado: form.itvCertificado || null,
+          soatNro: form.soatNro || null,
+          soatAseguradora: form.soatAseguradora || null,
+          codigoSipap: form.codigoSipap || null,
+          estadoMecanico: form.estadoMecanico || 'OPERATIVO'
         }
       });
       alert('Ficha de vehículo guardada correctamente');
@@ -344,7 +410,21 @@ export default function Vehiculos() {
       docCompVen: v.docCompVen || '',
       minuta: v.minuta || '',
       actaCoVe: v.actaCoVe || '',
-      imagen: v.imagen || ''
+      imagen: v.imagen || '',
+      fechaVencimientoSoat: v.fechaVencimientoSoat ? v.fechaVencimientoSoat.substring(0, 4) : '',
+      fotoConductor: v.fotoConductor || '',
+      choferAsignadoId: v.choferAsignado?.idEmpleado ? String(v.choferAsignado.idEmpleado) : '',
+      nombreChofer: v.nombreChofer || '',
+      licenciaConducir: v.licenciaConducir || '',
+      telefonoChofer: v.telefonoChofer || '',
+      kilometrajeActual: v.kilometrajeActual ? String(v.kilometrajeActual) : '',
+      itvGestion: v.itvGestion ? String(v.itvGestion) : '',
+      itvEstado: v.itvEstado || 'VIGENTE',
+      itvCertificado: v.itvCertificado || '',
+      soatNro: v.soatNro || '',
+      soatAseguradora: v.soatAseguradora || '',
+      codigoSipap: v.codigoSipap || '',
+      estadoMecanico: v.estadoMecanico || 'OPERATIVO'
     });
     setEditingVehiculo(v);
   };
@@ -375,7 +455,21 @@ export default function Vehiculos() {
       docCompVen: '',
       minuta: '',
       actaCoVe: '',
-      imagen: ''
+      imagen: '',
+      fechaVencimientoSoat: '',
+      fotoConductor: '',
+      choferAsignadoId: '',
+      nombreChofer: '',
+      licenciaConducir: '',
+      telefonoChofer: '',
+      kilometrajeActual: '',
+      itvGestion: new Date().getFullYear().toString(),
+      itvEstado: 'VIGENTE',
+      itvCertificado: '',
+      soatNro: '',
+      soatAseguradora: '',
+      codigoSipap: '',
+      estadoMecanico: 'OPERATIVO'
     });
     setIsCreating(true);
   };
@@ -544,6 +638,9 @@ export default function Vehiculos() {
                   <th style={{ width: '120px' }}>Año / Color</th>
                   <th style={{ width: '150px' }}>Chasis / Motor</th>
                   <th style={{ width: '110px' }}>RUAT</th>
+                  <th style={{ width: '130px' }}>Chofer Asignado</th>
+                  <th style={{ width: '115px' }}>Inspección ITV</th>
+                  <th style={{ width: '100px' }}>SIPAP</th>
                   <th style={{ width: '120px' }}>Estado SOAT</th>
                   <th style={{ width: '160px', textAlign: 'center' }}>Acciones</th>
                 </tr>
@@ -570,14 +667,11 @@ export default function Vehiculos() {
                     <td style={{ textAlign: 'center', padding: '4px' }}>
                       {v.imagen ? (
                         <img
-                          src={`http://localhost:8000${v.imagen}`}
+                          src={getMediaUrl(v.imagen)}
                           alt="Vehículo"
                           style={{ width: '40px', height: '30px', objectFit: 'cover', border: '1px solid var(--border-light)' }}
                           onError={(e) => {
-                            const img = e.currentTarget;
-                            if (img.src.includes('http://localhost:8000/media/')) {
-                              img.src = v.imagen;
-                            }
+                            e.currentTarget.style.display = 'none';
                           }}
                         />
                       ) : (
@@ -601,6 +695,44 @@ export default function Vehiculos() {
                       M: {v.motor || '-'}
                     </td>
                     <td style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{v.ruat || '-'}</td>
+                    <td style={{ fontSize: '0.8rem' }}>
+                      {v.nombreChofer ? (
+                        <div>
+                          <div style={{ fontWeight: 700, color: '#0f172a' }}>
+                            {v.nombreChofer}
+                          </div>
+                          {v.licenciaConducir && (
+                            <div style={{ fontSize: '0.7rem', color: '#1a3c6e', fontFamily: 'monospace' }}>
+                              Lic: {v.licenciaConducir}
+                            </div>
+                          )}
+                          {v.choferAsignado && (
+                            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                              Resp: {v.choferAsignado.nombre} {v.choferAsignado.apellido}
+                            </div>
+                          )}
+                        </div>
+                      ) : v.choferAsignado ? (
+                        <div>
+                          <div style={{ fontWeight: 600, color: 'var(--navy)' }}>
+                            {v.choferAsignado.nombre} {v.choferAsignado.apellido}
+                          </div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                            {v.choferAsignado.cargo || 'Responsable'}
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.75rem' }}>Sin chofer</span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={`badge ${v.itvEstado === 'VIGENTE' ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
+                        ITV {v.itvGestion || 'Pendiente'}: {v.itvEstado || 'Vigente'}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '0.8rem', fontFamily: 'monospace', fontWeight: 600 }}>
+                      {v.codigoSipap || '-'}
+                    </td>
                     <td>{getSoatBadge(v.fechaVencimientoSoat)}</td>
                     <td style={{ textAlign: 'center' }}>
                       <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
@@ -773,15 +905,10 @@ export default function Vehiculos() {
                   <div style={{ width: '100%', height: '120px', background: 'var(--bg-white)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed var(--border)', position: 'relative' }}>
                     {form.imagen ? (
                       <img 
-                        src={`http://localhost:8000${form.imagen}`} 
+                        src={getMediaUrl(form.imagen)} 
                         alt="Vehículo" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          const img = e.currentTarget;
-                          if (img.src.includes('http://localhost:8000/media/')) {
-                            img.src = form.imagen; 
-                          }
-                        }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }} 
                       />
                     ) : (
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 'bold' }}>SIN FOTO</span>
@@ -804,15 +931,10 @@ export default function Vehiculos() {
                   <div style={{ width: '100%', height: '120px', background: 'var(--bg-white)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed var(--border)', position: 'relative' }}>
                     {form.fotoConductor ? (
                       <img 
-                        src={`http://localhost:8000${form.fotoConductor}`} 
+                        src={getMediaUrl(form.fotoConductor)} 
                         alt="Conductor" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          const img = e.currentTarget as HTMLImageElement;
-                          if (img.src.includes('http://localhost:8000/media/')) {
-                            img.src = form.fotoConductor; 
-                          }
-                        }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }} 
                       />
                     ) : (
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 'bold' }}>SIN FOTO</span>
@@ -907,6 +1029,106 @@ export default function Vehiculos() {
                 <div className="form-group">
                   <label>Carnet Propietario <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
                   <input type="text" name="carnetProp" value={form.carnetProp} onChange={handleChange} placeholder="Nro CRP" />
+                </div>
+              </div>
+
+              {/* SECCIÓN UAGRM: CONTROL VEHICULAR (RR 150/2005, ITV Y SIPAP) */}
+              <div className="section-bar" style={{ margin: '4px 0 2px 0', backgroundColor: '#1a3c6e', color: '#ffffff', padding: '4px 8px', fontWeight: 700, fontSize: '0.75rem' }}>
+                Control Institucional UAGRM (Chofer, Custodio, ITV, SOAT y SIPAP)
+              </div>
+              <div className="form-grid form-grid-3">
+                <div className="form-group">
+                  <label>Nombre del Chofer Oficial</label>
+                  <input
+                    type="text"
+                    name="nombreChofer"
+                    value={form.nombreChofer}
+                    onChange={handleChange}
+                    placeholder="Ej: Juan Carlos Méndez Vargas"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Licencia de Conducir / Categoría</label>
+                  <input
+                    type="text"
+                    name="licenciaConducir"
+                    value={form.licenciaConducir}
+                    onChange={handleChange}
+                    placeholder="Ej: 5849302 SC - Categoría C"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Teléfono Chofer</label>
+                  <input
+                    type="text"
+                    name="telefonoChofer"
+                    value={form.telefonoChofer}
+                    onChange={handleChange}
+                    placeholder="Ej: 71023456"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Autoridad / Custodio Asignado (Unidad)</label>
+                  <select name="choferAsignadoId" value={form.choferAsignadoId} onChange={handleChange}>
+                    <option value="">Seleccione autoridad o custodio...</option>
+                    {data?.todosEmpleados?.map((emp: any) => (
+                      <option key={emp.idEmpleado} value={emp.idEmpleado}>
+                        {emp.nombre} {emp.apellido} {emp.cargo ? `(${emp.cargo})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Kilometraje Actual (Km)</label>
+                  <input type="number" name="kilometrajeActual" value={form.kilometrajeActual} onChange={handleChange} placeholder="Ej: 85400" />
+                </div>
+
+                <div className="form-group">
+                  <label>Código Registro SIPAP</label>
+                  <input type="text" name="codigoSipap" value={form.codigoSipap} onChange={handleChange} placeholder="Ej: SIPAP-UAGRM-042" />
+                </div>
+
+                <div className="form-group">
+                  <label>Gestión Inspección Técnica (ITV)</label>
+                  <input type="number" name="itvGestion" value={form.itvGestion} onChange={handleChange} placeholder="Ej: 2026" />
+                </div>
+
+                <div className="form-group">
+                  <label>Estado ITV</label>
+                  <select name="itvEstado" value={form.itvEstado} onChange={handleChange}>
+                    <option value="VIGENTE">Vigente (Aprobado)</option>
+                    <option value="PENDIENTE">Pendiente de Inspección</option>
+                    <option value="OBSERVADO">Observado / En Taller</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>N° Certificado ITV</label>
+                  <input type="text" name="itvCertificado" value={form.itvCertificado} onChange={handleChange} placeholder="N° Certificado Rosal / Tránsito" />
+                </div>
+
+                <div className="form-group">
+                  <label>N° Póliza SOAT</label>
+                  <input type="text" name="soatNro" value={form.soatNro} onChange={handleChange} placeholder="N° de Roseta / Póliza SOAT" />
+                </div>
+
+                <div className="form-group">
+                  <label>Aseguradora SOAT</label>
+                  <input type="text" name="soatAseguradora" value={form.soatAseguradora} onChange={handleChange} placeholder="Ej: UNIVIDA S.A." />
+                </div>
+
+                <div className="form-group">
+                  <label>Estado Mecánico Actual</label>
+                  <select name="estadoMecanico" value={form.estadoMecanico} onChange={handleChange}>
+                    <option value="OPERATIVO">Operativo / En Servicio</option>
+                    <option value="MANTENIMIENTO">En Mantenimiento Preventivo</option>
+                    <option value="TALLER">En Taller Central (Reparación)</option>
+                    <option value="PARADO">Parado / Inoperativo</option>
+                  </select>
                 </div>
               </div>
 
@@ -1063,18 +1285,15 @@ function PrintableSheet({ vehicle }: { vehicle: any }) {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ width: '100%', height: '140px', border: '1.5px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', marginBottom: '5px' }}>
               {v.imagen ? (
-                <img 
-                  src={`http://localhost:8000${v.imagen}`} 
-                  alt="Vehículo" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    const img = e.currentTarget;
-                    if (img.src.includes('http://localhost:8000/media/')) {
-                      img.src = v.imagen; 
-                    }
-                  }}
-                />
-              ) : (
+                        <img
+                          src={getMediaUrl(v.imagen)}
+                          alt="Vehículo"
+                          style={{ width: '40px', height: '30px', objectFit: 'cover', border: '1px solid var(--border-light)' }}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : (
                 <div style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 'bold' }}>SIN FOTO</div>
               )}
             </div>
@@ -1085,14 +1304,12 @@ function PrintableSheet({ vehicle }: { vehicle: any }) {
             <div style={{ width: '110px', height: '120px', border: '1.5px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', marginBottom: '5px' }}>
               {v.fotoConductor ? (
                 <img 
-                  src={`http://localhost:8000${v.fotoConductor}`} 
+                  src={getMediaUrl(v.fotoConductor)} 
                   alt="Conductor" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                   onError={(e) => {
                     const img = e.currentTarget;
-                    if (img.src.includes('http://localhost:8000/media/')) {
-                      img.src = v.fotoConductor; 
-                    }
+                    img.style.display = 'none';
                   }}
                 />
               ) : (
@@ -1198,15 +1415,92 @@ function PrintableSheet({ vehicle }: { vehicle: any }) {
         </table>
       </div>
 
+      {/* 5. Control Operativo y Conductor Asignado (Normativa UAGRM) */}
+      <h2 style={{ background: '#f1f5f9', padding: '4px 8px', fontSize: '10px', fontWeight: 'bold', margin: '0 0 8px 0', textTransform: 'uppercase' }}>
+        5. Control Operativo UAGRM y Conductor Asignado (RR 150/2005 y Circular 010/2025)
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold', width: '130px' }}>Conductor Oficial:</td>
+              <td style={{ padding: '4px 0', fontWeight: 'bold', color: '#1a3c6e' }}>
+                {v.nombreChofer || (v.choferAsignado ? `${v.choferAsignado.nombre} ${v.choferAsignado.apellido}` : 'Sin conductor asignado')}
+              </td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>Licencia de Conducir:</td>
+              <td style={{ padding: '4px 0', fontFamily: 'monospace' }}>{v.licenciaConducir || '-'}</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>Teléfono Conductor:</td>
+              <td style={{ padding: '4px 0' }}>{v.telefonoChofer || '-'}</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>Kilometraje Actual:</td>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>
+                {v.kilometrajeActual != null ? `${Number(v.kilometrajeActual).toLocaleString('es-BO')} km` : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>Estado Mecánico:</td>
+              <td style={{ padding: '4px 0', fontWeight: 'bold', color: v.estadoMecanico === 'OPERATIVO' ? '#166534' : '#991b1b' }}>
+                {v.estadoMecanico || 'OPERATIVO'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold', width: '130px' }}>Código SIPAP (Estado):</td>
+              <td style={{ padding: '4px 0', fontFamily: 'monospace' }}>{v.codigoSipap || '-'}</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>Seguro SOAT N°:</td>
+              <td style={{ padding: '4px 0' }}>
+                {v.soatNro ? `${v.soatNro} (${v.soatAseguradora || 'Aseguradora'})` : '-'}
+              </td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>Vigencia SOAT:</td>
+              <td style={{ padding: '4px 0', fontWeight: 'bold', color: v.fechaVencimientoSoat && new Date(v.fechaVencimientoSoat) >= new Date() ? '#166534' : '#991b1b' }}>
+                {v.fechaVencimientoSoat ? `${v.fechaVencimientoSoat} (${new Date(v.fechaVencimientoSoat) >= new Date() ? 'VIGENTE' : 'VENCIDO'})` : '-'}
+              </td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>ITV (Policía):</td>
+              <td style={{ padding: '4px 0' }}>
+                {v.itvGestion ? `Gestión ${v.itvGestion} - ${v.itvEstado || 'VIGENTE'}` : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ padding: '4px 0', fontWeight: 'bold' }}>Certificado ITV:</td>
+              <td style={{ padding: '4px 0', fontFamily: 'monospace' }}>{v.itvCertificado || '-'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       {/* Signature blocks */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', marginTop: '60px', textAlign: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '30px', marginTop: '45px', textAlign: 'center' }}>
         <div>
-          <div style={{ borderTop: '1px solid #4a5568', width: '220px', margin: '0 auto 5px auto' }}></div>
-          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9px' }}>RESPONSABLE FLOTA VEHICULAR</p>
-          <p style={{ margin: '2px 0 0 0', fontSize: '8px', color: '#718096' }}>Dpto. Activos Fijos UAGRM</p>
+          <div style={{ borderTop: '1px solid #4a5568', width: '170px', margin: '0 auto 5px auto' }}></div>
+          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9px' }}>CONDUCTOR / CHOFER</p>
+          <p style={{ margin: '2px 0 0 0', fontSize: '8px', color: '#4a5568', fontWeight: 600 }}>
+            {v.nombreChofer || (v.choferAsignado ? `${v.choferAsignado.nombre} ${v.choferAsignado.apellido}` : 'Custodio Operativo')}
+          </p>
+          <p style={{ margin: '1px 0 0 0', fontSize: '7.5px', color: '#718096' }}>
+            {v.licenciaConducir ? `Lic: ${v.licenciaConducir}` : 'Receptor del Vehículo'}
+          </p>
         </div>
         <div>
-          <div style={{ borderTop: '1px solid #4a5568', width: '220px', margin: '0 auto 5px auto' }}></div>
+          <div style={{ borderTop: '1px solid #4a5568', width: '170px', margin: '0 auto 5px auto' }}></div>
+          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9px' }}>JEFE DE TRANSPORTES Y TALLERES</p>
+          <p style={{ margin: '2px 0 0 0', fontSize: '8px', color: '#718096' }}>Dpto. de Transporte UAGRM</p>
+        </div>
+        <div>
+          <div style={{ borderTop: '1px solid #4a5568', width: '170px', margin: '0 auto 5px auto' }}></div>
           <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9px' }}>DIRECTOR ADM. FINANCIERO</p>
           <p style={{ margin: '2px 0 0 0', fontSize: '8px', color: '#718096' }}>Autoridad Universitaria UAGRM</p>
         </div>

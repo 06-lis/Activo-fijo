@@ -48,7 +48,7 @@ const DAR_DE_BAJA_TIPO = gql`
   }
 `;
 
-export default function Tipos() {
+export default function Tipos({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_tipo');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_tipo');
@@ -125,7 +125,7 @@ export default function Tipos() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Tipos de Activo"
       actions={
         puedeCrear ? [

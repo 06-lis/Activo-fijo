@@ -34,7 +34,7 @@ const EDITAR_CONDICION = gql`
   }
 `;
 
-export default function Condiciones() {
+export default function Condiciones({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_condicion_activo');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_condicion_activo');
@@ -97,7 +97,7 @@ export default function Condiciones() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Condiciones de Activos"
       actions={
         puedeCrear ? [

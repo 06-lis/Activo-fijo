@@ -15,6 +15,7 @@ import Transferencias from './pages/Transferencias';
 import Revaluos from './pages/Revaluos';
 import Bajas from './pages/Bajas';
 import Proveedores from './pages/Proveedores';
+import Catalogos from './pages/Catalogos';
 import Oficinas from './pages/Oficinas';
 import Grupos from './pages/Grupos';
 import Marcas from './pages/Marcas';
@@ -179,6 +180,7 @@ function AppInner() {
             {/* Other System Modules (Protected) */}
             <Route path="/revaluos"      element={<ProtectedRoute element={<Revaluos />} requiredPermission="ver_reevaluos" />} />
             <Route path="/proveedores"   element={<ProtectedRoute element={<Proveedores />} requiredPermission="ver_proveedores" />} />
+            <Route path="/catalogos"     element={<ProtectedRoute element={<Catalogos />} />} />
             <Route path="/oficinas"      element={<ProtectedRoute element={<Oficinas />} requiredPermission="ver_ubicaciones" />} />
             <Route path="/grupos"        element={<ProtectedRoute element={<Grupos />} requiredPermission="ver_grupos" />} />
             <Route path="/marcas"        element={<ProtectedRoute element={<Marcas />} requiredPermission="ver_marcas" />} />

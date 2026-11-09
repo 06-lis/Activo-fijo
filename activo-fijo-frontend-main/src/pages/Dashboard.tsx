@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import DashboardEjecutivo from '../components/DashboardEjecutivo';
 
 const GET_DASHBOARD_DATA = gql`
   query GetDashboardData {
@@ -226,6 +227,9 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="dashboard-grid">
+            {/* HU-LEG-NEW-02: Dashboard Ejecutivo de Métricas Patrimoniales */}
+            {puedeVerActivos && <DashboardEjecutivo />}
+
             {/* Fila de Tarjetas Resumen Principales */}
             <div className="dashboard-grid-4">
               {puedeVerActivos && statsActivos && (

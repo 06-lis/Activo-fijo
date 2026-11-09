@@ -34,7 +34,7 @@ const EDITAR_ESTADO = gql`
   }
 `;
 
-export default function Estados() {
+export default function Estados({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_estado_activo');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_estado_activo');
@@ -97,7 +97,7 @@ export default function Estados() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Estados de Activos"
       actions={
         puedeCrear ? [

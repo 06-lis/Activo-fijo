@@ -29,7 +29,11 @@ export default function Bajas() {
     fechaBajaEf: '',
     observacion: '',
     codEmpResp: '',
-    valorFinal: ''
+    valorFinal: '',
+    unidadTecnica: '',
+    nroInforme: '',
+    fechaInforme: '',
+    destinoFinal: ''
   });
 
   const [showMotivoModal, setShowMotivoModal] = useState(false);
@@ -104,7 +108,11 @@ export default function Bajas() {
         observacion: form.observacion || null,
         tipoPerResp: form.codEmpResp ? 1 : null,
         codEmpResp: form.codEmpResp ? parseInt(form.codEmpResp) : null,
-        valorFinal: form.valorFinal ? parseFloat(form.valorFinal) : null
+        valorFinal: form.valorFinal ? parseFloat(form.valorFinal) : null,
+        unidadTecnica: form.unidadTecnica || null,
+        nroInforme: form.nroInforme || null,
+        fechaInforme: form.fechaInforme || null,
+        destinoFinal: form.destinoFinal || null
       };
 
       await crearBaja({ variables });
@@ -120,7 +128,11 @@ export default function Bajas() {
         fechaBajaEf: '',
         observacion: '',
         codEmpResp: '',
-        valorFinal: ''
+        valorFinal: '',
+        unidadTecnica: '',
+        nroInforme: '',
+        fechaInforme: '',
+        destinoFinal: ''
       });
       setActivoSearch('');
       setEmpAutSearch('');
@@ -264,6 +276,8 @@ export default function Bajas() {
                 <th>Nro.</th>
                 <th>Activo</th>
                 <th>Motivo</th>
+                <th>Dictamen Técnico (UAGRM)</th>
+                <th>Destino Final</th>
                 <th>Autorizador</th>
                 <th>Documento</th>
                 <th>Fecha Técnica</th>
@@ -291,7 +305,7 @@ export default function Bajas() {
               ) : (
                 <>
                   {activosBaja.length === 0 && (
-                    <tr><td colSpan={8} className="empty">No hay bajas formales registradas</td></tr>
+                    <tr><td colSpan={10} className="empty">No hay bajas formales registradas</td></tr>
                   )}
                   {activosBaja.map((b: any) => (
                     <tr key={b.nro} className="border-b border-slate-700 hover:bg-slate-700/30 transition">
@@ -308,6 +322,31 @@ export default function Bajas() {
                         <span className="badge badge-danger text-xs font-semibold px-2 py-0.5 rounded">
                           {getMotivoDescription(b.motivo)}
                         </span>
+                      </td>
+                      <td>
+                        {b.unidadTecnica ? (
+                          <div className="text-xs">
+                            <span className="badge badge-info font-bold px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-500/30">
+                              {b.unidadTecnica}
+                            </span>
+                            {b.nroInforme && (
+                              <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                                {b.nroInforme}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-slate-500 text-xs italic">Sin peritaje</span>
+                        )}
+                      </td>
+                      <td>
+                        {b.destinoFinal ? (
+                          <span className="badge badge-warning text-[11px] font-semibold px-2 py-0.5 rounded bg-amber-900/40 text-amber-300 border border-amber-600/30">
+                            {b.destinoFinal}
+                          </span>
+                        ) : (
+                          <span className="text-slate-500 text-xs italic">Pendiente</span>
+                        )}
                       </td>
                       <td className="text-slate-300 text-sm">{getEmpleadoName(b.codEmpAut)}</td>
                       <td className="text-slate-300 text-sm">{b.documento || '-'}</td>
@@ -518,6 +557,84 @@ export default function Bajas() {
                     onChange={e => setForm({ ...form, valorFinal: e.target.value })}
                     placeholder="Opcional (se calculará valor actual si se deja vacío)"
                   />
+                </div>
+              </div>
+
+              {/* Requerimientos UAGRM (RR 449/2013 y RR 368/2023) */}
+              <div style={{
+                background: 'rgba(26, 60, 110, 0.08)',
+                border: '1px solid rgba(26, 60, 110, 0.25)',
+                borderRadius: '8px',
+                padding: '12px 14px',
+                marginBottom: '12px'
+              }}>
+                <div style={{
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  color: '#1a3c6e',
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <span>Dictamen Técnico y Disposición (Normativa UAGRM)</span>
+                </div>
+
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Unidad Técnica Evaluadora (Peritaje)</label>
+                    <select
+                      value={form.unidadTecnica}
+                      onChange={e => setForm({ ...form, unidadTecnica: e.target.value })}
+                    >
+                      <option value="">Seleccione unidad pericial...</option>
+                      <option value="DSU">DSU (Computación, Muebles, Aires, Intangibles)</option>
+                      <option value="DIEU">DIEU (Infraestructura, Redes, Edificios, Eléctrico)</option>
+                      <option value="UTALAB">UTALAB (Equipos e Instrumental de Laboratorio)</option>
+                      <option value="TALLER CENTRAL">Taller Central / Transporte (Vehículos y Maquinaria)</option>
+                      <option value="VETERINARIA/AGRONOMIA">Veterinaria / Agronomía (Semovientes / Animales)</option>
+                      <option value="DIBLAT">DIBLAT (Bibliotecas / Material Bibliográfico)</option>
+                      <option value="ASESORIA LEGAL">Asesoría Legal / Denuncia FELCC (Robo o Siniestro)</option>
+                      <option value="OTRA COMISION">Otra Comisión Técnica Especial</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Destino Final del Bien (Disposición)</label>
+                    <select
+                      value={form.destinoFinal}
+                      onChange={e => setForm({ ...form, destinoFinal: e.target.value })}
+                    >
+                      <option value="">Seleccione destino...</option>
+                      <option value="DESTRUCCION">Destrucción / Chatarra (Inservible)</option>
+                      <option value="DONACION">Donación / Enajenación Gratuita</option>
+                      <option value="REMATE">Remate / Subasta Pública</option>
+                      <option value="PENDIENTE">Pendiente de Disposición (Depósito)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-grid" style={{ marginTop: '8px' }}>
+                  <div className="form-group">
+                    <label>N° de Informe Técnico Previo</label>
+                    <input
+                      type="text"
+                      value={form.nroInforme}
+                      onChange={e => setForm({ ...form, nroInforme: e.target.value })}
+                      placeholder="Ej: INF-DSU-142/2026"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Fecha de Informe Pericial</label>
+                    <input
+                      type="date"
+                      value={form.fechaInforme}
+                      onChange={e => setForm({ ...form, fechaInforme: e.target.value })}
+                    />
+                  </div>
                 </div>
               </div>
 

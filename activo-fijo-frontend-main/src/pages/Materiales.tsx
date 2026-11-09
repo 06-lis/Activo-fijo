@@ -34,7 +34,7 @@ const EDITAR_MATERIAL = gql`
   }
 `;
 
-export default function Materiales() {
+export default function Materiales({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_material');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_material');
@@ -97,7 +97,7 @@ export default function Materiales() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Tipos de Material"
       actions={
         puedeCrear ? [

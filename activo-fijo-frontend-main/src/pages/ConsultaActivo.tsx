@@ -39,6 +39,15 @@ const GET_ACTIVO_CONSULTA = gql`
         color
         anio
         fechaVencimientoSoat
+        nombreChofer
+        licenciaConducir
+        telefonoChofer
+        kilometrajeActual
+        estadoMecanico
+        codigoSipap
+        soatNro
+        soatAseguradora
+        itvEstado
       }
       inDetAsigSet {
         codAsig {
@@ -154,7 +163,27 @@ export default function ConsultaActivo() {
     );
   }
 
-  if (error || !activo) {
+  if (error) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', fontFamily: 'sans-serif', padding: '20px', textAlign: 'center' }}>
+        <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626', marginBottom: '16px', fontSize: '24px' }}>
+          ⚠️
+        </div>
+        <h2 style={{ color: '#0f172a', margin: '0 0 8px 0', fontSize: '1.25rem' }}>Error de Conexión</h2>
+        <p style={{ color: '#64748b', maxWidth: '340px', margin: '0 0 24px 0', fontSize: '0.9rem' }}>
+          No se pudo conectar con el servidor de Activos Fijos ({error.message}). Por favor verifique la red.
+        </p>
+        <button
+          onClick={() => refetch()}
+          style={{ background: '#1a3c6e', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}
+        >
+          Reintentar Consulta
+        </button>
+      </div>
+    );
+  }
+
+  if (!activo) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', fontFamily: 'sans-serif', padding: '20px', textAlign: 'center' }}>
         <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626', marginBottom: '16px' }}>
@@ -353,6 +382,22 @@ export default function ConsultaActivo() {
                   <div>
                     <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>N° CHASIS:</span>
                     <strong style={{ color: '#1e293b', fontFamily: 'monospace' }}>{vehiculo.chasis || 'S/N'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>CONDUCTOR OFICIAL:</span>
+                    <strong style={{ color: '#1a3c6e' }}>{vehiculo.nombreChofer || 'Sin conductor asignado'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>LICENCIA / CONTACTO:</span>
+                    <strong style={{ color: '#1e293b' }}>{vehiculo.licenciaConducir || '-'} {vehiculo.telefonoChofer ? `(Cel. ${vehiculo.telefonoChofer})` : ''}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>KILOMETRAJE:</span>
+                    <strong style={{ color: '#1e293b' }}>{vehiculo.kilometrajeActual != null ? `${Number(vehiculo.kilometrajeActual).toLocaleString('es-BO')} km` : '-'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>ESTADO MECÁNICO:</span>
+                    <strong style={{ color: vehiculo.estadoMecanico === 'OPERATIVO' ? '#166534' : '#991b1b' }}>{vehiculo.estadoMecanico || 'OPERATIVO'}</strong>
                   </div>
                 </div>
                 {vehiculo.fechaVencimientoSoat && (

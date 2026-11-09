@@ -37,7 +37,7 @@ const EDITAR_UNIDAD = gql`
   }
 `;
 
-export default function Unidades() {
+export default function Unidades({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_unidad_medida');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_unidad_medida');
@@ -103,7 +103,7 @@ export default function Unidades() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Unidades de Medida"
       actions={
         puedeCrear ? [

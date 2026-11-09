@@ -24,6 +24,10 @@ export const GET_BAJAS_DATA = gql`
       motivo
       observacion
       valorFinal
+      unidadTecnica
+      nroInforme
+      fechaInforme
+      destinoFinal
       nroActivo {
         nroActivo
         codActivo
@@ -308,18 +312,22 @@ export const GET_CATALOGOS_ACTIVOS = gql`
       codPadre {
         codGrupo
         codHijo
+        desGrupo
         nivel
         codPadre {
           codGrupo
           codHijo
+          desGrupo
           nivel
           codPadre {
             codGrupo
             codHijo
+            desGrupo
             nivel
             codPadre {
               codGrupo
               codHijo
+              desGrupo
               nivel
             }
           }
@@ -382,6 +390,9 @@ export const GET_CATALOGOS_ACTIVOS = gql`
     todasUnidades {
       codUnidad
       desUnidad
+    }
+    todosActivos(soloActivos: false) {
+      codActivo
     }
   }
 `;
@@ -562,6 +573,13 @@ export const GET_ASIGNACIONES_PAGINADAS = gql`
         estado
         tipoResp
         codResp
+        empleadoResponsable {
+          idEmpleado
+          nombre
+          apellido
+          numeroDocumento
+          cargo
+        }
         tipoAsig { tipoAsig des }
         codOfic {
           codOfic

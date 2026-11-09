@@ -39,6 +39,23 @@ const GET_VEHICULO = gql`
       imagen
       fechaVencimientoSoat
       fotoConductor
+      choferAsignado {
+        idEmpleado
+        nombre
+        apellido
+        cargo
+      }
+      nombreChofer
+      licenciaConducir
+      telefonoChofer
+      kilometrajeActual
+      itvGestion
+      itvEstado
+      itvCertificado
+      soatNro
+      soatAseguradora
+      codigoSipap
+      estadoMecanico
     }
   }
 `;
@@ -50,7 +67,12 @@ const GUARDAR_VEHICULO = gql`
     $cilindrada: Int, $industria: String, $ruat: String, $carnetProp: String,
     $poliza: String, $factura: Int, $resMin: String, $resAdm: String,
     $infTec: String, $leyEstado: String, $ds: String, $docTransf: String,
-    $docCompVen: String, $minuta: String, $actaCoVe: String, $imagen: String
+    $docCompVen: String, $minuta: String, $actaCoVe: String, $imagen: String,
+    $fechaVencimientoSoat: Date, $fotoConductor: String,
+    $choferAsignadoId: Int, $nombreChofer: String, $licenciaConducir: String,
+    $telefonoChofer: String, $kilometrajeActual: Int, $itvGestion: Int,
+    $itvEstado: String, $itvCertificado: String, $soatNro: String,
+    $soatAseguradora: String, $codigoSipap: String, $estadoMecanico: String
   ) {
     guardarVehiculo(
       nroActivo: $nroActivo, tipo: $tipo, marca: $marca, modelo: $modelo,
@@ -58,7 +80,14 @@ const GUARDAR_VEHICULO = gql`
       cilindrada: $cilindrada, industria: $industria, ruat: $ruat, carnetProp: $carnetProp,
       poliza: $poliza, factura: $factura, resMin: $resMin, resAdm: $resAdm,
       infTec: $infTec, leyEstado: $leyEstado, ds: $ds, docTransf: $docTransf,
-      docCompVen: $docCompVen, minuta: $minuta, actaCoVe: $actaCoVe, imagen: $imagen
+      docCompVen: $docCompVen, minuta: $minuta, actaCoVe: $actaCoVe, imagen: $imagen,
+      fechaVencimientoSoat: $fechaVencimientoSoat, fotoConductor: $fotoConductor,
+      choferAsignadoId: $choferAsignadoId, nombreChofer: $nombreChofer,
+      licenciaConducir: $licenciaConducir, telefonoChofer: $telefonoChofer,
+      kilometrajeActual: $kilometrajeActual,
+      itvGestion: $itvGestion, itvEstado: $itvEstado, itvCertificado: $itvCertificado,
+      soatNro: $soatNro, soatAseguradora: $soatAseguradora, codigoSipap: $codigoSipap,
+      estadoMecanico: $estadoMecanico
     ) {
       vehiculo {
         nroActivo {
@@ -174,6 +203,45 @@ function getGroupUnifiedCode(grupo: any): string {
   return parts.join('');
 }
 
+function getGroupBreadcrumb(grupo: any): string {
+  if (!grupo) return '';
+  const parts = [];
+  let current = grupo;
+  while (current) {
+    if (current.desGrupo) {
+      parts.unshift(current.desGrupo.trim());
+    }
+    current = current.codPadre;
+  }
+  return parts.join(' > ');
+}
+
+// Retorna el ancestro raíz (Grupo Mayor o Rubro Contable)
+function getGroupRoot(grupo: any): any {
+  let curr = grupo;
+  while (curr?.codPadre) {
+    curr = curr.codPadre;
+  }
+  return curr;
+}
+
+// Retorna únicamente el camino específico del bien (excluyendo el rubro raíz para no redundar)
+function getGroupSpecificPath(grupo: any): string {
+  if (!grupo) return '';
+  const parts = [];
+  let curr = grupo;
+  while (curr && curr.codPadre) {
+    if (curr.desGrupo) {
+      parts.unshift(curr.desGrupo.trim());
+    }
+    curr = curr.codPadre;
+  }
+  if (parts.length === 0) {
+    return grupo.desGrupo?.trim() || '';
+  }
+  return parts.join(' > ');
+}
+
 const FORM_VACIO = {
   codGest: '', codActivo: '', codGrupo: '', descripcion: '', codEstado: '',
   nroIngreso: '', monto: '', fecAdqui: '', nroSerie: '',
@@ -196,6 +264,7 @@ export default function Activos() {
   const [grupoSelDes, setGrupoSelDes] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
+  const [modalError, setModalError] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [debouncedBusqueda, setDebouncedBusqueda] = useState('');
   const [paginaActual, setPaginaActual] = useState(1);
@@ -248,7 +317,7 @@ export default function Activos() {
       soloPendientes: soloPendientes
     }
   });
-  const { data: cats } = useQuery(GET_CATALOGOS_ACTIVOS);
+  const { data: cats, refetch: refetchCats } = useQuery(GET_CATALOGOS_ACTIVOS);
   const [crearActivo] = useMutation(CREAR_ACTIVO);
   const [editarActivo] = useMutation(EDITAR_ACTIVO);
   const [aprobarActivo] = useMutation(APROBAR_ACTIVO);
@@ -256,6 +325,40 @@ export default function Activos() {
   const modelosFiltrados = cats?.todosModelos?.filter(
     (m: any) => !form.codMarca || String(m.codMarca?.codMarca) === String(form.codMarca)
   ) || [];
+
+  // Clasificación ética institucional: solo bienes terminales (hojas) agrupados por Rubro
+  const groupedLeaves = React.useMemo(() => {
+    if (!cats?.todosGrupos) return [];
+    
+    // Identificar qué grupos son padres (tienen subcategorías que dependen de ellos)
+    const parentIds = new Set<string>();
+    cats.todosGrupos.forEach((g: any) => {
+      if (g.codPadre?.codGrupo) {
+        parentIds.add(String(g.codPadre.codGrupo));
+      }
+    });
+
+    // Solo conservar nodos terminales específicos (bienes reales que se pueden registrar)
+    const leafNodes = cats.todosGrupos.filter((g: any) => !parentIds.has(String(g.codGrupo)));
+
+    // Agrupar bajo su Rubro Contable mayor
+    const map = new Map<string, any[]>();
+    leafNodes.forEach((leaf: any) => {
+      const root = getGroupRoot(leaf);
+      const rootName = (root?.desGrupo?.trim() || 'OTROS ACTIVOS').toUpperCase();
+      if (!map.has(rootName)) {
+        map.set(rootName, []);
+      }
+      map.get(rootName)!.push(leaf);
+    });
+
+    return Array.from(map.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([rootName, items]) => ({
+        rootName,
+        items: items.sort((a, b) => getGroupSpecificPath(a).localeCompare(getGroupSpecificPath(b)))
+      }));
+  }, [cats?.todosGrupos]);
 
   const esSimple = esGrupoSimple(grupoSelDes);
 
@@ -296,50 +399,86 @@ export default function Activos() {
     return text.includes(query) || num.includes(query);
   }) || [];
 
+  // Helper to autogenerate next unique asset code based on office and group
+  const autoGenerateCode = (nroIngresoVal: string, codGrupoVal: string): string => {
+    if (!nroIngresoVal || !codGrupoVal || !cats?.todosIngresos || !cats?.todosGrupos) return '';
+    const selectedIngreso = cats.todosIngresos.find((i: any) => String(i.nroIngreso) === String(nroIngresoVal));
+    const selectedGroup = cats.todosGrupos.find((g: any) => String(g.codGrupo) === String(codGrupoVal));
+    
+    if (selectedIngreso?.codOficDest && selectedGroup) {
+      const officeCode = getOfficeUnifiedCode(selectedIngreso.codOficDest);
+      const groupCode = getGroupUnifiedCode(selectedGroup);
+      
+      let combined = (officeCode + groupCode).replace(/[^0-9A-Z]/gi, '');
+      if (combined.length > 8) {
+        combined = combined.substring(0, 8);
+      } else {
+        combined = combined.padEnd(8, '0');
+      }
+
+      const existingCodes = new Set<string>([
+        ...(cats?.todosActivos?.map((a: any) => a.codActivo) || []),
+        ...(activosPaginados?.map((a: any) => a.codActivo) || [])
+      ]);
+
+      let seq = 1;
+      let generated = `U${combined}${seq.toString().padStart(4, '0')}`;
+      while (existingCodes.has(generated)) {
+        seq++;
+        generated = `U${combined}${seq.toString().padStart(4, '0')}`;
+      }
+      return generated;
+    }
+    return '';
+  };
+
   // Autocomplete code generator
   useEffect(() => {
     if (editId) return; // Do not auto-generate code when editing an existing asset
-    if (form.nroIngreso && form.codGrupo && cats?.todosIngresos && cats?.todosGrupos) {
-      const selectedIngreso = cats.todosIngresos.find((i: any) => String(i.nroIngreso) === String(form.nroIngreso));
-      const selectedGroup = cats.todosGrupos.find((g: any) => String(g.codGrupo) === String(form.codGrupo));
-      
-      if (selectedIngreso?.codOficDest && selectedGroup) {
-        const officeCode = getOfficeUnifiedCode(selectedIngreso.codOficDest);
-        const groupCode = getGroupUnifiedCode(selectedGroup);
-        
-        let combined = (officeCode + groupCode).replace(/[^0-9A-Z]/gi, '');
-        if (combined.length > 8) {
-          combined = combined.substring(0, 8);
-        } else {
-          combined = combined.padEnd(8, '0');
-        }
-        
-        const generated = `U${combined}0001`;
-        setForm((prev: any) => ({ ...prev, codActivo: generated }));
+    if (form.nroIngreso && form.codGrupo) {
+      const nextCode = autoGenerateCode(form.nroIngreso, form.codGrupo);
+      if (nextCode && nextCode !== form.codActivo) {
+        setForm((prev: any) => ({ ...prev, codActivo: nextCode }));
       }
     }
-  }, [form.nroIngreso, form.codGrupo, cats?.todosIngresos, cats?.todosGrupos, editId]);
+  }, [form.nroIngreso, form.codGrupo, cats?.todosIngresos, cats?.todosGrupos, cats?.todosActivos, editId]);
+
+  const cerrarModal = () => {
+    setShowModal(false);
+    setEditId(null);
+    setModalError('');
+  };
+
+  const validarFormulario = () => {
+    const missing: string[] = [];
+    if (!form.codGest) missing.push('Gestión');
+    if (!form.nroIngreso) missing.push('Ingreso');
+    if (!form.codGrupo) missing.push('Grupo');
+    if (!form.codActivo) missing.push('Código Activo');
+    if (!form.descripcion || !form.descripcion.trim()) missing.push('Descripción');
+    if (!form.codEstado) missing.push('Estado');
+    return missing;
+  };
 
   // Creación en lote
   const handleSubmitLote = async () => {
     if (!puedeCrear) {
-      setError('No tienes permiso para crear activos');
-      setTimeout(() => setError(''), 3000);
+      setModalError('No tienes permiso para crear activos');
       return;
     }
     
     const cantidad = cantidadLote || 1;
     if (cantidad < 1) {
-      setError('La cantidad debe ser al menos 1');
-      setTimeout(() => setError(''), 3000);
+      setModalError('La cantidad debe ser al menos 1');
       return;
     }
 
-    if (!form.codGest || !form.codActivo || !form.codGrupo || !form.descripcion || !form.codEstado || !form.nroIngreso) {
-      setError('Complete los campos obligatorios (*)');
-      setTimeout(() => setError(''), 3000);
+    const missing = validarFormulario();
+    if (missing.length > 0) {
+      setModalError(`Por favor complete los campos obligatorios (*): ${missing.join(', ')}`);
       return;
     }
+    setModalError('');
 
     setCreandoLote(true);
     setProgresoLote({ actual: 0, total: cantidad });
@@ -348,12 +487,13 @@ export default function Activos() {
     let fallos = 0;
     let errorMsg = '';
 
-    const basePrefix = form.codActivo.substring(0, 9);
-    const prefix = basePrefix.padEnd(9, '0');
+    const prefix = form.codActivo.length > 4 ? form.codActivo.substring(0, form.codActivo.length - 4) : form.codActivo;
+    const lastDigits = form.codActivo.slice(-4);
+    const startSeq = /^\d+$/.test(lastDigits) ? parseInt(lastDigits, 10) : 1;
 
     for (let i = 0; i < cantidad; i++) {
-      const seqStr = (i + 1).toString().padStart(4, '0');
-      const codigoCompleto = `${prefix}${seqStr}`;
+      const seqStr = (startSeq + i).toString().padStart(4, '0');
+      const codigoCompleto = cantidad === 1 ? form.codActivo : `${prefix}${seqStr}`;
       try {
         await crearActivo({
           variables: {
@@ -388,16 +528,17 @@ export default function Activos() {
     setTimeout(() => {
       setCreandoLote(false);
       if (fallos > 0) {
+        setModalError(`Lote interrumpido. ${exitos} creados. ${errorMsg}`);
         setError(`Lote interrumpido. ${exitos} creados. ${errorMsg}`);
-        setTimeout(() => setError(''), 6000);
       } else {
         setMensaje(`Lote completado: ${exitos} creados exitosamente.`);
-        setShowModal(false);
+        cerrarModal();
         setForm(FORM_VACIO);
         setGrupoSelDes('');
         setGrupoSearch('');
         setIngresoSearch('');
         refetch();
+        refetchCats();
         setTimeout(() => setMensaje(''), 4000);
       }
     }, 500);
@@ -428,6 +569,7 @@ export default function Activos() {
     setGrupoSelDes(a.codGrupo?.desGrupo || '');
     const unified = a.codGrupo ? getGroupUnifiedCode(a.codGrupo) : '';
     setGrupoSearch(a.codGrupo ? `[${unified}] ${a.codGrupo.desGrupo}` : '');
+    setModalError('');
     setShowModal(true);
   };
 
@@ -490,6 +632,10 @@ export default function Activos() {
 
   const handleSubmitIndividual = async () => {
     if (editId) {
+      if (!form.descripcion || !form.descripcion.trim()) {
+        setModalError('Por favor complete el campo obligatorio (*): Descripción');
+        return;
+      }
       try {
         await editarActivo({
           variables: {
@@ -510,29 +656,26 @@ export default function Activos() {
           }
         });
         setMensaje('Activo editado correctamente');
-        setShowModal(false);
+        cerrarModal();
         setForm(FORM_VACIO);
-        setEditId(null);
         setGrupoSelDes('');
         setGrupoSearch('');
         refetch();
         setTimeout(() => setMensaje(''), 3000);
       } catch (e: any) {
-        setError('Error al editar: ' + e.message);
-        setTimeout(() => setError(''), 3000);
+        setModalError('Error al editar activo: ' + e.message);
       }
       return;
     }
 
     if (!puedeCrear) {
-      setError('No tienes permiso para crear activos');
-      setTimeout(() => setError(''), 3000);
+      setModalError('No tienes permiso para crear activos');
       return;
     }
 
-    if (!form.codGest || !form.codActivo || !form.codGrupo || !form.descripcion || !form.codEstado || !form.nroIngreso) {
-      setError('Complete los campos obligatorios (*)');
-      setTimeout(() => setError(''), 3000);
+    const missing = validarFormulario();
+    if (missing.length > 0) {
+      setModalError(`Por favor complete los campos obligatorios (*): ${missing.join(', ')}`);
       return;
     }
 
@@ -559,15 +702,15 @@ export default function Activos() {
         }
       });
       setMensaje('Activo creado correctamente');
-      setShowModal(false);
+      cerrarModal();
       setForm(FORM_VACIO);
       setGrupoSelDes('');
       setGrupoSearch('');
       refetch();
+      refetchCats();
       setTimeout(() => setMensaje(''), 3000);
     } catch (e: any) {
-      setError('Error: ' + e.message);
-      setTimeout(() => setError(''), 3000);
+      setModalError('Error al registrar activo: ' + e.message);
     }
   };
 
@@ -593,7 +736,7 @@ export default function Activos() {
       icon: '+',
       variant: 'primary' as const,
       disabled: !puedeCrear,
-      onClick: () => { setForm(FORM_VACIO); setGrupoSelDes(''); setGrupoSearch(''); setShowModal(true); },
+      onClick: () => { refetchCats(); setForm(FORM_VACIO); setGrupoSelDes(''); setGrupoSearch(''); setModalError(''); setShowModal(true); },
       show: true,
     },
     {
@@ -882,24 +1025,63 @@ export default function Activos() {
 
       {/* Modal */}
 {showModal && (
-  <div className="modal-overlay" onClick={() => { setShowModal(false); setEditId(null); }}>
+  <div className="modal-overlay" onClick={cerrarModal}>
     <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
       
       {/* Header */}
       <div className="modal-title">
-        <span>{editId ? '✏️ EDITAR ACTIVO' : '➕ REGISTRAR ACTIVO'}</span>
-        <button className="modal-close" onClick={() => { setShowModal(false); setEditId(null); }}>
+        <span>{editId ? 'EDITAR ACTIVO' : 'REGISTRAR ACTIVO'}</span>
+        <button className="modal-close" onClick={cerrarModal}>
           ✕
         </button>
       </div>
 
       {/* Body */}
       <div className="modal-body">
+        {modalError && (
+          <div 
+            style={{ 
+              background: '#fef2f2', 
+              border: '1.5px solid #ef4444', 
+              borderRadius: '6px', 
+              padding: '12px 16px', 
+              marginBottom: '1rem', 
+              color: '#991b1b', 
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: '12px',
+              boxShadow: '0 2px 8px rgba(239, 68, 68, 0.15)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>⚠️</span>
+              <div>
+                <span style={{ display: 'block', color: '#7f1d1d', fontWeight: 700, fontSize: '0.9rem', marginBottom: '2px' }}>
+                  Atención: No se pudo registrar el activo
+                </span>
+                <span style={{ color: '#b91c1c', fontWeight: 500 }}>
+                  {modalError}
+                </span>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => setModalError('')}
+              style={{ background: 'transparent', border: 'none', color: '#991b1b', fontSize: '1.2rem', cursor: 'pointer', lineHeight: 1, padding: 0 }}
+              title="Cerrar advertencia"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         <div className="space-y-4">
           <div className="form-grid">
             <div className="form-group">
               <label>Gestión *</label>
-              <select name="codGest" value={form.codGest} onChange={handleChange} disabled={editId !== null}>
+              <select name="codGest" value={form.codGest} onChange={handleChange} disabled={editId !== null} style={modalError && !form.codGest ? { borderColor: '#ef4444', borderWidth: '1.5px' } : undefined}>
                 <option value="">Seleccionar...</option>
                 {cats?.todasGestiones?.map((g: any, idx: number) => (
                   <option key={`gest-${g.codGest}-${idx}`} value={g.codGest}>{g.gestIni}</option>
@@ -908,90 +1090,106 @@ export default function Activos() {
             </div>
             <div className="form-group">
               <label>Ingreso *</label>
-              <input
-                type="text"
-                list="ingresos-lista"
-                value={ingresoSearch}
+              <select
+                name="nroIngreso"
+                style={modalError && !form.nroIngreso ? { borderColor: '#ef4444', borderWidth: '1.5px' } : undefined}
+                value={form.nroIngreso}
                 onChange={e => {
                   const val = e.target.value;
-                  setIngresoSearch(val);
-                  
-                  const found = cats?.todosIngresos?.find((i: any) => 
-                    `#${i.nroIngreso} - ${i.glosa || 'Sin glosa'}` === val
-                  );
-
-                  if (found) {
-                    setForm({ ...form, nroIngreso: String(found.nroIngreso) });
-                  } else {
-                    setForm({ ...form, nroIngreso: '' });
-                  }
+                  setForm((prev: any) => {
+                    const nextCode = val && prev.codGrupo ? autoGenerateCode(val, prev.codGrupo) : '';
+                    return { ...prev, nroIngreso: val, codActivo: nextCode };
+                  });
                 }}
-                placeholder="Ej. #2 - Compra..."
                 disabled={editId !== null}
-              />
-              <datalist id="ingresos-lista">
+              >
+                <option value="">Seleccione el Ingreso...</option>
                 {cats?.todosIngresos?.map((i: any) => (
-                  <option key={`ing-${i.nroIngreso}`} value={`#${i.nroIngreso} - ${i.glosa || 'Sin glosa'}`} />
+                  <option key={`ing-${i.nroIngreso}`} value={String(i.nroIngreso)}>
+                    #{i.nroIngreso} - {i.glosa || 'Sin glosa'}
+                  </option>
                 ))}
-              </datalist>
+              </select>
             </div>
           </div>
 
           <div className="form-group form-group-full">
-            <label>Código Activo *</label>
+            <label>Código Activo (Autogenerado automáticamente por el Sistema)</label>
             <input 
               name="codActivo" 
-              value={form.codActivo} 
-              onChange={handleChange} 
-              placeholder="Auto-generado al elegir Ingreso y Grupo" 
-              readOnly={editId === null}
-              disabled={editId !== null} 
-              style={editId === null ? { backgroundColor: 'var(--bg-light)', cursor: 'not-allowed' } : {}}
-              title={editId === null ? "Se autogenera al seleccionar un Ingreso y Grupo." : ""}
+              value={form.codActivo || ''} 
+              readOnly={true}
+              disabled={true}
+              placeholder="Codigo autogenerado" 
+              style={{
+                backgroundColor: '#f1f5f9',
+                color: form.codActivo ? '#1a3c6e' : '#94a3b8',
+                fontWeight: form.codActivo ? 800 : 500,
+                fontSize: '1rem',
+                fontFamily: 'monospace',
+                border: form.codActivo ? '2px solid #3b82f6' : '1px solid #cbd5e1',
+                cursor: 'not-allowed'
+              }}
+              title="Este código es calculado automáticamente por el sistema según normativa UAGRM."
             />
+            {form.codActivo ? (
+              <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700, display: 'block', marginTop: '4px' }}>
+                ✓ Código institucional UAGRM generado con éxito (correlativo único asignado)
+              </span>
+            ) : (
+              <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginTop: '4px' }}>
+                * Seleccione el Ingreso y el Grupo en las listas desplegables para generar el código oficial.
+              </span>
+            )}
           </div>
 
           <div className="form-group form-group-full">
             <label>Descripción *</label>
-            <input name="descripcion" value={form.descripcion} onChange={handleChange} placeholder="Descripción del activo" />
+            <input name="descripcion" value={form.descripcion} onChange={handleChange} placeholder="Descripción del activo" style={modalError && !form.descripcion ? { borderColor: '#ef4444', borderWidth: '1.5px' } : undefined} />
           </div>
 
           <div className="form-grid">
             <div className="form-group">
               <label>Grupo *</label>
-              <input
-                type="text"
-                list="grupos-lista"
-                value={grupoSearch}
+              <select
+                name="codGrupo"
+                style={modalError && !form.codGrupo ? { borderColor: '#ef4444', borderWidth: '1.5px' } : undefined}
+                value={form.codGrupo}
                 onChange={e => {
                   const val = e.target.value;
-                  setGrupoSearch(val);
-                  
-                  const found = cats?.todosGrupos?.find((g: any) => 
-                    `[${getGroupUnifiedCode(g)}] ${g.desGrupo}` === val
-                  );
-
-                  if (found) {
-                    setForm({ ...form, codGrupo: String(found.codGrupo) });
-                  } else {
-                    setForm({ ...form, codGrupo: '' });
-                  }
+                  const selectedGrp = cats?.todosGrupos?.find((g: any) => String(g.codGrupo) === val);
+                  setGrupoSelDes(selectedGrp?.desGrupo || '');
+                  setForm((prev: any) => {
+                    const nextCode = prev.nroIngreso && val ? autoGenerateCode(prev.nroIngreso, val) : '';
+                    return { ...prev, codGrupo: val, codActivo: nextCode };
+                  });
                 }}
-                placeholder="Ej. [11-03] Silla"
                 disabled={editId !== null && form.estadoRegistro === 'APROBADO'}
-              />
-              <datalist id="grupos-lista">
-                {cats?.todosGrupos?.map((g: any) => {
-                  const unified = getGroupUnifiedCode(g);
-                  return (
-                    <option key={`grp-${g.codGrupo}`} value={`[${unified}] ${g.desGrupo}`} />
-                  );
-                })}
-              </datalist>
+              >
+                <option value="">Seleccione el Bien Específico...</option>
+                {form.codGrupo && !groupedLeaves.some((grp: any) => grp.items.some((it: any) => String(it.codGrupo) === String(form.codGrupo))) && (
+                  <option value={String(form.codGrupo)}>
+                    (Selección actual) {cats?.todosGrupos?.find((g: any) => String(g.codGrupo) === String(form.codGrupo))?.desGrupo || form.codGrupo}
+                  </option>
+                )}
+                {groupedLeaves.map(({ rootName, items }: any) => (
+                  <optgroup key={`optgrp-${rootName}`} label={`📁 ${rootName}`}>
+                    {items.map((g: any) => {
+                      const unified = getGroupUnifiedCode(g);
+                      const specificPath = getGroupSpecificPath(g);
+                      return (
+                        <option key={`grp-${g.codGrupo}`} value={String(g.codGrupo)}>
+                          [{unified}] {specificPath}
+                        </option>
+                      );
+                    })}
+                  </optgroup>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label>Estado *</label>
-              <select name="codEstado" value={form.codEstado} onChange={handleChange}>
+              <select name="codEstado" value={form.codEstado} onChange={handleChange} style={modalError && !form.codEstado ? { borderColor: '#ef4444', borderWidth: '1.5px' } : undefined}>
                 <option value="">Seleccionar...</option>
                 {cats?.todosEstados?.map((e: any) => (
                   <option key={e.codEstado} value={e.codEstado}>{e.desEstado}</option>
@@ -1125,11 +1323,24 @@ export default function Activos() {
             </div>
           )}
 
+          {modalError && (
+            <div style={{ 
+              background: '#fef2f2', 
+              borderLeft: '4px solid #ef4444', 
+              padding: '8px 12px', 
+              marginBottom: '0.75rem', 
+              color: '#b91c1c', 
+              fontSize: '0.85rem', 
+              fontWeight: 600 
+            }}>
+              ⚠️ {modalError}
+            </div>
+          )}
           <div className="modal-actions">
             <button className="btn btn-primary" onClick={editId ? handleSubmitIndividual : (cantidadLote > 1 ? handleSubmitLote : handleSubmitIndividual)}>
               {editId ? 'Guardar Cambios' : 'Registrar Activo'}
             </button>
-            <button className="btn btn-secondary" onClick={() => { setShowModal(false); setEditId(null); }}>
+            <button className="btn btn-secondary" onClick={cerrarModal}>
               Cancelar
             </button>
           </div>
@@ -1452,7 +1663,18 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
     actaCoVe: '',
     imagen: '',
     fechaVencimientoSoat: '',
-    fotoConductor: ''
+    fotoConductor: '',
+    nombreChofer: '',
+    licenciaConducir: '',
+    telefonoChofer: '',
+    kilometrajeActual: '',
+    itvGestion: '',
+    itvEstado: 'VIGENTE',
+    itvCertificado: '',
+    soatNro: '',
+    soatAseguradora: '',
+    codigoSipap: '',
+    estadoMecanico: 'OPERATIVO'
   });
 
   useEffect(() => {
@@ -1488,8 +1710,19 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
         minuta: v.minuta || '',
         actaCoVe: v.actaCoVe || '',
         imagen: v.imagen || '',
-        fechaVencimientoSoat: soatAnio,
-        fotoConductor: v.fotoConductor || ''
+        fechaVencimientoSoat: v.fechaVencimientoSoat || '',
+        fotoConductor: v.fotoConductor || '',
+        nombreChofer: v.nombreChofer || '',
+        licenciaConducir: v.licenciaConducir || '',
+        telefonoChofer: v.telefonoChofer || '',
+        kilometrajeActual: v.kilometrajeActual != null ? String(v.kilometrajeActual) : '',
+        itvGestion: v.itvGestion != null ? String(v.itvGestion) : '',
+        itvEstado: v.itvEstado || 'VIGENTE',
+        itvCertificado: v.itvCertificado || '',
+        soatNro: v.soatNro || '',
+        soatAseguradora: v.soatAseguradora || '',
+        codigoSipap: v.codigoSipap || '',
+        estadoMecanico: v.estadoMecanico || 'OPERATIVO'
       });
     }
   }, [data]);
@@ -1586,8 +1819,19 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
           minuta: form.minuta,
           actaCoVe: form.actaCoVe,
           imagen: form.imagen,
-          fechaVencimientoSoat: form.fechaVencimientoSoat ? `${form.fechaVencimientoSoat}-12-31` : null,
-          fotoConductor: form.fotoConductor
+          fechaVencimientoSoat: form.fechaVencimientoSoat || null,
+          fotoConductor: form.fotoConductor,
+          nombreChofer: form.nombreChofer || null,
+          licenciaConducir: form.licenciaConducir || null,
+          telefonoChofer: form.telefonoChofer || null,
+          kilometrajeActual: form.kilometrajeActual ? parseInt(form.kilometrajeActual) : null,
+          itvGestion: form.itvGestion ? parseInt(form.itvGestion) : null,
+          itvEstado: form.itvEstado || 'VIGENTE',
+          itvCertificado: form.itvCertificado || null,
+          soatNro: form.soatNro || null,
+          soatAseguradora: form.soatAseguradora || null,
+          codigoSipap: form.codigoSipap || null,
+          estadoMecanico: form.estadoMecanico || 'OPERATIVO'
         }
       });
       alert('🚗 Ficha de vehículo guardada correctamente');
@@ -1787,6 +2031,143 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
                 <label>Acta Compra Venta</label>
                 <input type="text" name="actaCoVe" value={form.actaCoVe} onChange={handleChange} placeholder="Acta de Compra/Venta" />
+              </div>
+            </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0.25rem 0' }} />
+
+            <div style={{ background: '#1a3c6e', color: '#ffffff', padding: '6px 12px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Control Institucional UAGRM (Conductor, Odómetro, SOAT, ITV y SIPAP)
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+              <div className="form-group">
+                <label>Nombre del Chofer Oficial</label>
+                <input
+                  type="text"
+                  name="nombreChofer"
+                  value={form.nombreChofer}
+                  onChange={handleChange}
+                  placeholder="Ej: Mario Benítez Sandoval"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Licencia de Conducir / Categoría</label>
+                <input
+                  type="text"
+                  name="licenciaConducir"
+                  value={form.licenciaConducir}
+                  onChange={handleChange}
+                  placeholder="Ej: 4892015-SCZ (Cat. C)"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Teléfono Chofer</label>
+                <input
+                  type="text"
+                  name="telefonoChofer"
+                  value={form.telefonoChofer}
+                  onChange={handleChange}
+                  placeholder="Ej: 77012345"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Kilometraje Actual (km)</label>
+                <input
+                  type="number"
+                  name="kilometrajeActual"
+                  value={form.kilometrajeActual}
+                  onChange={handleChange}
+                  placeholder="Ej: 35400"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Estado Mecánico</label>
+                <select name="estadoMecanico" value={form.estadoMecanico} onChange={handleChange}>
+                  <option value="OPERATIVO">OPERATIVO</option>
+                  <option value="EN_MANTENIMIENTO">EN MANTENIMIENTO</option>
+                  <option value="INOPERATIVO">INOPERATIVO</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Código Registro SIPAP</label>
+                <input
+                  type="text"
+                  name="codigoSipap"
+                  value={form.codigoSipap}
+                  onChange={handleChange}
+                  placeholder="Ej: SIPAP-UAGRM-015"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>N° Póliza / Roseta SOAT</label>
+                <input
+                  type="text"
+                  name="soatNro"
+                  value={form.soatNro}
+                  onChange={handleChange}
+                  placeholder="Ej: SOAT-2026-88412"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Aseguradora SOAT</label>
+                <input
+                  type="text"
+                  name="soatAseguradora"
+                  value={form.soatAseguradora}
+                  onChange={handleChange}
+                  placeholder="Ej: UNIBIENES"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Fecha Vencimiento SOAT</label>
+                <input
+                  type="date"
+                  name="fechaVencimientoSoat"
+                  value={form.fechaVencimientoSoat}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Gestión Inspección Técnica (ITV)</label>
+                <input
+                  type="number"
+                  name="itvGestion"
+                  value={form.itvGestion}
+                  onChange={handleChange}
+                  placeholder="Ej: 2026"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Estado ITV (Policía)</label>
+                <select name="itvEstado" value={form.itvEstado} onChange={handleChange}>
+                  <option value="VIGENTE">Vigente (Aprobado)</option>
+                  <option value="PENDIENTE">Pendiente de Inspección</option>
+                  <option value="OBSERVADO">Observado / En Taller</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>N° Certificado ITV</label>
+                <input
+                  type="text"
+                  name="itvCertificado"
+                  value={form.itvCertificado}
+                  onChange={handleChange}
+                  placeholder="Ej: ITV-POL-04821"
+                />
               </div>
             </div>
 

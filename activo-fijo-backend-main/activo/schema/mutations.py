@@ -1220,12 +1220,17 @@ class CrearBajaAct(graphene.Mutation):
         tipo_per_resp  = graphene.Int()
         cod_emp_resp   = graphene.Int()
         valor_final    = graphene.Float()
+        unidad_tecnica = graphene.String()
+        nro_informe    = graphene.String()
+        fecha_informe  = graphene.Date()
+        destino_final  = graphene.String()
 
     baja = graphene.Field(InBajaActType)
 
     def mutate(root, info, nro_activo, tipo_per_aut, cod_emp_aut, fecha_baja_te, motivo,
                cod_asig=None, documento=None, fecha_baja_ef=None, observacion=None,
-               tipo_per_resp=None, cod_emp_resp=None, valor_final=None):
+               tipo_per_resp=None, cod_emp_resp=None, valor_final=None,
+               unidad_tecnica=None, nro_informe=None, fecha_informe=None, destino_final=None):
         
         activo_obj = in_activo.objects.get(pk=nro_activo)
         
@@ -1258,10 +1263,20 @@ class CrearBajaAct(graphene.Mutation):
             tipo_per_resp=tipo_per_resp,
             cod_emp_resp=cod_emp_resp,
             valor_final=valor_final_dec,
+            unidad_tecnica=unidad_tecnica,
+            nro_informe=nro_informe,
+            fecha_informe=fecha_informe,
+            destino_final=destino_final,
             fecha_trans=timezone.now()
         )
 
         activo_obj.a_b = 'B'
+        try:
+            estado_baja = in_estado.objects.filter(cod_estado=4).first()
+            if estado_baja:
+                activo_obj.cod_estado = estado_baja
+        except Exception:
+            pass
         activo_obj.save()
 
         # Auditoría log
@@ -1279,6 +1294,10 @@ class CrearBajaAct(graphene.Mutation):
             tipo_per_resp=baja_obj.tipo_per_resp,
             cod_emp_resp=baja_obj.cod_emp_resp,
             valor_final=baja_obj.valor_final,
+            unidad_tecnica=baja_obj.unidad_tecnica,
+            nro_informe=baja_obj.nro_informe,
+            fecha_informe=baja_obj.fecha_informe,
+            destino_final=baja_obj.destino_final,
             fecha_trans=baja_obj.fecha_trans,
             fecha_proc=timezone.now()
         )
@@ -2435,6 +2454,18 @@ class GuardarVehiculo(graphene.Mutation):
         imagen = graphene.String()
         fecha_vencimiento_soat = graphene.Date()
         foto_conductor = graphene.String()
+        chofer_asignado_id = graphene.Int()
+        nombre_chofer = graphene.String()
+        licencia_conducir = graphene.String()
+        telefono_chofer = graphene.String()
+        kilometraje_actual = graphene.Int()
+        itv_gestion = graphene.Int()
+        itv_estado = graphene.String()
+        itv_certificado = graphene.String()
+        soat_nro = graphene.String()
+        soat_aseguradora = graphene.String()
+        codigo_sipap = graphene.String()
+        estado_mecanico = graphene.String()
 
     vehiculo = graphene.Field(InVehicType)
 

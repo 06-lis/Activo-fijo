@@ -91,10 +91,18 @@ GRAPHENE = {
     ]
 }
 
-# CORS — permite peticiones desde el frontend React
+# CORS — permite peticiones desde el frontend React (localhost y red local para escaneo QR móvil)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http:\/\/localhost:\d+$",
+    r"^http:\/\/127\.0\.0\.1:\d+$",
+    r"^http:\/\/192\.168\.\d+\.\d+(:\d+)?$",
+    r"^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -35,6 +35,7 @@ const GET_CATS = gql`
         idEmpleado
         nombre
         apellido
+        numeroDocumento
         cargo
       }
     }
@@ -159,6 +160,9 @@ export default function Asignaciones() {
   // Bulk Print states
   const [printAssetsList, setPrintAssetsList] = useState<any[] | null>(null);
   const [printLocationName, setPrintLocationName] = useState<string>('');
+
+  // UAGRM Formulario Oficial de Reasignación state
+  const [actaPrintData, setActaPrintData] = useState<{ asig: any; oficinaNombre: string; resp: any } | null>(null);
 
   const { data, loading, error, refetch } = useQuery(GET_ASIGNACIONES_PAGINADAS, {
     variables: {
@@ -549,10 +553,22 @@ export default function Asignaciones() {
                   <div className="flex items-center gap-3 self-start sm:self-center shrink-0">
                     <button
                       onClick={() => handlePrintOficina(`[${unified || office.codOfic}] ${path.join(' > ')}`, list)}
-                      className="bg-slate-700/50 hover:bg-slate-600/60 border border-slate-600/50 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+                      style={{
+                        backgroundColor: '#0f172a',
+                        color: '#f8fafc',
+                        border: '1px solid #475569',
+                        borderRadius: '6px',
+                        padding: '6px 12px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                      }}
+                      title="Imprimir etiquetas con código de barras y QR para todos los activos de esta oficina"
                     >
-                      <span className="font-mono text-lg" style={{ marginRight: '4px' }}>⎙</span>
-                      Etiquetas
+                      Imprimir Etiquetas QR / Barras
                     </button>
                     <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-700/50 px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 shadow-inner">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -603,14 +619,50 @@ export default function Asignaciones() {
                               </span>
                             </td>
                             <td className="px-4 py-3 text-right">
-                              {puedeAnular && a.estado === 'A' && (
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                                 <button
-                                  className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg text-xs font-medium transition"
-                                  onClick={() => handleAnular(a.codAsig)}
+                                  type="button"
+                                  style={{
+                                    backgroundColor: '#1a3c6e',
+                                    color: '#ffffff',
+                                    border: '1px solid #2563eb',
+                                    borderRadius: '6px',
+                                    padding: '4px 9px',
+                                    fontSize: '11px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                  }}
+                                  title="Imprimir Formulario Oficial de Asignación / Custodia UAGRM (RR 633/2018)"
+                                  onClick={() => setActaPrintData({
+                                    asig: a,
+                                    oficinaNombre: office ? `[${unified || office.codOfic}] ${path.join(' > ')}` : 'Sin Oficina',
+                                    resp: resp || a.empleadoResponsable
+                                  })}
                                 >
-                                  Anular
+                                  Acta UAGRM
                                 </button>
-                              )}
+                                {puedeAnular && a.estado === 'A' && (
+                                  <button
+                                    type="button"
+                                    style={{
+                                      backgroundColor: '#fee2e2',
+                                      color: '#b91c1c',
+                                      border: '1px solid #f87171',
+                                      borderRadius: '6px',
+                                      padding: '4px 8px',
+                                      fontSize: '11px',
+                                      fontWeight: 600,
+                                      cursor: 'pointer'
+                                    }}
+                                    onClick={() => handleAnular(a.codAsig)}
+                                  >
+                                    Anular
+                                  </button>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         );
@@ -982,6 +1034,13 @@ export default function Asignaciones() {
           onClose={() => setPrintAssetsList(null)}
         />
       )}
+
+      {actaPrintData && (
+        <FormularioOficialUAGRMModal
+          data={actaPrintData}
+          onClose={() => setActaPrintData(null)}
+        />
+      )}
     </PageLayout>
   );
 }
@@ -1151,6 +1210,352 @@ function BulkLabelModal({ activos, location, onClose }: { activos: any[]; locati
               </div>
             );
           })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==================== FORMULARIO OFICIAL DE REASIGNACIÓN UAGRM (RR 633/2018) ====================
+function FormularioOficialUAGRMModal({ data, onClose }: { data: { asig: any; oficinaNombre: string; resp: any }; onClose: () => void }) {
+  const { asig, oficinaNombre, resp } = data;
+  const emp = resp?.codEmp || resp || asig.empleadoResponsable;
+  const nombreCompleto = emp ? `${emp.nombre || ''} ${emp.apellido || ''}`.trim() : `ID: ${asig.codResp}`;
+  const cargo = emp?.cargo || 'Docente / Administrativo';
+  const ci = emp?.numeroDocumento || '-';
+  const activos = asig.inDetAsigSet || [];
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+        zIndex: 99999,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '20px 10px',
+        overflowY: 'auto'
+      }}
+      onClick={onClose}
+    >
+      <style>{`
+        @media print {
+          @page {
+            size: letter portrait;
+            margin: 10mm 12mm;
+          }
+          body * {
+            visibility: hidden !important;
+          }
+          #hoja-carta-uagrm, #hoja-carta-uagrm * {
+            visibility: visible !important;
+          }
+          #hoja-carta-uagrm {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: white !important;
+            color: #000000 !important;
+          }
+          .uagrm-no-print {
+            display: none !important;
+          }
+          .uagrm-activos-tabla th {
+            background-color: #f1f5f9 !important;
+            color: #000000 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+        }
+      `}</style>
+
+      {/* Barra de Acciones Superior (Solo pantalla) */}
+      <div
+        className="uagrm-no-print"
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: '820px',
+          background: '#ffffff',
+          borderRadius: '8px 8px 0 0',
+          padding: '12px 20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          borderBottom: '1px solid #e2e8f0'
+        }}
+      >
+        <div>
+          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '15px' }}>
+            Formulario de Reasignación de Activos Fijos
+          </div>
+          <div style={{ fontSize: '12px', color: '#64748b' }}>
+            Formato Oficial • Hoja Carta Monocromática (U.A.G.R.M.)
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            style={{
+              backgroundColor: '#0f172a',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px 16px',
+              fontWeight: 700,
+              fontSize: '13px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+          >
+            Imprimir / Guardar PDF
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              backgroundColor: '#e2e8f0',
+              color: '#334155',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px 14px',
+              fontWeight: 600,
+              fontSize: '13px',
+              cursor: 'pointer'
+            }}
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+      {/* HOJA TIPO CARTA ESTRICTA - 100% MONOCROMÁTICA / FORMAL */}
+      <div
+        id="hoja-carta-uagrm"
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: '820px',
+          backgroundColor: '#ffffff',
+          color: '#000000',
+          padding: '40px 48px',
+          fontFamily: "'Segoe UI', Arial, Helvetica, sans-serif",
+          boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+          borderRadius: '0 0 8px 8px',
+          boxSizing: 'border-box',
+          lineHeight: 1.4,
+          minHeight: '1020px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}
+      >
+        <div>
+          {/* Encabezado UAGRM */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #000000', paddingBottom: '10px', marginBottom: '14px' }}>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 900, color: '#000000', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                UNIVERSIDAD AUTÓNOMA "GABRIEL RENÉ MORENO"
+              </div>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: '#334155', marginTop: '2px' }}>
+                DIRECCIÓN ADMINISTRATIVA FINANCIERA • DEPARTAMENTO DE ACTIVO FIJO
+              </div>
+              <div style={{ fontSize: '11px', color: '#64748b' }}>
+                Santa Cruz de la Sierra - Bolivia
+              </div>
+            </div>
+            <div style={{ textAlign: 'right', borderLeft: '1px solid #cbd5e1', paddingLeft: '16px' }}>
+              <div style={{ fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>CÓDIGO DE TRÁMITE</div>
+              <div style={{ fontSize: '16px', fontWeight: 900, color: '#000000', fontFamily: 'monospace' }}>
+                ASIG-#{asig.codAsig}
+              </div>
+              <div style={{ fontSize: '11px', color: '#000000', marginTop: '2px' }}>
+                Fecha: <strong>{asig.fechaAsig || new Date().toISOString().split('T')[0]}</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* Título de la Hoja */}
+          <div style={{ textAlign: 'center', margin: '16px 0 16px 0' }}>
+            <span
+              style={{
+                border: '1.5px solid #000000',
+                color: '#000000',
+                padding: '5px 22px',
+                fontWeight: 900,
+                fontSize: '13px',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                display: 'inline-block'
+              }}
+            >
+              FORMULARIO REASIGNACIÓN DE ACTIVOS FIJOS
+            </span>
+          </div>
+
+          {/* Ficha de Datos del Funcionario y Ubicación */}
+          <div style={{
+            border: '1px solid #000000',
+            padding: '10px 14px',
+            backgroundColor: '#ffffff',
+            marginBottom: '18px',
+            fontSize: '11.5px'
+          }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none', background: 'transparent' }}>
+              <tbody>
+                <tr style={{ background: 'transparent', border: 'none' }}>
+                  <td style={{ width: '18%', padding: '3px 0', border: 'none', fontWeight: 800, color: '#000000' }}>NOMBRE CUSTODIO:</td>
+                  <td style={{ width: '42%', padding: '3px 0', border: 'none', color: '#000000', fontWeight: 600 }}>{nombreCompleto}</td>
+                  <td style={{ width: '16%', padding: '3px 0', border: 'none', fontWeight: 800, color: '#000000' }}>C.I. / DOCUMENTO:</td>
+                  <td style={{ width: '24%', padding: '3px 0', border: 'none', color: '#000000', fontWeight: 600 }}>{ci}</td>
+                </tr>
+                <tr style={{ background: 'transparent', border: 'none' }}>
+                  <td style={{ padding: '3px 0', border: 'none', fontWeight: 800, color: '#000000' }}>CARGO:</td>
+                  <td style={{ padding: '3px 0', border: 'none', color: '#000000' }}>{cargo}</td>
+                  <td style={{ padding: '3px 0', border: 'none', fontWeight: 800, color: '#000000' }}>CÓD. RESPONSABLE:</td>
+                  <td style={{ padding: '3px 0', border: 'none', color: '#000000' }}>#{asig.codResp}</td>
+                </tr>
+                <tr style={{ background: 'transparent', border: 'none' }}>
+                  <td style={{ padding: '3px 0', border: 'none', fontWeight: 800, color: '#000000' }}>UNIDAD / UBICACIÓN:</td>
+                  <td colSpan={3} style={{ padding: '3px 0', border: 'none', color: '#000000', fontWeight: 600 }}>
+                    {oficinaNombre}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Tabla de Activos Fijos Asignados */}
+          <div style={{ marginBottom: '18px' }}>
+            <table
+              className="uagrm-activos-tabla"
+              style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                fontSize: '11px',
+                border: '1px solid #000000',
+                backgroundColor: '#ffffff'
+              }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '1.5px solid #000000' }}>
+                  <th style={{ padding: '7px 8px', textAlign: 'center', width: '28px', color: '#000000', borderRight: '1px solid #cbd5e1' }}>N°</th>
+                  <th style={{ padding: '7px 8px', textAlign: 'left', width: '130px', color: '#000000', borderRight: '1px solid #cbd5e1' }}>CÓDIGO ACTIVO</th>
+                  <th style={{ padding: '7px 8px', textAlign: 'left', color: '#000000', borderRight: '1px solid #cbd5e1' }}>DESCRIPCIÓN DEL ACTIVO</th>
+                  <th style={{ padding: '7px 8px', textAlign: 'center', width: '45px', color: '#000000', borderRight: '1px solid #cbd5e1' }}>CANT.</th>
+                  <th style={{ padding: '7px 8px', textAlign: 'left', width: '130px', color: '#000000' }}>ESTADO / OBSERVACIÓN</th>
+                </tr>
+              </thead>
+              <tbody>
+                {activos.map((d: any, idx: number) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid #cbd5e1', backgroundColor: '#ffffff' }}>
+                    <td style={{ padding: '7px 8px', textAlign: 'center', borderRight: '1px solid #e2e8f0', color: '#000000' }}>
+                      {idx + 1}
+                    </td>
+                    <td style={{ padding: '7px 8px', fontWeight: 800, fontFamily: 'Consolas, monospace', color: '#000000', borderRight: '1px solid #e2e8f0', fontSize: '11px' }}>
+                      {d.nroActivo?.codActivo || '-'}
+                    </td>
+                    <td style={{ padding: '7px 8px', borderRight: '1px solid #e2e8f0', color: '#000000' }}>
+                      <div style={{ fontWeight: 600 }}>{d.nroActivo?.descripcion || 'Sin descripción'}</div>
+                      {d.nroActivo?.codGrupo?.desGrupo && (
+                        <div style={{ fontSize: '9.5px', color: '#475569', marginTop: '1px' }}>
+                          Grupo: {d.nroActivo.codGrupo.desGrupo}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ padding: '7px 8px', textAlign: 'center', borderRight: '1px solid #e2e8f0', fontWeight: 600, color: '#000000' }}>
+                      {d.cantidad || 1}
+                    </td>
+                    <td style={{ padding: '7px 8px', color: '#000000', fontSize: '10.5px' }}>
+                      En funcionamiento regular
+                    </td>
+                  </tr>
+                ))}
+                {activos.length === 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ padding: '16px', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>
+                      No se han detallado activos en esta asignación.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Cláusula Legal UAGRM y Ley SAFCO */}
+          <div style={{
+            fontSize: '9.5px',
+            color: '#000000',
+            backgroundColor: '#ffffff',
+            border: '1px solid #94a3b8',
+            padding: '8px 12px',
+            marginBottom: '36px',
+            textAlign: 'justify',
+            lineHeight: 1.35
+          }}>
+            <strong>COMPROMISO DE CUSTODIA Y SALVAGUARDA:</strong> En cumplimiento del Decreto Supremo Nº 181 (Normas Básicas del Sistema de Administración de Bienes y Servicios) y el Reglamento Específico del Subsistema de Administración de Bienes Muebles e Inmuebles de la U.A.G.R.M. (Resolución Rectoral Nº 633/2018), el funcionario firmante asume la custodia, conservación y uso exclusivamente oficial de los activos detallados. En caso de pérdida, deterioro injustificado o retiro no autorizado de los predios universitarios, se aplicarán las responsabilidades civiles y penales previstas en la Ley Nº 1178 (SAFCO).
+          </div>
+        </div>
+
+        {/* SECCIÓN DE LAS 3 FIRMAS NORMATIVAS OFICIALES - UNIFORMES Y MONOCROMÁTICAS */}
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', textAlign: 'center' }}>
+            {/* Firma 1: Entregué */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: '90%', borderTop: '1px solid #000000', paddingTop: '6px' }}>
+                <div style={{ fontWeight: 800, fontSize: '11px', color: '#000000' }}>ENTREGUÉ CONFORME</div>
+                <div style={{ fontSize: '10px', color: '#475569', marginTop: '2px' }}>Custodio Saliente / Encargado</div>
+                <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: '30px' }}>Firma y Aclaración</div>
+              </div>
+            </div>
+
+            {/* Firma 2: Recibí */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: '90%', borderTop: '1px solid #000000', paddingTop: '6px' }}>
+                <div style={{ fontWeight: 800, fontSize: '11px', color: '#000000' }}>RECIBÍ CONFORME</div>
+                <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#000000', marginTop: '2px' }}>{nombreCompleto}</div>
+                <div style={{ fontSize: '9.5px', color: '#475569' }}>C.I.: {ci}</div>
+                <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: '26px' }}>Firma y Sello Personal</div>
+              </div>
+            </div>
+
+            {/* Firma 3: Control y Fiscalización Dpto. Activo Fijo */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: '90%', borderTop: '1px solid #000000', paddingTop: '6px' }}>
+                <div style={{ fontWeight: 800, fontSize: '11px', color: '#000000' }}>CONTROL Y FISCALIZACIÓN</div>
+                <div style={{ fontSize: '10px', color: '#475569', marginTop: '2px' }}>Dpto. de Activo Fijo - UAGRM</div>
+                <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: '30px' }}>Sello y Visto Bueno</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Pie de Página */}
+          <div style={{
+            marginTop: '28px',
+            borderTop: '1px solid #cbd5e1',
+            paddingTop: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '9px',
+            color: '#64748b'
+          }}>
+            <div>Sistema Integrado de Gestión de Activos Fijos • U.A.G.R.M.</div>
+            <div>Impresión autorizada: {new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</div>
+          </div>
         </div>
       </div>
     </div>

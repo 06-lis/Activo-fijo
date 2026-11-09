@@ -10,7 +10,7 @@ const EDITAR_MARCA = gql`mutation EditarMarca($codMarca: Int!, $desMarca: String
 const ELIMINAR_MARCA = gql`mutation($codMarca: Int!) { eliminarMarca(codMarca: $codMarca) { ok } }`;
 const CREAR_MODELO = gql`mutation CrearModelo($codMarca: Int!, $desModelo: String!) { crearModelo(codMarca: $codMarca, desModelo: $desModelo) { modelo { codModelo desModelo } } }`;
 
-export default function Marcas() {
+export default function Marcas({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrearMarca = user?.esAdmin || user?.permisos.includes('crear_marca');
   const puedeEditarMarca = user?.esAdmin || user?.permisos.includes('editar_marca');
@@ -52,7 +52,7 @@ export default function Marcas() {
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Marcas y Modelos"
       actions={[
         ...(puedeCrearMarca ? [{ label: 'Nueva Marca', icon: '+', variant: 'primary' as const, onClick: () => { setEditandoMarca(null); setFormMarca({ desMarca: '' }); setShowMarcaModal(true); } }] : []),

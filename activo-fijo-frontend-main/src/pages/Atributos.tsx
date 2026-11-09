@@ -129,7 +129,7 @@ function getGroupUnifiedCode(grupo: any, allGroups: any[]): string {
   return parts.join('');
 }
 
-export default function Atributos() {
+export default function Atributos({ embedded }: { embedded?: boolean } = {}) {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('crear_atributo');
   const puedeEditar = user?.esAdmin || user?.permisos.includes('editar_atributo');
@@ -267,7 +267,7 @@ export default function Atributos() {
   };
 
   return (
-    <PageLayout
+    <PageLayout embedded={embedded}
       title="Configuración de Atributos Técnicos"
       actions={[
         ...(puedeCrear && selectedGrupoId ? [{
