@@ -1,5 +1,8 @@
 import graphene
 from graphene_django import DjangoObjectType
+from ..models import in_semoviente
+from ..models import in_pase_salida, in_det_pase
+from ..models import in_inmueble
 from ..models import (
     in_estado, in_condicion, in_unidad, in_tipo_asig, in_tipomat, in_tipo,
     in_marca, in_modelo, in_gestion, in_parte, in_revaluo, in_funcion_adm,
@@ -327,6 +330,30 @@ class InDevolucionType(DjangoObjectType):
 class InCertificadoLiberacionType(DjangoObjectType):
     class Meta:
         model = in_certificado_liberacion
+        fields = '__all__'
+
+
+class InInmuebleType(DjangoObjectType):
+    class Meta:
+        model = in_inmueble
+        fields = '__all__'
+
+
+class InPaseSalidaType(DjangoObjectType):
+    class Meta:
+        model = in_pase_salida
+        fields = '__all__'
+
+
+class InDetPaseType(DjangoObjectType):
+    class Meta:
+        model = in_det_pase
+        fields = '__all__'
+
+
+class InSemovienteType(DjangoObjectType):
+    class Meta:
+        model = in_semoviente
         fields = '__all__'
 
 

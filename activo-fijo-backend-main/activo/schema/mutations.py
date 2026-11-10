@@ -2,6 +2,12 @@ import graphene
 from django.utils import timezone
 from decimal import Decimal
 import re
+from ..models import in_semoviente
+from .types import InSemovienteType
+from ..models import in_pase_salida, in_det_pase
+from .types import InPaseSalidaType
+from ..models import in_inmueble
+from .types import InInmuebleType
 from ..models import (
     in_estado, in_condicion, in_unidad, in_tipo_asig, in_tipomat, in_tipo,
     in_marca, in_modelo, in_gestion, in_parte, in_revaluo, in_funcion_adm,
@@ -2503,6 +2509,151 @@ class GuardarVehiculo(graphene.Mutation):
         return GuardarVehiculo(vehiculo=obj)
 
 
+class GuardarInmueble(graphene.Mutation):
+    class Arguments:
+        nro_activo = graphene.Int(required=True)
+        uv = graphene.String()
+        manzana = graphene.String()
+        lote = graphene.String()
+        cod_catastral = graphene.String()
+        tipologia_constructiva = graphene.String()
+        patologias = graphene.String()
+
+    inmueble = graphene.Field(InInmuebleType)
+
+    def mutate(root, info, nro_activo, **kwargs):
+        obj, created = in_inmueble.objects.update_or_create(
+            nro_activo_id=nro_activo,
+            defaults=kwargs
+        )
+        return GuardarInmueble(inmueble=obj)
+
+
+class CrearPaseSalida(graphene.Mutation):
+    class Arguments:
+        id_solicitante = graphene.Int(required=True)
+        cod_ofic = graphene.Int()
+        destino = graphene.String(required=True)
+        motivo = graphene.String()
+        fecha_salida = graphene.Date(required=True)
+        fecha_retorno_est = graphene.Date(required=True)
+        activos = graphene.List(graphene.Int, required=True)
+
+    pase = graphene.Field(InPaseSalidaType)
+
+    def mutate(root, info, id_solicitante, destino, fecha_salida, fecha_retorno_est, activos,
+               cod_ofic=None, motivo=None):
+        from django.db import transaction
+        if fecha_retorno_est < fecha_salida:
+            raise Exception("La fecha estimada de retorno no puede ser anterior a la de salida.")
+        nros = list(dict.fromkeys(a for a in activos if a is not None))
+        if not nros:
+            raise Exception("Selecciona al menos un activo.")
+        if in_activo.objects.filter(pk__in=nros, a_b='B').exists():
+            raise Exception("No se puede sacar un activo dado de baja.")
+        ocupados = list(
+            in_det_pase.objects
+            .filter(nro_activo_id__in=nros, pase__estado__in=['PENDIENTE', 'AUTORIZADO', 'SALIDO'])
+            .values_list('nro_activo__cod_activo', flat=True)
+        )
+        if ocupados:
+            raise Exception("Estos activos ya estan en otro pase vigente: " + ", ".join(ocupados))
+        with transaction.atomic():
+            pase = in_pase_salida.objects.create(
+                solicitante_id=id_solicitante, oficina_id=cod_ofic, destino=destino,
+                motivo=motivo, fecha_salida=fecha_salida, fecha_retorno_est=fecha_retorno_est,
+            )
+            in_det_pase.objects.bulk_create([in_det_pase(pase=pase, nro_activo_id=n) for n in nros])
+        return CrearPaseSalida(pase=pase)
+
+
+class CambiarEstadoPase(graphene.Mutation):
+    TRANSICIONES = {
+        'PENDIENTE': ('AUTORIZADO', 'RECHAZADO'),
+        'AUTORIZADO': ('SALIDO', 'RECHAZADO'),
+        'SALIDO': ('DEVUELTO',),
+    }
+
+    class Arguments:
+        id_pase = graphene.Int(required=True)
+        estado = graphene.String(required=True)
+        vb_seguridad = graphene.Boolean()
+        observacion = graphene.String()
+
+    pase = graphene.Field(InPaseSalidaType)
+
+    def mutate(root, info, id_pase, estado, vb_seguridad=None, observacion=None):
+        from .auth_helper import get_authenticated_user
+        pase = in_pase_salida.objects.get(pk=id_pase)
+        if estado not in CambiarEstadoPase.TRANSICIONES.get(pase.estado, ()):
+            raise Exception("No se puede pasar de %s a %s." % (pase.estado, estado))
+        if estado == 'AUTORIZADO':
+            user = get_authenticated_user(info)
+            pase.autorizado_por_id = user.id_empleado_id if user else None
+        if estado == 'SALIDO':
+            if not vb_seguridad:
+                raise Exception("La salida requiere el visto bueno de seguridad.")
+            pase.vb_seguridad = True
+        if estado == 'DEVUELTO':
+            pase.fecha_retorno_real = timezone.now().date()
+        if observacion:
+            pase.observacion = observacion
+        pase.estado = estado
+        pase.save()
+        return CambiarEstadoPase(pase=pase)
+
+
+def _es_grupo_ganadero(grupo):
+    """True si el grupo, o alguno de sus grupos padre, es de Ganaderia/Ganado."""
+    for _ in range(10):
+        if grupo is None:
+            return False
+        if 'ganad' in (grupo.des_grupo or '').lower():
+            return True
+        grupo = grupo.cod_padre
+    return False
+
+
+class GuardarSemoviente(graphene.Mutation):
+    class Arguments:
+        nro_activo = graphene.Int(required=True)
+        especie = graphene.String()
+        raza = graphene.String()
+        sexo = graphene.String()
+        fecha_nacimiento = graphene.Date()
+        peso_kg = graphene.Float()
+        marca_hierro = graphene.String()
+        reg_zoosanitario = graphene.String()
+        causal_baja = graphene.String()
+        fecha_baja_zoo = graphene.Date()
+        medico_veterinario = graphene.String()
+        nro_informe_vet = graphene.String()
+        nro_acta_necropsia = graphene.String()
+        obs_zoo = graphene.String()
+
+    semoviente = graphene.Field(InSemovienteType)
+
+    def mutate(root, info, nro_activo, **kwargs):
+        activo = in_activo.objects.select_related('cod_grupo').filter(pk=nro_activo).first()
+        if activo is None:
+            raise Exception("El activo no existe.")
+        if not _es_grupo_ganadero(activo.cod_grupo):
+            raise Exception("Solo los activos del grupo Ganaderia pueden tener ficha de semoviente.")
+        causal = kwargs.get('causal_baja')
+        if causal:
+            if causal not in in_semoviente.CAUSALES:
+                raise Exception("Causal de baja no valida: " + causal)
+            if not kwargs.get('fecha_baja_zoo'):
+                raise Exception("La baja zoosanitaria requiere la fecha de la baja.")
+            if not kwargs.get('nro_informe_vet'):
+                raise Exception("La baja zoosanitaria requiere el numero del informe del Medico Veterinario Zootecnista.")
+        obj, created = in_semoviente.objects.update_or_create(
+            nro_activo_id=nro_activo,
+            defaults=kwargs
+        )
+        return GuardarSemoviente(semoviente=obj)
+
+
 class GuardarTasaRev(graphene.Mutation):
     class Arguments:
         nro = graphene.Int()
@@ -2814,6 +2965,10 @@ class Mutation(graphene.ObjectType):
     editar_motivo_baja   = EditarMotivoBaja.Field()
     eliminar_motivo_baja = EliminarMotivoBaja.Field()
     guardar_vehiculo     = GuardarVehiculo.Field()
+    guardar_semoviente   = GuardarSemoviente.Field()
+    crear_pase_salida    = CrearPaseSalida.Field()
+    cambiar_estado_pase  = CambiarEstadoPase.Field()
+    guardar_inmueble     = GuardarInmueble.Field()
     guardar_tasa_rev     = GuardarTasaRev.Field()
 
     # ── Asignación ──────────────────────────────────────────────
