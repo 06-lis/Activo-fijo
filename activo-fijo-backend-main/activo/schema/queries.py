@@ -1,4 +1,10 @@
 import graphene
+from ..models import in_semoviente
+from .types import InSemovienteType
+from ..models import in_pase_salida
+from .types import InPaseSalidaType
+from ..models import in_inmueble
+from .types import InInmuebleType
 from ..models import (
     in_estado, in_condicion, in_unidad, in_tipo_asig, in_tipomat, in_tipo,
     in_marca, in_modelo, in_gestion, in_parte, in_revaluo, in_funcion_adm,
@@ -223,6 +229,9 @@ class Query(graphene.ObjectType):
         solo_pendientes=graphene.Boolean(default_value=False)
     )
 
+    todos_inmuebles = graphene.List(InInmuebleType, search=graphene.String())
+    todos_pases_salida = graphene.List(InPaseSalidaType, search=graphene.String(), estado=graphene.String())
+    todos_semovientes = graphene.List(InSemovienteType, search=graphene.String())
     todos_vehiculos_paginados = graphene.Field(
         InVehicPaginatedType,
         limit=graphene.Int(default_value=15),
@@ -737,6 +746,48 @@ class Query(graphene.ObjectType):
         total_count = qs.count()
         results = qs.order_by('-nro_activo')[offset:offset+limit]
         return InActivoPaginatedType(total_count=total_count, results=results)
+
+    def resolve_todos_inmuebles(root, info, search=None):
+        from django.db.models import Q
+        qs = in_inmueble.objects.select_related('nro_activo').order_by('nro_activo__cod_activo')
+        if search:
+            qs = qs.filter(
+                Q(nro_activo__cod_activo__icontains=search) |
+                Q(nro_activo__descripcion__icontains=search) |
+                Q(uv__icontains=search) | Q(manzana__icontains=search) |
+                Q(lote__icontains=search) | Q(cod_catastral__icontains=search)
+            )
+        return qs
+
+    def resolve_todos_pases_salida(root, info, search=None, estado=None):
+        from django.db.models import Q
+        qs = (
+            in_pase_salida.objects
+            .select_related('solicitante', 'oficina', 'autorizado_por')
+            .prefetch_related('in_det_pase_set__nro_activo')
+            .order_by('-id_pase')
+        )
+        if estado:
+            qs = qs.filter(estado=estado)
+        if search:
+            qs = qs.filter(
+                Q(destino__icontains=search) | Q(solicitante__nombre__icontains=search) |
+                Q(solicitante__apellido__icontains=search) |
+                Q(in_det_pase__nro_activo__cod_activo__icontains=search)
+            ).distinct()
+        return qs
+
+    def resolve_todos_semovientes(root, info, search=None):
+        from django.db.models import Q
+        qs = in_semoviente.objects.select_related('nro_activo').order_by('nro_activo__cod_activo')
+        if search:
+            qs = qs.filter(
+                Q(nro_activo__cod_activo__icontains=search) |
+                Q(nro_activo__descripcion__icontains=search) |
+                Q(especie__icontains=search) | Q(raza__icontains=search) |
+                Q(reg_zoosanitario__icontains=search) | Q(marca_hierro__icontains=search)
+            )
+        return qs
 
     def resolve_todos_vehiculos_paginados(root, info, limit=15, offset=0, search=None):
         qs = in_vehic.objects.select_related('nro_activo')

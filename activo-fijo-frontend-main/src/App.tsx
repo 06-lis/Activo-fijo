@@ -14,6 +14,9 @@ import Asignaciones from './pages/Asignaciones';
 import Transferencias from './pages/Transferencias';
 import Revaluos from './pages/Revaluos';
 import Bajas from './pages/Bajas';
+import Inmuebles from './pages/Inmuebles';
+import PasesSalida from './pages/PasesSalida';
+import Semovientes from './pages/Semovientes';
 import Proveedores from './pages/Proveedores';
 import Oficinas from './pages/Oficinas';
 import Grupos from './pages/Grupos';
@@ -178,6 +181,9 @@ function AppInner() {
              <Route path="/ingresos"      element={<ProtectedRoute element={<Ingresos />} requiredPermission="ver_ingresos" />} />
             <Route path="/activos"       element={<ProtectedRoute element={<Activos />} requiredPermission="ver_activos" />} />
             <Route path="/vehiculos"     element={<ProtectedRoute element={<Vehiculos />} requiredPermission="ver_vehiculos" />} />
+            <Route path="/inmuebles"   element={<ProtectedRoute element={<Inmuebles />} requiredPermission="ver_activos" />} />
+            <Route path="/pases"       element={<ProtectedRoute element={<PasesSalida />} requiredPermission="ver_asignaciones" />} />
+            <Route path="/semovientes" element={<ProtectedRoute element={<Semovientes />} requiredPermission="ver_activos" />} />
             <Route path="/asignaciones"  element={<ProtectedRoute element={<Asignaciones />} requiredPermission="ver_asignaciones" />} />
             <Route path="/transferencias"element={<ProtectedRoute element={<Transferencias />} requiredPermission="ver_transferencias" />} />
             <Route path="/bajas"         element={<ProtectedRoute element={<Bajas />} requiredPermission="ver_bajas" />} />

@@ -48,3 +48,6 @@ __all__ = [
     'in_log_activo', 'in_log_ingreso', 'in_log_asignado', 'in_log_det_asig',
     'in_log_oficina', 'in_log_det_reval', 'in_log_baja_act'
 ]
+from .inmueble import in_inmueble
+from .pase_salida import in_pase_salida, in_det_pase
+from .semoviente import in_semoviente
