@@ -151,6 +151,11 @@ export default function PasesSalida() {
   };
 
   const accion = async (p: any, estado: string, extra: any = {}) => {
+    // Un pase sin bienes no debe poder autorizarse ni salir
+    if ((estado === 'AUTORIZADO' || estado === 'SALIDO') && (!p.inDetPaseSet || p.inDetPaseSet.length === 0)) {
+      alert('Este pase no tiene activos asignados, no se puede ' + (estado === 'AUTORIZADO' ? 'autorizar.' : 'registrar la salida.'));
+      return;
+    }
     setProcesando(true);
     try {
       await cambiarEstado({ variables: { idPase: Number(p.idPase), estado, ...extra } });
