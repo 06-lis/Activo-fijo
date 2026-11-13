@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import PageLayout from '../components/ui/PageLayout';
 import { useAuth } from '../context/AuthContext';
+import { imprimirPase } from '../utils/imprimirPase';
 
 const GET_PASES = gql`
   query GetPasesSalida($search: String, $estado: String) {
@@ -169,6 +170,14 @@ export default function PasesSalida() {
 
   const nombre = (e: any) => (e ? `${e.nombre} ${e.apellido}` : '-');
 
+  const imprimir = (p: any) => {
+    if (!p.inDetPaseSet || p.inDetPaseSet.length === 0) {
+      alert('Este pase no tiene activos asignados, no se puede imprimir.');
+      return;
+    }
+    imprimirPase(p, (user as any)?.email || '');
+  };
+
   if (error) return <div className="error">Error: {error.message}</div>;
 
   return (
@@ -289,6 +298,7 @@ export default function PasesSalida() {
                 <th style={estiloTh}>Salida</th>
                 <th style={estiloTh}>Retorno est.</th>
                 <th style={estiloTh}>Estado</th>
+                <th style={estiloTh}>Pase</th>
                 {puedeGestionar && <th style={estiloTh}>Acciones</th>}
               </tr>
             </thead>
@@ -326,6 +336,11 @@ export default function PasesSalida() {
                       {vencido && <div style={{ color: '#b91c1c', fontSize: '0.75rem', fontWeight: 700 }}>RETORNO VENCIDO</div>}
                       {p.vbSeguridad && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>V°B° Seguridad</div>}
                       {p.autorizadoPor && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Aut.: {nombre(p.autorizadoPor)}</div>}
+                    </td>
+                    <td style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>
+                      {['AUTORIZADO', 'SALIDO', 'DEVUELTO'].includes(p.estado) && (
+                        <button className="btn" onClick={() => imprimir(p)}>Imprimir</button>
+                      )}
                     </td>
                     {puedeGestionar && (
                       <td style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>
