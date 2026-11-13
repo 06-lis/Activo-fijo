@@ -152,7 +152,7 @@ export default function PasesSalida() {
   const accion = async (p: any, estado: string, extra: any = {}) => {
     setProcesando(true);
     try {
-      await cambiarEstado({ variables: { idPase: p.idPase, estado, ...extra } });
+      await cambiarEstado({ variables: { idPase: Number(p.idPase), estado, ...extra } });
       refetch();
     } catch (err: any) {
       alert('Error: ' + err.message);
