@@ -54,6 +54,12 @@ const GET_ACTIVO_CONSULTA = gql`
           codAsig
           estado
           fechaAsig
+          fechaFin
+          tipoAsig {
+            tipoAsig
+            des
+            abrev
+          }
           empleadoResponsable {
             idEmpleado
             nombre
@@ -452,15 +458,21 @@ export default function ConsultaActivo() {
     user?.permisos.includes('crear_activo')
   );
 
-  const asignacionActiva = activo?.inDetAsigSet?.find((a: any) => a.codAsig?.estado === 'A');
-  const oficina = asignacionActiva?.codAsig?.codOfic;
-  const responsable = asignacionActiva?.codAsig?.empleadoResponsable;
-  const vehiculo = activo?.vehiculo;
   const historialAsignaciones = [...(activo?.inDetAsigSet || [])].sort((a: any, b: any) => {
     const fA = a.codAsig?.fechaAsig ? new Date(a.codAsig.fechaAsig).getTime() : 0;
     const fB = b.codAsig?.fechaAsig ? new Date(b.codAsig.fechaAsig).getTime() : 0;
-    return fB - fA;
+    if (fB !== fA) return fB - fA;
+    const idA = Number(a.codAsig?.codAsig || 0);
+    const idB = Number(b.codAsig?.codAsig || 0);
+    return idB - idA;
   });
+
+  // La asignación activa es la primera del historial ordenado (la más reciente)
+  const asignacionActiva = historialAsignaciones.find((a: any) => a.codAsig?.estado === 'A') || historialAsignaciones[0];
+  const oficina = asignacionActiva?.codAsig?.codOfic;
+  const responsable = asignacionActiva?.codAsig?.empleadoResponsable;
+  const vehiculo = activo?.vehiculo;
+  const tieneHistorialPrevio = historialAsignaciones.length > 1;
 
   const buildUbicacion = () => {
     if (!oficina) return 'No asignado actualmente (En almacén/custodia general)';
@@ -834,20 +846,35 @@ export default function ConsultaActivo() {
                     </span>
                   )}
                 </div>
-                <span style={{
-                  background: '#dcfce7',
-                  color: '#166534',
-                  border: '1px solid #bbf7d0',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  padding: '3px 8px',
-                  borderRadius: '12px'
-                }}>
-                  🟢 Vigente
-                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '3px' }}>
+                  <span style={{
+                    background: '#dcfce7',
+                    color: '#166534',
+                    border: '1px solid #bbf7d0',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '12px'
+                  }}>
+                    🟢 Vigente
+                  </span>
+                  {tieneHistorialPrevio && (
+                    <span style={{
+                      background: '#fef3c7',
+                      color: '#92400e',
+                      border: '1px solid #fde68a',
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      padding: '2px 6px',
+                      borderRadius: '8px'
+                    }}>
+                      🔄 Bien Reasignado
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {/* Botón para ver historial de custodios / reasignaciones */}
+              {/* Historial de custodios / reasignaciones (Trazabilidad) */}
               {historialAsignaciones.length > 0 && (
                 <div style={{ marginTop: '4px', borderTop: '1px solid #f1f5f9', paddingTop: '6px' }}>
                   <button
@@ -870,7 +897,7 @@ export default function ConsultaActivo() {
                     <span>📜</span>
                     {mostrarHistorialCustodia
                       ? 'Ocultar historial de custodios'
-                      : `Ver historial de custodios (${historialAsignaciones.length} registro${historialAsignaciones.length > 1 ? 's' : ''})`}
+                      : `Ver historial de custodios (${historialAsignaciones.length} registro${historialAsignaciones.length > 1 ? 's' : ''}${tieneHistorialPrevio ? ' · Ver custodio anterior' : ''})`}
                   </button>
 
                   {mostrarHistorialCustodia && (
@@ -878,39 +905,45 @@ export default function ConsultaActivo() {
                       {historialAsignaciones.map((det: any, idx: number) => {
                         const asig = det.codAsig;
                         const emp = asig?.empleadoResponsable;
-                        const esActivo = asig?.estado === 'A';
+                        const esActual = idx === 0;
                         const ofi = asig?.codOfic;
                         return (
                           <div
                             key={idx}
                             style={{
-                              background: esActivo ? '#f0fdf4' : '#f8fafc',
-                              border: `1px solid ${esActivo ? '#86efac' : '#e2e8f0'}`,
+                              background: esActual ? '#f0fdf4' : '#fffbeb',
+                              border: `1px solid ${esActual ? '#86efac' : '#fde68a'}`,
                               borderRadius: '6px',
-                              padding: '8px',
+                              padding: '8px 10px',
                               fontSize: '11px'
                             }}
                           >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-                              <strong style={{ color: esActivo ? '#166534' : '#1e293b' }}>
-                                #{historialAsignaciones.length - idx} {emp ? `${emp.nombre} ${emp.apellido}` : 'Responsable general'}
+                              <strong style={{ color: esActual ? '#166534' : '#92400e' }}>
+                                {esActual ? '🟢 Custodio Actual:' : '⚪ Custodio Anterior:'} {emp ? `${emp.nombre} ${emp.apellido}` : 'Responsable general'}
                               </strong>
                               <span style={{
                                 fontSize: '9.5px',
                                 fontWeight: 700,
                                 padding: '1px 6px',
                                 borderRadius: '4px',
-                                background: esActivo ? '#bbf7d0' : '#e2e8f0',
-                                color: esActivo ? '#14532d' : '#64748b'
+                                background: esActual ? '#bbf7d0' : '#fef3c7',
+                                color: esActual ? '#14532d' : '#b45309'
                               }}>
-                                {esActivo ? 'Actual' : 'Anterior'}
+                                {esActual ? 'Vigente' : 'Histórico'}
                               </span>
                             </div>
                             <div style={{ color: '#475569', fontSize: '10.5px' }}>
-                              <span>Cargo: {emp?.cargo || 'No registrado'}</span>
+                              <span><strong>Cargo:</strong> {emp?.cargo || 'No registrado'}</span>
+                              {asig?.tipoAsig?.des && (
+                                <span style={{ marginLeft: '6px', color: '#64748b' }}>• {asig.tipoAsig.des}</span>
+                              )}
                             </div>
-                            <div style={{ color: '#64748b', fontSize: '10px', marginTop: '2px' }}>
-                              <span>Oficina: {ofi?.desDpto || 'Sin oficina'}</span> • <span>Fecha: {asig?.fechaAsig || 'S/F'}</span>
+                            <div style={{ color: '#64748b', fontSize: '10px', marginTop: '3px' }}>
+                              <span><strong>Ubicación:</strong> {ofi?.desDpto || 'Sin oficina'}</span> • <span><strong>Fecha Asig.:</strong> {asig?.fechaAsig || 'S/F'}</span>
+                              {asig?.fechaFin && (
+                                <span style={{ marginLeft: '4px', color: '#b45309' }}>• <strong>Hasta:</strong> {asig.fechaFin}</span>
+                              )}
                             </div>
                           </div>
                         );
