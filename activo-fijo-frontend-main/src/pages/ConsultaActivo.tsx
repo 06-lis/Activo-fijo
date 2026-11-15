@@ -94,6 +94,336 @@ const ACTUALIZAR_CONDICION = gql`
   }
 `;
 
+
+interface SedeUbicacion {
+  municipio: string;
+  provincia: string;
+  campus: string;
+  direccion: string;
+  lat: number;
+  lng: number;
+  esProvincia: boolean;
+  searchQuery: string;
+}
+
+const SEDES_UAGRM: Record<string, SedeUbicacion> = {
+  // --- Módulos específicos de Ciudad Universitaria ---
+  '214': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Módulo 214 - Facultad de Tecnología',
+    direccion: 'Ciudad Universitaria (Ingreso Av. Busch y 2do Anillo)',
+    lat: -17.7768,
+    lng: -63.1935,
+    esProvincia: false,
+    searchQuery: 'Modulo 214 Facultad de Tecnologia UAGRM Santa Cruz'
+  },
+  'veterinaria': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Hospital Escuela de Veterinaria (UAGRM)',
+    direccion: 'Ciudad Universitaria (Sector Central)',
+    lat: -17.7763,
+    lng: -63.1953,
+    esProvincia: false,
+    searchQuery: 'Hospital Escuela de Veterinaria UAGRM Santa Cruz'
+  },
+  'hospital escuela': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Hospital Escuela de Veterinaria (UAGRM)',
+    direccion: 'Ciudad Universitaria (Sector Central)',
+    lat: -17.7763,
+    lng: -63.1953,
+    esProvincia: false,
+    searchQuery: 'Hospital Escuela de Veterinaria UAGRM Santa Cruz'
+  },
+  '236': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Módulo 236 - FICCT',
+    direccion: 'Ciudad Universitaria (Facultad de Cs. de la Computación)',
+    lat: -17.7752,
+    lng: -63.1958,
+    esProvincia: false,
+    searchQuery: 'Modulo 236 FICCT UAGRM Santa Cruz'
+  },
+  'ficct': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Módulo 236 - FICCT',
+    direccion: 'Ciudad Universitaria (Facultad de Cs. de la Computación)',
+    lat: -17.7752,
+    lng: -63.1958,
+    esProvincia: false,
+    searchQuery: 'Modulo 236 FICCT UAGRM Santa Cruz'
+  },
+  '246': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Módulo 246',
+    direccion: 'Ciudad Universitaria (Sector Aulas Centrales)',
+    lat: -17.7768,
+    lng: -63.1960,
+    esProvincia: false,
+    searchQuery: 'Modulo 246 UAGRM Santa Cruz'
+  },
+  'economicas': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Facultad de Ciencias Económicas y Financieras',
+    direccion: 'Ciudad Universitaria (Campus Principal)',
+    lat: -17.7760,
+    lng: -63.1965,
+    esProvincia: false,
+    searchQuery: 'Facultad de Ciencias Economicas UAGRM Santa Cruz'
+  },
+  'juridicas': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Facultad de Ciencias Jurídicas (Módulo 293)',
+    direccion: 'Ciudad Universitaria (Sector Santos Ortiz)',
+    lat: -17.7770,
+    lng: -63.1975,
+    esProvincia: false,
+    searchQuery: 'Facultad de Ciencias Juridicas UAGRM Santa Cruz'
+  },
+  '293': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Facultad de Ciencias Jurídicas (Módulo 293)',
+    direccion: 'Ciudad Universitaria (Sector Santos Ortiz)',
+    lat: -17.7770,
+    lng: -63.1975,
+    esProvincia: false,
+    searchQuery: 'Modulo 293 UAGRM Santa Cruz'
+  },
+  'medicina': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Facultad de Medicina (Módulos 280-282)',
+    direccion: 'Ciudad Universitaria',
+    lat: -17.7745,
+    lng: -63.1970,
+    esProvincia: false,
+    searchQuery: 'Facultad de Medicina UAGRM Santa Cruz'
+  },
+  'politecnica': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Facultad Politécnica (Módulo 224)',
+    direccion: 'Ciudad Universitaria (Av. Busch)',
+    lat: -17.7758,
+    lng: -63.1938,
+    esProvincia: false,
+    searchQuery: 'Facultad Politecnica UAGRM Santa Cruz'
+  },
+
+  // --- Sedes Provinciales / Regionales ---
+  'montero': {
+    municipio: 'Montero',
+    provincia: 'Obispo Santistevan',
+    campus: 'Facultad Integral del Norte (FINOR)',
+    direccion: 'Av. Circunvalación / Prolongación Isaías Parada, Montero',
+    lat: -17.3422,
+    lng: -63.2568,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral del Norte FINOR UAGRM Montero'
+  },
+  'finor': {
+    municipio: 'Montero',
+    provincia: 'Obispo Santistevan',
+    campus: 'Facultad Integral del Norte (FINOR)',
+    direccion: 'Av. Circunvalación / Prolongación Isaías Parada, Montero',
+    lat: -17.3422,
+    lng: -63.2568,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral del Norte FINOR UAGRM Montero'
+  },
+  'camiri': {
+    municipio: 'Camiri',
+    provincia: 'Cordillera',
+    campus: 'Facultad Integral del Chaco (FICH)',
+    direccion: 'Barrio Universitario, Camiri',
+    lat: -20.0385,
+    lng: -63.5242,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral del Chaco FICH UAGRM Camiri'
+  },
+  'fich': {
+    municipio: 'Camiri',
+    provincia: 'Cordillera',
+    campus: 'Facultad Integral del Chaco (FICH)',
+    direccion: 'Barrio Universitario, Camiri',
+    lat: -20.0385,
+    lng: -63.5242,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral del Chaco FICH UAGRM Camiri'
+  },
+  'vallegrande': {
+    municipio: 'Vallegrande',
+    provincia: 'Vallegrande',
+    campus: 'Facultad Integral de los Valles (FINVAL)',
+    direccion: 'Av. Marcelo Quiroga Santa Cruz, Vallegrande',
+    lat: -18.4908,
+    lng: -64.1062,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral de los Valles FINVAL UAGRM Vallegrande'
+  },
+  'finval': {
+    municipio: 'Vallegrande',
+    provincia: 'Vallegrande',
+    campus: 'Facultad Integral de los Valles (FINVAL)',
+    direccion: 'Av. Marcelo Quiroga Santa Cruz, Vallegrande',
+    lat: -18.4908,
+    lng: -64.1062,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral de los Valles FINVAL UAGRM Vallegrande'
+  },
+  'yapacani': {
+    municipio: 'Yapacaní',
+    provincia: 'Ichilo',
+    campus: 'Facultad Integral de Ichilo (FIIC)',
+    direccion: 'Av. Epifanio Ríos, Yapacaní',
+    lat: -17.4042,
+    lng: -63.8860,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral de Ichilo FIIC UAGRM Yapacani'
+  },
+  'fiic': {
+    municipio: 'Yapacaní',
+    provincia: 'Ichilo',
+    campus: 'Facultad Integral de Ichilo (FIIC)',
+    direccion: 'Av. Epifanio Ríos, Yapacaní',
+    lat: -17.4042,
+    lng: -63.8860,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral de Ichilo FIIC UAGRM Yapacani'
+  },
+  'san ignacio': {
+    municipio: 'San Ignacio de Velasco',
+    provincia: 'José Miguel de Velasco',
+    campus: 'Facultad Integral de San Ignacio (FINSAN)',
+    direccion: 'San Ignacio de Velasco',
+    lat: -16.3755,
+    lng: -60.9634,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral de San Ignacio FINSAN UAGRM'
+  },
+  'finsan': {
+    municipio: 'San Ignacio de Velasco',
+    provincia: 'José Miguel de Velasco',
+    campus: 'Facultad Integral de San Ignacio (FINSAN)',
+    direccion: 'San Ignacio de Velasco',
+    lat: -16.3755,
+    lng: -60.9634,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral de San Ignacio FINSAN UAGRM'
+  },
+  'san jose': {
+    municipio: 'San José de Chiquitos',
+    provincia: 'Chiquitos',
+    campus: 'Facultad Integral Chiquitana (FINCHI)',
+    direccion: 'San José de Chiquitos',
+    lat: -17.8465,
+    lng: -60.7441,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral Chiquitana FINCHI UAGRM'
+  },
+  'finchi': {
+    municipio: 'San José de Chiquitos',
+    provincia: 'Chiquitos',
+    campus: 'Facultad Integral Chiquitana (FINCHI)',
+    direccion: 'San José de Chiquitos',
+    lat: -17.8465,
+    lng: -60.7441,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral Chiquitana FINCHI UAGRM'
+  },
+  'san julian': {
+    municipio: 'San Julián',
+    provincia: 'Ñuflo de Chávez',
+    campus: 'Facultad Integral del Noreste',
+    direccion: 'San Julián, Santa Cruz',
+    lat: -16.9150,
+    lng: -62.6160,
+    esProvincia: true,
+    searchQuery: 'Facultad Integral del Noreste UAGRM San Julian'
+  },
+  'el torno': {
+    municipio: 'El Torno',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Unidad Académica El Torno',
+    direccion: 'El Torno, Santa Cruz',
+    lat: -17.9942,
+    lng: -63.3812,
+    esProvincia: true,
+    searchQuery: 'UAGRM El Torno Santa Cruz'
+  },
+  'puerto suarez': {
+    municipio: 'Puerto Suárez',
+    provincia: 'Germán Busch',
+    campus: 'Facultad Integral de la Chiquitania Sur',
+    direccion: 'Puerto Suárez, Santa Cruz',
+    lat: -18.9667,
+    lng: -57.7997,
+    esProvincia: true,
+    searchQuery: 'UAGRM Puerto Suarez Santa Cruz'
+  },
+  'ciudad universitaria': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Ciudad Universitaria (Campus Principal)',
+    direccion: 'Av. Busch entre 2do y 3er Anillo',
+    lat: -17.7763,
+    lng: -63.1953,
+    esProvincia: false,
+    searchQuery: 'Ciudad Universitaria UAGRM Santa Cruz'
+  },
+  'campus universitario': {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Campus Universitario (El Prado / Central)',
+    direccion: 'Av. Centenario y 2do Anillo',
+    lat: -17.7788,
+    lng: -63.1930,
+    esProvincia: false,
+    searchQuery: 'Campus Universitario UAGRM Santa Cruz'
+  },
+  rectorado: {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: 'Edificio Central Rectorado UAGRM',
+    direccion: 'Calle Junín esq. Libertad (Plaza 24 de Septiembre)',
+    lat: -17.7831,
+    lng: -63.1822,
+    esProvincia: false,
+    searchQuery: 'Rectorado UAGRM Calle Junin Santa Cruz'
+  }
+};
+
+const detectarSedeUbicacion = (ubicacionStr: string): SedeUbicacion => {
+  const norm = (ubicacionStr || '').toLowerCase();
+  for (const [key, data] of Object.entries(SEDES_UAGRM)) {
+    if (norm.includes(key)) return data;
+  }
+  // Dinámico si no coincide exactamente:
+  const queryDinamica = ubicacionStr && !ubicacionStr.includes('No asignado')
+    ? `${ubicacionStr.replace(/>/g, ' ')} UAGRM Santa Cruz`
+    : 'Ciudad Universitaria UAGRM Santa Cruz';
+
+  return {
+    municipio: 'Santa Cruz de la Sierra',
+    provincia: 'Andrés Ibáñez',
+    campus: ubicacionStr && !ubicacionStr.includes('No asignado') ? ubicacionStr : 'Instalaciones Centrales UAGRM',
+    direccion: 'Ciudad Universitaria - Av. Busch',
+    lat: -17.7763,
+    lng: -63.1953,
+    esProvincia: false,
+    searchQuery: queryDinamica
+  };
+};
+
 export default function ConsultaActivo() {
   const { codActivo } = useParams<{ codActivo: string }>();
   const navigate = useNavigate();
@@ -101,6 +431,8 @@ export default function ConsultaActivo() {
 
   const [nuevaCondicion, setNuevaCondicion] = useState<number | null>(null);
   const [mensajeAudit, setMensajeAudit] = useState<string | null>(null);
+  const [mostrarMapa, setMostrarMapa] = useState<boolean>(false);
+  const [mostrarHistorialCustodia, setMostrarHistorialCustodia] = useState<boolean>(false);
 
   const { data, loading, error, refetch } = useQuery(GET_ACTIVO_CONSULTA, {
     variables: { codActivo: codActivo || '' },
@@ -124,6 +456,11 @@ export default function ConsultaActivo() {
   const oficina = asignacionActiva?.codAsig?.codOfic;
   const responsable = asignacionActiva?.codAsig?.empleadoResponsable;
   const vehiculo = activo?.vehiculo;
+  const historialAsignaciones = [...(activo?.inDetAsigSet || [])].sort((a: any, b: any) => {
+    const fA = a.codAsig?.fechaAsig ? new Date(a.codAsig.fechaAsig).getTime() : 0;
+    const fB = b.codAsig?.fechaAsig ? new Date(b.codAsig.fechaAsig).getTime() : 0;
+    return fB - fA;
+  });
 
   const buildUbicacion = () => {
     if (!oficina) return 'No asignado actualmente (En almacén/custodia general)';
@@ -133,6 +470,9 @@ export default function ConsultaActivo() {
     if (oficina.desDpto) partes.push(oficina.desDpto);
     return partes.join(' > ') || oficina.desDpto;
   };
+
+  const ubicacionTexto = buildUbicacion();
+  const sedeInfo = detectarSedeUbicacion(ubicacionTexto);
 
   const handleAuditarConfirmar = async () => {
     if (!activo) return;
@@ -338,26 +678,247 @@ export default function ConsultaActivo() {
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '8px', borderBottom: '1px solid #f1f5f9' }}>
-              <span style={{ color: '#64748b', fontWeight: 600 }}>Ubicación Asignada:</span>
-              <span style={{ color: '#1a3c6e', fontWeight: 700, background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 10px', borderRadius: '6px', fontSize: '11px', lineHeight: '1.3' }}>
-                {buildUbicacion()}
-              </span>
+            {/* Ubicación Asignada y Navegación GPS (Cómo llegar) */}
+            <div style={{
+              background: '#f8fafc',
+              border: '1px solid #cbd5e1',
+              borderRadius: '10px',
+              padding: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#1e293b', fontWeight: 700, fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span>📍</span> Ubicación Asignada
+                </span>
+                <span style={{
+                  background: sedeInfo.esProvincia ? '#fef3c7' : '#e0f2fe',
+                  color: sedeInfo.esProvincia ? '#92400e' : '#0369a1',
+                  border: `1px solid ${sedeInfo.esProvincia ? '#fde68a' : '#bae6fd'}`,
+                  fontSize: '10.5px',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}>
+                  {sedeInfo.esProvincia ? '🏛️ Sede Provincial' : '🏛️ Campus Central'} • {sedeInfo.municipio}
+                </span>
+              </div>
+
+              {/* Jerarquía de oficina */}
+              <div style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                padding: '8px 10px',
+                borderRadius: '6px',
+                color: '#1a3c6e',
+                fontWeight: 700,
+                fontSize: '11.5px',
+                lineHeight: '1.4'
+              }}>
+                {ubicacionTexto}
+              </div>
+
+              {/* Datos de dirección física */}
+              <div style={{ fontSize: '11px', color: '#475569', display: 'flex', flexDirection: 'column', gap: '3px', background: '#ffffff', padding: '8px 10px', borderRadius: '6px', border: '1px solid #f1f5f9' }}>
+                <div>
+                  <strong style={{ color: '#0f172a' }}>Campus / Facultad:</strong> {sedeInfo.campus}
+                </div>
+                <div>
+                  <strong style={{ color: '#0f172a' }}>Municipio / Prov.:</strong> {sedeInfo.municipio} ({sedeInfo.provincia})
+                </div>
+                <div>
+                  <strong style={{ color: '#0f172a' }}>Dirección / Ref.:</strong> {sedeInfo.direccion}
+                </div>
+              </div>
+
+              {/* Botones de acción rápida: Cómo llegar */}
+              <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(sedeInfo.searchQuery || `${sedeInfo.lat},${sedeInfo.lng}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    padding: '8px 10px',
+                    borderRadius: '6px',
+                    textDecoration: 'none',
+                    fontWeight: 700,
+                    fontSize: '11.5px',
+                    boxShadow: '0 2px 4px rgba(2,132,199,0.25)',
+                    textAlign: 'center'
+                  }}
+                >
+                  🧭 ¿Cómo llegar? (GPS)
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setMostrarMapa(!mostrarMapa)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    background: mostrarMapa ? '#e2e8f0' : '#ffffff',
+                    color: '#1e293b',
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '11.5px'
+                  }}
+                >
+                  {mostrarMapa ? 'Ocultar Mapa' : '🗺️ Ver Mapa'}
+                </button>
+              </div>
+
+              {/* Mapa embebido OpenStreetMap */}
+              {mostrarMapa && (
+                <div style={{ marginTop: '4px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1' }}>
+                  <iframe
+                    title="Ubicación Sede UAGRM"
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${sedeInfo.lng - 0.007}%2C${sedeInfo.lat - 0.005}%2C${sedeInfo.lng + 0.007}%2C${sedeInfo.lat + 0.005}&layer=mapnik&marker=${sedeInfo.lat}%2C${sedeInfo.lng}`}
+                  />
+                  <div style={{ background: '#f1f5f9', padding: '6px 10px', fontSize: '10px', color: '#64748b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>📍 Coords: {sedeInfo.lat}, {sedeInfo.lng}</span>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${sedeInfo.lat},${sedeInfo.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#0284c7', fontWeight: 700, textDecoration: 'none' }}
+                    >
+                      Abrir en Google Maps ↗
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Custodio / Encargado Legal */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #f1f5f9' }}>
-              <span style={{ color: '#64748b', fontWeight: 600 }}>Custodio / Responsable:</span>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ color: '#0f172a', fontWeight: 700, display: 'block' }}>
-                  {responsable ? `${responsable.nombre} ${responsable.apellido}` : 'Sin custodio individual'}
-                </span>
-                {responsable?.cargo && (
-                  <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>
-                    {responsable.cargo}
+            {/* Custodio / Encargado Legal y Trazabilidad */}
+            <div style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              padding: '10px 12px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <span style={{ color: '#64748b', fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', display: 'block', letterSpacing: '0.3px' }}>
+                    Custodio / Responsable Actual:
                   </span>
-                )}
+                  <span style={{ color: '#0f172a', fontWeight: 800, fontSize: '13px', display: 'block', marginTop: '2px' }}>
+                    {responsable ? `${responsable.nombre} ${responsable.apellido}` : 'Sin custodio individual'}
+                  </span>
+                  {responsable?.cargo && (
+                    <span style={{ color: '#0284c7', fontSize: '11px', fontWeight: 600, display: 'block' }}>
+                      {responsable.cargo}
+                    </span>
+                  )}
+                </div>
+                <span style={{
+                  background: '#dcfce7',
+                  color: '#166534',
+                  border: '1px solid #bbf7d0',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  padding: '3px 8px',
+                  borderRadius: '12px'
+                }}>
+                  🟢 Vigente
+                </span>
               </div>
+
+              {/* Botón para ver historial de custodios / reasignaciones */}
+              {historialAsignaciones.length > 0 && (
+                <div style={{ marginTop: '4px', borderTop: '1px solid #f1f5f9', paddingTop: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setMostrarHistorialCustodia(!mostrarHistorialCustodia)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1a3c6e',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      padding: '2px 0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    <span>📜</span>
+                    {mostrarHistorialCustodia
+                      ? 'Ocultar historial de custodios'
+                      : `Ver historial de custodios (${historialAsignaciones.length} registro${historialAsignaciones.length > 1 ? 's' : ''})`}
+                  </button>
+
+                  {mostrarHistorialCustodia && (
+                    <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {historialAsignaciones.map((det: any, idx: number) => {
+                        const asig = det.codAsig;
+                        const emp = asig?.empleadoResponsable;
+                        const esActivo = asig?.estado === 'A';
+                        const ofi = asig?.codOfic;
+                        return (
+                          <div
+                            key={idx}
+                            style={{
+                              background: esActivo ? '#f0fdf4' : '#f8fafc',
+                              border: `1px solid ${esActivo ? '#86efac' : '#e2e8f0'}`,
+                              borderRadius: '6px',
+                              padding: '8px',
+                              fontSize: '11px'
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+                              <strong style={{ color: esActivo ? '#166534' : '#1e293b' }}>
+                                #{historialAsignaciones.length - idx} {emp ? `${emp.nombre} ${emp.apellido}` : 'Responsable general'}
+                              </strong>
+                              <span style={{
+                                fontSize: '9.5px',
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                background: esActivo ? '#bbf7d0' : '#e2e8f0',
+                                color: esActivo ? '#14532d' : '#64748b'
+                              }}>
+                                {esActivo ? 'Actual' : 'Anterior'}
+                              </span>
+                            </div>
+                            <div style={{ color: '#475569', fontSize: '10.5px' }}>
+                              <span>Cargo: {emp?.cargo || 'No registrado'}</span>
+                            </div>
+                            <div style={{ color: '#64748b', fontSize: '10px', marginTop: '2px' }}>
+                              <span>Oficina: {ofi?.desDpto || 'Sin oficina'}</span> • <span>Fecha: {asig?.fechaAsig || 'S/F'}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* DATOS EXCLUSIVOS DE VEHÍCULO (Solo si el activo es un vehículo) */}

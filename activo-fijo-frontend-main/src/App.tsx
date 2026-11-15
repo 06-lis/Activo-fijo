@@ -212,9 +212,9 @@ function AppInner() {
             <Route path="/ufvs"          element={<ProtectedRoute element={<Ufvs />} requiredPermission="ver_tipo_cambio" />} />
 
             {/* Mis Activos / Portal del funcionario */}
-            <Route path="/mis-activos"                    element={<ProtectedRoute element={<MisActivos />} requiredPermission="ver_mis_activos" />} />
-            <Route path="/mis-activos/:nroActivo"         element={<ProtectedRoute element={<MisActivosDetalle />} requiredPermission="ver_mis_activos" />} />
-            <Route path="/reportar-incidencia"            element={<ProtectedRoute element={<ReportarIncidencia />} requiredPermission="ver_mis_activos" />} />
+            <Route path="/mis-activos"                    element={<ProtectedRoute element={<MisActivos />} />} />
+            <Route path="/mis-activos/:nroActivo"         element={<ProtectedRoute element={<MisActivosDetalle />} />} />
+            <Route path="/reportar-incidencia"            element={<ProtectedRoute element={<ReportarIncidencia />} />} />
             <Route path="/gestionar-incidencias"          element={<ProtectedRoute element={<GestionarIncidencias />} requiredPermission="ver_incidencias" />} />
 
             {/* Devolución y Certificado de Liberación */}
