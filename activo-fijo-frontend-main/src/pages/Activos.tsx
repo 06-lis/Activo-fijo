@@ -6,6 +6,7 @@ import PageLayout from '../components/ui/PageLayout';
 import { useAuth } from '../context/AuthContext';
 import { Code39Barcode, QRCodeImage } from '../utils/barcodes';
 import FichaTecnicaModal from '../components/activos/FichaTecnicaModal';
+import HistorialActivoModal from '../components/activos/HistorialActivoModal';
 
 
 const GET_VEHICULO = gql`
@@ -166,9 +167,27 @@ const CREAR_DET_ATRIB = gql`
   }
 `;
 
-const GRUPOS_SIMPLES = ['MOBILIARIO', 'MUEBLES', 'ENSERES', 'SILLA', 'MESA', 'ESCRITORIO'];
-const esGrupoSimple = (desGrupo: string) =>
-  GRUPOS_SIMPLES.some(g => desGrupo?.toUpperCase().includes(g));
+// Qué grupos piden marca, modelo y serie. Se revisa el nombre del grupo y el de sus padres.
+const GRUPOS_CON_DATOS_TECNICOS = [
+  'EQUIPO', 'MAQUINARIA', 'MAQUINA', 'VEHICUL', 'VEHÍCUL', 'HERRAMIENTA', 'COMPUTA', 'ELECTR', 'INSTRUMENT',
+];
+// Estos nunca los piden, aunque estén dentro de un grupo de equipos
+const GRUPOS_SIN_DATOS_TECNICOS = [
+  'MOBILIARIO', 'MUEBLE', 'ENSER', 'SILLA', 'MESA', 'ESCRITORIO', 'MADERA',
+  'VACA', 'GANADO', 'ANIMAL', 'SEMOVIENTE', 'TERRENO', 'EDIFICIO', 'INMUEBLE',
+];
+const requiereDatosTecnicos = (grupo: any): boolean => {
+  if (!grupo) return false;
+  let ruta = '';
+  let g = grupo;
+  while (g) {
+    ruta += ' ' + (g.desGrupo || '');
+    g = g.codPadre;
+  }
+  const t = ruta.toUpperCase();
+  if (GRUPOS_SIN_DATOS_TECNICOS.some(k => t.includes(k))) return false;
+  return GRUPOS_CON_DATOS_TECNICOS.some(k => t.includes(k));
+};
 
 // Helper functions for office/group codes
 function getOfficeUnifiedCode(ofic: any): string {
@@ -279,6 +298,8 @@ export default function Activos() {
   const [selectedActivoLabel, setSelectedActivoLabel] = useState<any>(null);
   const [showFichaModal, setShowFichaModal] = useState(false);
   const [selectedActivoFicha, setSelectedActivoFicha] = useState<any>(null);
+  const [showHistorialModal, setShowHistorialModal] = useState(false);
+  const [selectedActivoHistorial, setSelectedActivoHistorial] = useState<any>(null);
 
   // Estados para filtro y selección masiva
   const [soloPendientes, setSoloPendientes] = useState(false);
@@ -363,7 +384,8 @@ export default function Activos() {
       }));
   }, [cats?.todosGrupos]);
 
-  const esSimple = esGrupoSimple(grupoSelDes);
+  const grupoElegido = cats?.todosGrupos?.find((g: any) => String(g.codGrupo) === String(form.codGrupo));
+  const esSimple = !requiereDatosTecnicos(grupoElegido);
 
   // ==================== FILTROS Y PAGINACIÓN ====================
   const totalCount = data?.todosActivosPaginados?.totalCount || 0;
@@ -987,6 +1009,17 @@ export default function Activos() {
                         <button
                           style={{
                             background: 'none', border: 'none', padding: '8px 16px',
+                            textAlign: 'left', fontSize: '0.85rem', color: '#0369a1', cursor: 'pointer'
+                          }}
+                          onClick={() => { setOpenDropdownId(null); setSelectedActivoHistorial(a); setShowHistorialModal(true); }}
+                          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          Movimientos
+                        </button>
+                        <button
+                          style={{
+                            background: 'none', border: 'none', padding: '8px 16px',
                             textAlign: 'left', fontSize: '0.85rem', color: '#9333ea', cursor: 'pointer'
                           }}
                           onClick={() => { setOpenDropdownId(null); setSelectedActivoLabel(a); setShowLabelModal(true); }}
@@ -1393,6 +1426,15 @@ export default function Activos() {
           onClose={() => {
             setShowLabelModal(false);
             setSelectedActivoLabel(null);
+          }}
+        />
+      )}
+      {showHistorialModal && selectedActivoHistorial && (
+        <HistorialActivoModal
+          activo={selectedActivoHistorial}
+          onClose={() => {
+            setShowHistorialModal(false);
+            setSelectedActivoHistorial(null);
           }}
         />
       )}

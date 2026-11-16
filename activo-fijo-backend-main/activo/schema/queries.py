@@ -44,6 +44,7 @@ from .types import (
 )
 
 from .dashboard import DashboardResumenType, resolver_dashboard_resumen
+from .historial import HistorialActivoType, resolver_historial_activo
 
 # ═══════════════════════════════════════════════════════════════
 # QUERIES
@@ -130,6 +131,7 @@ class Query(graphene.ObjectType):
     # ── Activos ─────────────────────────────────────────────────
     todos_activos          = graphene.List(InActivoType, solo_activos=graphene.Boolean(), solo_aprobados=graphene.Boolean())
     dashboard_resumen      = graphene.Field(DashboardResumenType)
+    historial_activo       = graphene.Field(HistorialActivoType, nro_activo=graphene.Int(required=True))
     activo                 = graphene.Field(InActivoType, nro_activo=graphene.Int(required=True))
     activo_por_codigo      = graphene.Field(InActivoType, cod_activo=graphene.String(required=True))
     activos_por_grupo      = graphene.List(InActivoType, cod_grupo=graphene.Int(required=True), solo_activos=graphene.Boolean())
@@ -495,6 +497,10 @@ class Query(graphene.ObjectType):
     # ── Resolvers — Dashboard ───────────────────────────────────
     def resolve_dashboard_resumen(root, info):
         return resolver_dashboard_resumen(root, info)
+
+    # ── Resolvers — Historial de movimientos de un activo ──
+    def resolve_historial_activo(root, info, nro_activo):
+        return resolver_historial_activo(root, info, nro_activo)
 
     # ── Resolvers — Asignaciones ────────────────────────────────
     def resolve_todas_asignaciones(root, info, estado=None):
