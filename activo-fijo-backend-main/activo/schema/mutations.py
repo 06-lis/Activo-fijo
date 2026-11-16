@@ -2502,6 +2502,8 @@ class GuardarVehiculo(graphene.Mutation):
     vehiculo = graphene.Field(InVehicType)
 
     def mutate(root, info, nro_activo, **kwargs):
+        from ..grupos_validacion import validar_activo, GRUPOS_VEHICULO
+        validar_activo(nro_activo, GRUPOS_VEHICULO, 'vehículo')
         obj, created = in_vehic.objects.update_or_create(
             nro_activo_id=nro_activo,
             defaults=kwargs
@@ -2522,6 +2524,8 @@ class GuardarInmueble(graphene.Mutation):
     inmueble = graphene.Field(InInmuebleType)
 
     def mutate(root, info, nro_activo, **kwargs):
+        from ..grupos_validacion import validar_activo, GRUPOS_INMUEBLE
+        validar_activo(nro_activo, GRUPOS_INMUEBLE, 'inmueble')
         obj, created = in_inmueble.objects.update_or_create(
             nro_activo_id=nro_activo,
             defaults=kwargs
