@@ -1,9 +1,9 @@
 import PageLayout from '../components/ui/PageLayout';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import DashboardEjecutivo from '../components/DashboardEjecutivo';
+import DashboardEjecutivo, { BarraPestanas } from '../components/DashboardEjecutivo';
 
 const GET_DASHBOARD_DATA = gql`
   query GetDashboardData {
@@ -40,6 +40,7 @@ const GET_DASHBOARD_DATA = gql`
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [tab, setTab] = useState('resumen');
   const { data, loading, error, refetch } = useQuery(GET_DASHBOARD_DATA, {
     fetchPolicy: 'cache-and-network'
   });
@@ -228,8 +229,10 @@ export default function Dashboard() {
         ) : (
           <div className="dashboard-grid">
             {/* HU-LEG-NEW-02: Dashboard Ejecutivo de Métricas Patrimoniales */}
-            {puedeVerActivos && <DashboardEjecutivo />}
+            <BarraPestanas tab={tab} setTab={setTab} />
+            {puedeVerActivos && tab !== 'reportes' && <DashboardEjecutivo vista={tab} />}
 
+            {tab === 'reportes' && (<>
             {/* Fila de Tarjetas Resumen Principales */}
             <div className="dashboard-grid-4">
               {puedeVerActivos && statsActivos && (
@@ -494,6 +497,7 @@ export default function Dashboard() {
               )}
 
             </div>
+            </>)}
           </div>
         )}
       </PageLayout>
