@@ -917,8 +917,8 @@ export const GET_LOGS_BAJA_ACT_PAGINADOS = gql`
 
 // ==================== MIS ACTIVOS / INCIDENCIAS ====================
 export const MIS_ACTIVOS = gql`
-  query MisActivos {
-    misActivos {
+  query MisActivos($email: String) {
+    misActivos(email: $email) {
       nroActivo
       codActivo
       descripcion

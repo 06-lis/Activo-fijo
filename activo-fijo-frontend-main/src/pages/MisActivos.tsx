@@ -17,6 +17,7 @@ export default function MisActivos() {
   const puedeReportar = user?.esAdmin || (user?.permisos?.includes('reportar_incidencia') ?? false);
 
   const { data, loading, error, refetch } = useQuery(MIS_ACTIVOS, {
+    variables: { email: user?.email },
     fetchPolicy: 'cache-and-network',
   });
 
@@ -93,9 +94,12 @@ export default function MisActivos() {
               </tr>
             )}
             {activos.map((a: any) => {
-              const asig = a.inDetAsigSet?.[0]?.codAsig || {};
+              // Obtener la última asignación vigente
+              const asigList = a.inDetAsigSet || [];
+              const asig = (asigList.length > 0 ? asigList[asigList.length - 1]?.codAsig : null) || {};
               const oficina = asig.codOfic || {};
-              const oficinaPath = [oficina.desDpto, oficina.codPadre?.desDpto, oficina.codPadre?.codPadre?.desDpto].filter(Boolean).join(' / ') || 'Sin oficina';
+              const oficinaHierarchy = [oficina.codPadre?.codPadre?.desDpto, oficina.codPadre?.desDpto, oficina.desDpto].filter(Boolean);
+              const oficinaPath = oficinaHierarchy.length > 0 ? oficinaHierarchy.join(' > ') : (oficina.desDpto || 'Sin oficina');
               return (
                 <tr key={a.nroActivo} style={{ borderBottom: '1px solid #e2e8f0', cursor: 'pointer' }} onClick={() => {}}>
                   <td style={{ padding: '10px 12px', fontFamily: 'monospace', fontWeight: 700, color: '#1a3c6e' }}>{a.codActivo}</td>

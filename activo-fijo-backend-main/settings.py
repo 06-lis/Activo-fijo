@@ -6,6 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Cargar variables de entorno desde .env
 load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(Path(__file__).resolve().parent, '.env'))
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-)%&-z(k^a#6v$&n=6dfxhw*+ryhx)@a*zmcbm+%kagzy_5mzag")
 
@@ -63,7 +64,7 @@ DATABASES = {
         "USER": os.environ.get("DB_USER", "postgres"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "Aforo255#2019"),
         "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "PORT": os.environ.get("DB_PORT", "5433"),
     }
 }
 

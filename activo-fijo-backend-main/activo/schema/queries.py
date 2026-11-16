@@ -178,7 +178,7 @@ class Query(graphene.ObjectType):
     oficinas_a_cargo             = graphene.List(InOficinaType)
 
     # ── Portal Mis Activos ──────────────────────────────────────
-    mis_activos         = graphene.List(InActivoType)
+    mis_activos         = graphene.List(InActivoType, email=graphene.String())
     mis_incidencias     = graphene.List(InIncidenciaType)
 
     # ── Gestión de incidencias (Activo Fijo) ────────────────────
@@ -523,26 +523,45 @@ class Query(graphene.ObjectType):
         all_ofic_ids = set(list(asig_oficinas_ids) + list(encargado_oficinas_ids))
         return in_oficina.objects.filter(pk__in=all_ofic_ids)
     # ── Resolvers — Portal Mis Activos ──────────────────────────
-    def resolve_mis_activos(root, info):
+    def resolve_mis_activos(root, info, email=None, **kwargs):
+        from .auth_helper import get_authenticated_user
         user = getattr(info.context, 'user', None)
-        if not user or not hasattr(user, 'id_empleado') or not user.id_empleado:
+        if not user or getattr(user, 'is_anonymous', False) or not hasattr(user, 'id_empleado'):
+            user = get_authenticated_user(info)
+        
+        # Fallback por email si el contexto no lo tiene directamente
+        if (not user or getattr(user, 'is_anonymous', False)) and email:
+            from ..models.rbac import in_usuario
+            user = in_usuario.objects.filter(correo__iexact=email, estado='ACTIVO').first()
+            
+        if not user or getattr(user, 'is_anonymous', False) or not hasattr(user, 'id_empleado') or not user.id_empleado:
             return []
+            
         id_empleado = user.id_empleado.id_empleado
         try:
-            responsable = in_responsable.objects.filter(cod_emp_id=id_empleado, a_b='A').first()
-            if not responsable:
-                return []
-            asigs = in_asignado.objects.filter(cod_resp=responsable.cod_resp, estado='A').values_list('cod_asig', flat=True)
-            nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
-            return in_activo.objects.filter(nro_activo__in=nros, a_b='A').select_related(
+            resp_ids = [id_empleado]
+            responsables = list(in_responsable.objects.filter(cod_emp_id=id_empleado).values_list('cod_resp', flat=True))
+            resp_ids.extend(responsables)
+            
+            asigs = in_asignado.objects.filter(cod_resp__in=resp_ids, estado='A').values_list('cod_asig', flat=True)
+            nros = set(in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True))
+            
+            # Incluir también si fue asignado como empleado de destino en el ingreso
+            nros_ingreso = set(in_activo.objects.filter(nro_ingreso__cod_emp_dest=id_empleado, a_b='A').values_list('nro_activo', flat=True))
+            todos_nros = nros.union(nros_ingreso)
+            
+            return in_activo.objects.filter(nro_activo__in=todos_nros, a_b='A').distinct().select_related(
                 'cod_grupo', 'cod_marca', 'cod_modelo', 'cod_cond', 'cod_estado', 'nro_ingreso'
             )
         except Exception:
             return []
 
     def resolve_mis_incidencias(root, info):
+        from .auth_helper import get_authenticated_user
         user = getattr(info.context, 'user', None)
-        if not user or not hasattr(user, 'id_empleado') or not user.id_empleado:
+        if not user or getattr(user, 'is_anonymous', False) or not hasattr(user, 'id_empleado'):
+            user = get_authenticated_user(info)
+        if not user or getattr(user, 'is_anonymous', False) or not hasattr(user, 'id_empleado') or not user.id_empleado:
             return []
         id_empleado = user.id_empleado.id_empleado
         return in_incidencia.objects.filter(id_empleado_id=id_empleado, a_b='A').order_by('-nro_incidencia')

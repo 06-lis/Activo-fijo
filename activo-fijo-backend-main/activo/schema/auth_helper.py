@@ -18,21 +18,30 @@ def get_user_from_token(token):
         return None
 
 def get_authenticated_user(info):
+    if not info or not hasattr(info, 'context') or not info.context:
+        return None
     request = info.context
     token = None
     
     # 1. Intentar leer desde la cookie HttpOnly
-    if request.COOKIES and 'jwt_token' in request.COOKIES:
+    if hasattr(request, 'COOKIES') and request.COOKIES and 'jwt_token' in request.COOKIES:
         token = request.COOKIES.get('jwt_token')
         
     # 2. Si no hay cookie, intentar desde el header Authorization (por si acaso)
     if not token:
-        auth_header = request.headers.get('Authorization') or request.META.get('HTTP_AUTHORIZATION')
+        auth_header = None
+        if hasattr(request, 'headers') and request.headers:
+            auth_header = request.headers.get('Authorization')
+        if not auth_header and hasattr(request, 'META') and request.META:
+            auth_header = request.META.get('HTTP_AUTHORIZATION')
+            
         if auth_header:
             try:
                 parts = auth_header.split()
-                if len(parts) == 2 and parts[0].upper() == 'JWT':
+                if len(parts) == 2 and parts[0].upper() in ['JWT', 'BEARER']:
                     token = parts[1]
+                elif len(parts) == 1:
+                    token = parts[0]
             except Exception:
                 pass
                 

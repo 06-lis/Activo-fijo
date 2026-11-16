@@ -1488,6 +1488,17 @@ class AsignarActivo(graphene.Mutation):
         cantidad   = graphene.Int()
     det_asig = graphene.Field(InDetAsigType)
     def mutate(root, info, cod_asig, nro_activo, cantidad=1):
+        # Al reasignar un activo, cerramos las asignaciones activas previas que lo contenían
+        prev_asigs = in_det_asig.objects.filter(
+            nro_activo_id=nro_activo,
+            cod_asig__estado='A'
+        ).exclude(cod_asig_id=cod_asig).select_related('cod_asig')
+        for prev in prev_asigs:
+            prev_asig = prev.cod_asig
+            prev_asig.fecha_fin = timezone.now().date()
+            prev_asig.estado = 'H'  # Histórico / Reasignado
+            prev_asig.save()
+
         obj = in_det_asig.objects.create(
             cod_asig_id=cod_asig, nro_activo_id=nro_activo,
             cantidad=cantidad, fecha_trans=timezone.now().date()

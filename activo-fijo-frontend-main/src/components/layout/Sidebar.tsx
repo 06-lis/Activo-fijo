@@ -30,7 +30,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Bajas',           to: '/bajas',          icon: '↥', permission: 'ver_bajas' },
       { label: 'Vehículos',       to: '/vehiculos',      icon: '◻', permission: 'ver_vehiculos' },
       { label: 'Inmuebles',       to: '/inmuebles',   icon: '⌂', permission: 'ver_activos' },
-      { label: 'Mis Activos',     to: '/mis-activos',    icon: '⍥', permission: 'ver_mis_activos' },
+      { label: 'Mis Activos',     to: '/mis-activos',    icon: '⍥' },
     ],
   },
   {
