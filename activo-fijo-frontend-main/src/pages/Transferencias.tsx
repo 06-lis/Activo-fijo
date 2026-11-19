@@ -82,6 +82,13 @@ const GET_CATS = gql`
         codAsig {
           codAsig
           estado
+          codResp
+          empleadoResponsable {
+            idEmpleado
+            nombre
+            apellido
+            cargo
+          }
           codOfic {
             codOfic
             codDpto
@@ -140,8 +147,21 @@ const GET_CATS = gql`
       codResp
       codEstprog
       codEmp {
+        idEmpleado
         nombre
         apellido
+        cargo
+      }
+    }
+  }
+`;
+
+const CREAR_ASIGNACION = gql`
+  mutation CrearAsignacion($tipoAsig: Int!, $tipoResp: Int!, $codResp: Int!, $codOfic: Int!, $fechaAsig: Date!) {
+    crearAsignacion(tipoAsig: $tipoAsig, tipoResp: $tipoResp, codResp: $codResp, codOfic: $codOfic, fechaAsig: $fechaAsig) {
+      asignado {
+        codAsig
+        fechaAsig
       }
     }
   }
@@ -250,6 +270,7 @@ function formatOfficeName(oficina: any): string {
   return `[${code || oficina.codOfic}] ${path.join(' > ')}`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function formatAsignacion(asig: any, responsables: any[]): string {
   if (!asig) return '';
   const resp = responsables?.find((r: any) => String(r.codResp) === String(asig.codResp));
@@ -274,6 +295,37 @@ function getActivoOffice(activo: any) {
   return null;
 }
 
+// Helper function to resolve the current custodian of an asset
+function getActivoCustodio(activo: any, responsables?: any[]): { nombre: string; cargo?: string; codResp?: number; codAsig?: number } | null {
+  if (!activo) return null;
+  const activeAsig = activo.inDetAsigSet?.find(
+    (det: any) => det.codAsig?.estado === 'A'
+  );
+  if (activeAsig?.codAsig) {
+    const emp = activeAsig.codAsig.empleadoResponsable;
+    if (emp) {
+      return {
+        nombre: `${emp.nombre} ${emp.apellido}`,
+        cargo: emp.cargo || '',
+        codResp: activeAsig.codAsig.codResp,
+        codAsig: activeAsig.codAsig.codAsig,
+      };
+    }
+    if (activeAsig.codAsig.codResp && responsables) {
+      const resp = responsables.find((r: any) => String(r.codResp) === String(activeAsig.codAsig.codResp));
+      if (resp?.codEmp) {
+        return {
+          nombre: `${resp.codEmp.nombre} ${resp.codEmp.apellido}`,
+          cargo: resp.codEmp.cargo || '',
+          codResp: activeAsig.codAsig.codResp,
+          codAsig: activeAsig.codAsig.codAsig,
+        };
+      }
+    }
+  }
+  return null;
+}
+
 export default function Transferencias() {
   const { user } = useAuth();
   const puedeCrear = user?.esAdmin || user?.permisos.includes('solicitar_transferencia');
@@ -282,26 +334,21 @@ export default function Transferencias() {
   const [showModal, setShowModal] = useState(false);
   const [transfCreada, setTransfCreada] = useState<number | null>(null);
   const [form, setForm] = useState({
-    codOfiRem: '',
     codOfiDest: '',
-    fechaTransf: '',
-    codAsigOr: '',
-    codAsigDe: ''
+    fechaTransf: new Date().toISOString().split('T')[0]
   });
   const [nroActivoTransf, setNroActivoTransf] = useState('');
   
   // Selection states for new transfer active list
   const [selectedActivos, setSelectedActivos] = useState<any[]>([]);
 
-  // Autocomplete search states
+  // Autocomplete search states - Destino
   const [oficinaDestSearch, setOficinaDestSearch] = useState('');
   const [showOficinaDestDropdown, setShowOficinaDestDropdown] = useState(false);
 
-  const [asigOrSearch, setAsigOrSearch] = useState('');
-  const [showAsigOrDropdown, setShowAsigOrDropdown] = useState(false);
-
-  const [asigDeSearch, setAsigDeSearch] = useState('');
-  const [showAsigDeDropdown, setShowAsigDeDropdown] = useState(false);
+  const [nuevoRespSearch, setNuevoRespSearch] = useState('');
+  const [selectedNuevoResp, setSelectedNuevoResp] = useState<any | null>(null);
+  const [showNuevoRespDropdown, setShowNuevoRespDropdown] = useState(false);
 
   // Asset autocomplete search states
   const [activoNewSearch, setActivoNewSearch] = useState('');
@@ -313,6 +360,7 @@ export default function Transferencias() {
   const { data, loading, error, refetch } = useQuery(GET_TRANSFERENCIAS);
   const { data: cats } = useQuery(GET_CATS);
   const [crearTransf] = useMutation(CREAR_TRANSF);
+  const [crearAsignacion] = useMutation(CREAR_ASIGNACION);
   const [editarTransf] = useMutation(EDITAR_TRANSF);
   const [anularTransf] = useMutation(ANULAR_TRANSF);
   const [agregarActivo] = useMutation(AGREGAR_ACT_TRANSF);
@@ -355,28 +403,16 @@ export default function Transferencias() {
     setShowOficinaDestDropdown(true);
   };
 
-  const handleSelectAsigOr = (a: any) => {
-    setForm(prev => ({ ...prev, codAsigOr: a.codAsig.toString() }));
-    setAsigOrSearch(formatAsignacion(a, cats?.todosResponsables));
-    setShowAsigOrDropdown(false);
+  const handleSelectNuevoResp = (r: any) => {
+    setSelectedNuevoResp(r);
+    setNuevoRespSearch(`${r.codEmp.nombre} ${r.codEmp.apellido}${r.codEmp.cargo ? ` (${r.codEmp.cargo})` : ''}`);
+    setShowNuevoRespDropdown(false);
   };
 
-  const handleAsigOrSearchChange = (val: string) => {
-    setAsigOrSearch(val);
-    setForm(prev => ({ ...prev, codAsigOr: '' }));
-    setShowAsigOrDropdown(true);
-  };
-
-  const handleSelectAsigDe = (a: any) => {
-    setForm(prev => ({ ...prev, codAsigDe: a.codAsig.toString() }));
-    setAsigDeSearch(formatAsignacion(a, cats?.todosResponsables));
-    setShowAsigDeDropdown(false);
-  };
-
-  const handleAsigDeSearchChange = (val: string) => {
-    setAsigDeSearch(val);
-    setForm(prev => ({ ...prev, codAsigDe: '' }));
-    setShowAsigDeDropdown(true);
+  const handleNuevoRespSearchChange = (val: string) => {
+    setNuevoRespSearch(val);
+    setSelectedNuevoResp(null);
+    setShowNuevoRespDropdown(true);
   };
 
   // Autocomplete filtering
@@ -388,28 +424,12 @@ export default function Transferencias() {
     return text.includes(query) || fullCode.includes(query) || unifiedCode.includes(query);
   }) || [];
 
-  const filteredAsigOr = cats?.todasAsignaciones?.filter((asig: any) => {
-    const resp = cats?.todosResponsables?.find((r: any) => String(r.codResp) === String(asig.codResp));
-    const respName = resp ? `${resp.codEmp.nombre} ${resp.codEmp.apellido}`.toLowerCase() : '';
-    const oficName = asig.codOfic ? asig.codOfic.desDpto.toLowerCase() : '';
-    const query = asigOrSearch.toLowerCase();
-    return (
-      String(asig.codAsig).includes(query) ||
-      respName.includes(query) ||
-      oficName.includes(query)
-    );
-  }) || [];
-
-  const filteredAsigDe = cats?.todasAsignaciones?.filter((asig: any) => {
-    const resp = cats?.todosResponsables?.find((r: any) => String(r.codResp) === String(asig.codResp));
-    const respName = resp ? `${resp.codEmp.nombre} ${resp.codEmp.apellido}`.toLowerCase() : '';
-    const oficName = asig.codOfic ? asig.codOfic.desDpto.toLowerCase() : '';
-    const query = asigDeSearch.toLowerCase();
-    return (
-      String(asig.codAsig).includes(query) ||
-      respName.includes(query) ||
-      oficName.includes(query)
-    );
+  const filteredResponsables = cats?.todosResponsables?.filter((r: any) => {
+    if (!r.codEmp) return false;
+    const fullName = `${r.codEmp.nombre} ${r.codEmp.apellido}`.toLowerCase();
+    const cargo = (r.codEmp.cargo || '').toLowerCase();
+    const query = nuevoRespSearch.toLowerCase();
+    return fullName.includes(query) || cargo.includes(query) || String(r.codResp).includes(query);
   }) || [];
 
   const filteredActivosNew = cats?.todosActivos?.filter((a: any) => {
@@ -441,34 +461,41 @@ export default function Transferencias() {
     setNroActivoTransf('');
     setSelectedActivos([]);
     setOficinaDestSearch('');
-    setAsigOrSearch('');
-    setAsigDeSearch('');
+    setNuevoRespSearch('');
+    setSelectedNuevoResp(null);
     setActivoNewSearch('');
     setActivoExistSearch('');
     setForm({
-      codOfiRem: '',
       codOfiDest: '',
-      fechaTransf: '',
-      codAsigOr: '',
-      codAsigDe: ''
+      fechaTransf: new Date().toISOString().split('T')[0]
     });
     setShowModal(true);
   };
 
   const handleCrear = async () => {
-    if (!form.codOfiDest || !form.fechaTransf) {
-      alert('Complete los campos obligatorios (Oficina Destino y Fecha)');
+    if (selectedActivos.length === 0) {
+      alert('Debe seleccionar al menos un activo para transferir.');
       return;
     }
-    if (selectedActivos.length === 0) {
-      alert('Debe seleccionar al menos un activo para transferir');
+    if (!form.codOfiDest) {
+      alert('Debe seleccionar la Oficina / Ubicación Destino.');
+      return;
+    }
+    if (!selectedNuevoResp) {
+      alert('Debe seleccionar al Nuevo Custodio / Funcionario Receptor.');
+      return;
+    }
+    if (!form.fechaTransf) {
+      alert('Debe ingresar la Fecha de Traslado.');
       return;
     }
 
-    // Resolve source office for each selected asset
+    // Resolve source office, origin custodian, and active assignment for each selected asset
     const assetsWithOffice = selectedActivos.map(asset => {
       const office = getActivoOffice(asset);
-      return { asset, office };
+      const activeAsig = asset.inDetAsigSet?.find((det: any) => det.codAsig?.estado === 'A')?.codAsig;
+      const custodio = getActivoCustodio(asset, cats?.todosResponsables);
+      return { asset, office, activeAsig, custodio };
     });
 
     // Verify all selected assets have a derived source office
@@ -478,40 +505,57 @@ export default function Transferencias() {
       return;
     }
 
-    // Group assets by source office ID
-    const groups: Record<string, any[]> = {};
+    // Group assets by origin (office + active assignment / origin custodian)
+    // If assets come from different offices or custodians, they each get their own legal transfer!
+    const groups: Record<string, { office: any; activeAsig: any; custodio: any; assets: any[] }> = {};
     assetsWithOffice.forEach(x => {
-      const officeId = String(x.office.codOfic);
-      if (!groups[officeId]) {
-        groups[officeId] = [];
+      const groupKey = `${x.office.codOfic}_${x.activeAsig?.codAsig || '0'}`;
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          office: x.office,
+          activeAsig: x.activeAsig,
+          custodio: x.custodio,
+          assets: []
+        };
       }
-      groups[officeId].push(x.asset);
+      groups[groupKey].assets.push(x.asset);
     });
 
     try {
-      const createdTransfers: number[] = [];
-      
-      // Perform creation for each group sequentially
-      for (const officeId of Object.keys(groups)) {
-        const assetsInGroup = groups[officeId];
-        
-        // 1. Create the transfer record
+      // 1. Create or ensure Destination Assignment for the recipient in the destination office
+      const asigRes = await crearAsignacion({
+        variables: {
+          tipoAsig: 1, // Normal
+          tipoResp: 1, // Empleado
+          codResp: parseInt(selectedNuevoResp.codResp),
+          codOfic: parseInt(form.codOfiDest),
+          fechaAsig: form.fechaTransf
+        }
+      });
+      const newCodAsigDe = asigRes.data?.crearAsignacion?.asignado?.codAsig;
+
+      const createdTransfers: { codTransf: number; origenOffice: string; origenCustodio: string; count: number }[] = [];
+
+      // 2. Perform creation for each origin group
+      for (const key of Object.keys(groups)) {
+        const group = groups[key];
+
         const res = await crearTransf({
           variables: {
             tipoTransf: 'T',
-            codOfiRem: parseInt(officeId),
+            codOfiRem: parseInt(String(group.office.codOfic)),
             codOfiDest: parseInt(form.codOfiDest),
             fechaTransf: form.fechaTransf,
-            codAsigOr: form.codAsigOr ? parseInt(form.codAsigOr) : null,
-            codAsigDe: form.codAsigDe ? parseInt(form.codAsigDe) : null
+            codAsigOr: group.activeAsig?.codAsig ? parseInt(String(group.activeAsig.codAsig)) : null,
+            codAsigDe: newCodAsigDe ? parseInt(String(newCodAsigDe)) : null
           }
         });
-        
+
         const newCodTransf = res.data?.crearTransferencia?.transferido?.codTransf;
         if (!newCodTransf) throw new Error("No se pudo obtener el ID de la transferencia creada");
-        
-        // 2. Add each asset in the group to this transfer
-        for (const asset of assetsInGroup) {
+
+        // 3. Attach assets in this group
+        for (const asset of group.assets) {
           await agregarActivo({
             variables: {
               codTransf: parseInt(String(newCodTransf)),
@@ -520,28 +564,37 @@ export default function Transferencias() {
             }
           });
         }
-        
-        createdTransfers.push(newCodTransf);
+
+        createdTransfers.push({
+          codTransf: newCodTransf,
+          origenOffice: group.office.desDpto || `Oficina #${group.office.codOfic}`,
+          origenCustodio: group.custodio?.nombre || 'Sin custodio',
+          count: group.assets.length
+        });
       }
 
-      alert(`Se crearon con éxito ${createdTransfers.length} transferencia(s) para los activos seleccionados: ` + createdTransfers.map(id => `#${id}`).join(', '));
+      const respNombre = `${selectedNuevoResp.codEmp.nombre} ${selectedNuevoResp.codEmp.apellido}`;
+      const msg = createdTransfers.length === 1
+        ? `✅ Transferencia #${createdTransfers[0].codTransf} registrada con éxito hacia ${oficinaDestSearch}.\nCustodio receptor: ${respNombre} (${createdTransfers[0].count} activo/s transferidos).`
+        : `✅ Se generaron ${createdTransfers.length} transferencias automáticas por origen hacia ${oficinaDestSearch}:\n` +
+          createdTransfers.map(t => `• Transferencia #${t.codTransf}: Origen [${t.origenOffice} · ${t.origenCustodio}] (${t.count} activo/s)`).join('\n') +
+          `\nTodos asignados a: ${respNombre}`;
+
+      alert(msg);
       setShowModal(false);
       setSelectedActivos([]);
       setOficinaDestSearch('');
-      setAsigOrSearch('');
-      setAsigDeSearch('');
+      setNuevoRespSearch('');
+      setSelectedNuevoResp(null);
       setActivoNewSearch('');
       setActivoExistSearch('');
       setForm({
-        codOfiRem: '',
         codOfiDest: '',
-        fechaTransf: '',
-        codAsigOr: '',
-        codAsigDe: ''
+        fechaTransf: new Date().toISOString().split('T')[0]
       });
       refetch();
     } catch (e: any) {
-      alert('Error al crear las transferencias: ' + e.message);
+      alert('Error al registrar las transferencias: ' + e.message);
     }
   };
 
@@ -562,16 +615,13 @@ export default function Transferencias() {
       setShowModal(false);
       setTransfCreada(null);
       setOficinaDestSearch('');
-      setAsigOrSearch('');
-      setAsigDeSearch('');
+      setNuevoRespSearch('');
+      setSelectedNuevoResp(null);
       setActivoNewSearch('');
       setActivoExistSearch('');
       setForm({
-        codOfiRem: '',
         codOfiDest: '',
-        fechaTransf: '',
-        codAsigOr: '',
-        codAsigDe: ''
+        fechaTransf: new Date().toISOString().split('T')[0]
       });
       setNroActivoTransf('');
       refetch();
@@ -615,16 +665,13 @@ export default function Transferencias() {
     setTransfCreada(null);
     setSelectedActivos([]);
     setOficinaDestSearch('');
-    setAsigOrSearch('');
-    setAsigDeSearch('');
+    setNuevoRespSearch('');
+    setSelectedNuevoResp(null);
     setActivoNewSearch('');
     setActivoExistSearch('');
     setForm({
-      codOfiRem: '',
       codOfiDest: '',
-      fechaTransf: '',
-      codAsigOr: '',
-      codAsigDe: ''
+      fechaTransf: new Date().toISOString().split('T')[0]
     });
     setNroActivoTransf('');
   };
@@ -773,186 +820,204 @@ export default function Transferencias() {
 
             {!transfCreada ? (
               <>
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label>Oficina Destino *</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {/* SECCIÓN 1: ACTIVOS A TRANSFERIR (ORIGEN) */}
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px' }}>
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.9rem', display: 'block', marginBottom: '4px' }}>
+                        1. Seleccionar Activos a Transferir *
+                      </label>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>
+                        Busque y agregue los activos. El sistema detectará automáticamente la ubicación y el responsable actual de cada uno.
+                      </p>
+                    </div>
+
                     <div className="autocomplete-container">
                       <input
                         type="text"
-                        value={oficinaDestSearch}
-                        onChange={e => handleOficinaDestSearchChange(e.target.value)}
-                        onFocus={() => setShowOficinaDestDropdown(true)}
-                        onBlur={() => setTimeout(() => setShowOficinaDestDropdown(false), 200)}
-                        placeholder="Buscar oficina por código o nombre..."
+                        value={activoNewSearch}
+                        onChange={e => {
+                          setActivoNewSearch(e.target.value);
+                          setShowActivoNewDropdown(true);
+                        }}
+                        onFocus={() => setShowActivoNewDropdown(true)}
+                        onBlur={() => setTimeout(() => setShowActivoNewDropdown(false), 200)}
+                        placeholder="Buscar por código de activo o descripción..."
                       />
-                      {showOficinaDestDropdown && (
+                      {showActivoNewDropdown && (
                         <ul className="autocomplete-dropdown">
-                          {filteredOficinasDest.slice(0, 20).map((o: any) => (
-                            <li
-                              key={o.codOfic}
-                              className="autocomplete-item"
-                              onClick={() => handleSelectOficinaDest(o)}
-                            >
-                              {formatOfficeName(o)}
-                            </li>
-                          ))}
-                          {filteredOficinasDest.length === 0 && (
-                            <li className="autocomplete-no-results">No se encontraron oficinas</li>
+                          {filteredActivosNew.slice(0, 20).map((a: any) => {
+                            const office = getActivoOffice(a);
+                            const officeLabel = office ? formatOfficeName(office) : 'Sin oficina';
+                            const custodio = getActivoCustodio(a, cats?.todosResponsables);
+                            return (
+                              <li
+                                key={a.nroActivo}
+                                className="autocomplete-item"
+                                onClick={() => handleSelectAssetForForm(a)}
+                                style={{ padding: '8px 12px' }}
+                              >
+                                <strong style={{ color: '#2563eb' }}>{a.codActivo}</strong> — {a.descripcion}
+                                <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                                  <span>📍 {officeLabel}</span>
+                                  {custodio && <span style={{ marginLeft: '10px' }}>👤 {custodio.nombre}</span>}
+                                </div>
+                              </li>
+                            );
+                          })}
+                          {filteredActivosNew.length === 0 && (
+                            <li className="autocomplete-no-results">No se encontraron activos disponibles</li>
                           )}
                         </ul>
                       )}
                     </div>
-                  </div>
 
-                  <div className="form-group">
-                    <label>Fecha *</label>
-                    <input type="date" value={form.fechaTransf} onChange={e => setForm({...form, fechaTransf: e.target.value})} />
-                  </div>
-
-                  <div className="form-group">
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      <label className="mb-0">Asignación Origen (Opcional)</label>
-                      <span 
-                        className="cursor-help text-blue-400 hover:text-blue-300 font-bold font-mono text-[10px] select-none bg-blue-500/10 border border-blue-500/20 w-4 h-4 rounded-full flex items-center justify-center transition-all"
-                        title="Opcional. Vincula la transferencia a una asignación de origen específica."
-                      >
-                        ?
-                      </span>
-                    </div>
-                    <div className="autocomplete-container">
-                      <input
-                        type="text"
-                        value={asigOrSearch}
-                        onChange={e => handleAsigOrSearchChange(e.target.value)}
-                        onFocus={() => setShowAsigOrDropdown(true)}
-                        onBlur={() => setTimeout(() => setShowAsigOrDropdown(false), 200)}
-                        placeholder="Buscar asignación por código, custodio u oficina..."
-                      />
-                      {showAsigOrDropdown && (
-                        <ul className="autocomplete-dropdown">
-                          {filteredAsigOr.slice(0, 20).map((a: any) => (
-                            <li
-                              key={a.codAsig}
-                              className="autocomplete-item"
-                              onClick={() => handleSelectAsigOr(a)}
-                            >
-                              {formatAsignacion(a, cats?.todosResponsables)}
-                            </li>
-                          ))}
-                          {filteredAsigOr.length === 0 && (
-                            <li className="autocomplete-no-results">No se encontraron asignaciones</li>
-                          )}
+                    {selectedActivos.length > 0 && (
+                      <div style={{ marginTop: '0.75rem', maxHeight: '180px', overflowY: 'auto' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>
+                          Activos Seleccionados ({selectedActivos.length}):
+                        </span>
+                        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {selectedActivos.map((a: any) => {
+                            const office = getActivoOffice(a);
+                            const custodio = getActivoCustodio(a, cats?.todosResponsables);
+                            return (
+                              <li
+                                key={a.nroActivo}
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  padding: '8px 12px',
+                                  border: '1px solid #e2e8f0',
+                                  borderRadius: '6px',
+                                  background: '#ffffff',
+                                  fontSize: '0.8rem'
+                                }}
+                              >
+                                <div>
+                                  <div style={{ color: '#1e293b' }}>
+                                    <strong style={{ fontFamily: 'monospace', color: '#2563eb', marginRight: '6px' }}>{a.codActivo}</strong>
+                                    — {a.descripcion}
+                                  </div>
+                                  <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '3px', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                                    <span>📍 <strong>Origen:</strong> {office ? formatOfficeName(office) : 'Sin oficina determinada'}</span>
+                                    <span>👤 <strong>A cargo:</strong> {custodio ? `${custodio.nombre}${custodio.cargo ? ` (${custodio.cargo})` : ''}` : <span style={{ color: '#94a3b8' }}>Sin custodio asignado</span>}</span>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveAssetFromForm(a.nroActivo)}
+                                  style={{
+                                    background: '#fee2e2',
+                                    border: '1px solid #fca5a5',
+                                    color: '#dc2626',
+                                    borderRadius: '4px',
+                                    padding: '4px 8px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 600,
+                                    marginLeft: '12px'
+                                  }}
+                                >
+                                  ✕ Quitar
+                                </button>
+                              </li>
+                            );
+                          })}
                         </ul>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      <label className="mb-0">Asignación Destino (Opcional)</label>
-                      <span 
-                        className="cursor-help text-blue-400 hover:text-blue-300 font-bold font-mono text-[10px] select-none bg-blue-500/10 border border-blue-500/20 w-4 h-4 rounded-full flex items-center justify-center transition-all"
-                        title="Opcional. Registra automáticamente una asignación de destino para el activo."
-                      >
-                        ?
-                      </span>
-                    </div>
-                    <div className="autocomplete-container">
-                      <input
-                        type="text"
-                        value={asigDeSearch}
-                        onChange={e => handleAsigDeSearchChange(e.target.value)}
-                        onFocus={() => setShowAsigDeDropdown(true)}
-                        onBlur={() => setTimeout(() => setShowAsigDeDropdown(false), 200)}
-                        placeholder="Buscar asignación por código, custodio u oficina..."
-                      />
-                      {showAsigDeDropdown && (
-                        <ul className="autocomplete-dropdown">
-                          {filteredAsigDe.slice(0, 20).map((a: any) => (
-                            <li
-                              key={a.codAsig}
-                              className="autocomplete-item"
-                              onClick={() => handleSelectAsigDe(a)}
-                            >
-                              {formatAsignacion(a, cats?.todosResponsables)}
-                            </li>
-                          ))}
-                          {filteredAsigDe.length === 0 && (
-                            <li className="autocomplete-no-results">No se encontraron asignaciones</li>
-                          )}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="form-group" style={{ marginTop: '1rem' }}>
-                  <label style={{ fontWeight: 'bold' }}>Agregar Activos a Transferir *</label>
-                  <div className="autocomplete-container">
-                    <input
-                      type="text"
-                      value={activoNewSearch}
-                      onChange={e => {
-                        setActivoNewSearch(e.target.value);
-                        setShowActivoNewDropdown(true);
-                      }}
-                      onFocus={() => setShowActivoNewDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowActivoNewDropdown(false), 200)}
-                      placeholder="Buscar por código de activo o descripción..."
-                    />
-                    {showActivoNewDropdown && (
-                      <ul className="autocomplete-dropdown">
-                        {filteredActivosNew.slice(0, 20).map((a: any) => {
-                          const office = getActivoOffice(a);
-                          const officeLabel = office ? formatOfficeName(office) : 'Sin oficina';
-                          return (
-                            <li
-                              key={a.nroActivo}
-                              className="autocomplete-item"
-                              onClick={() => handleSelectAssetForForm(a)}
-                            >
-                              <strong style={{ color: '#2563eb' }}>{a.codActivo}</strong> — {a.descripcion} ({officeLabel})
-                            </li>
-                          );
-                        })}
-                        {filteredActivosNew.length === 0 && (
-                          <li className="autocomplete-no-results">No se encontraron activos</li>
-                        )}
-                      </ul>
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {selectedActivos.length > 0 && (
-                  <div style={{ marginTop: '0.75rem', maxHeight: '180px', overflowY: 'auto', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '8px', background: '#f8fafc' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Activos Seleccionados ({selectedActivos.length}):</span>
-                    <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                      {selectedActivos.map((a: any) => {
-                        const office = getActivoOffice(a);
-                        return (
-                          <li key={a.nroActivo} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 8px', borderBottom: '1px solid #e2e8f0', fontSize: '0.8rem' }}>
-                            <span style={{ color: '#334155' }}>
-                              <strong style={{ fontFamily: 'monospace', color: '#2563eb' }}>{a.codActivo}</strong> — {a.descripcion}
-                              <br />
-                              <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Origen: {office ? formatOfficeName(office) : 'Sin determinar'}</span>
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveAssetFromForm(a.nroActivo)}
-                              style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
-                            >
-                              Quitar
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                  {/* SECCIÓN 2: DESTINO DE LA TRANSFERENCIA */}
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px' }}>
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.9rem', display: 'block', marginBottom: '4px' }}>
+                        2. Destino de la Transferencia
+                      </label>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>
+                        Indique la oficina receptora, la persona que asumirá la custodia y la fecha del traslado.
+                      </p>
+                    </div>
+
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label>Oficina / Ubicación Destino *</label>
+                        <div className="autocomplete-container">
+                          <input
+                            type="text"
+                            value={oficinaDestSearch}
+                            onChange={e => handleOficinaDestSearchChange(e.target.value)}
+                            onFocus={() => setShowOficinaDestDropdown(true)}
+                            onBlur={() => setTimeout(() => setShowOficinaDestDropdown(false), 200)}
+                            placeholder="Buscar oficina por código o nombre..."
+                          />
+                          {showOficinaDestDropdown && (
+                            <ul className="autocomplete-dropdown">
+                              {filteredOficinasDest.slice(0, 20).map((o: any) => (
+                                <li
+                                  key={o.codOfic}
+                                  className="autocomplete-item"
+                                  onClick={() => handleSelectOficinaDest(o)}
+                                >
+                                  {formatOfficeName(o)}
+                                </li>
+                              ))}
+                              {filteredOficinasDest.length === 0 && (
+                                <li className="autocomplete-no-results">No se encontraron oficinas</li>
+                              )}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Nuevo Responsable Receptor *</label>
+                        <div className="autocomplete-container">
+                          <input
+                            type="text"
+                            value={nuevoRespSearch}
+                            onChange={e => handleNuevoRespSearchChange(e.target.value)}
+                            onFocus={() => setShowNuevoRespDropdown(true)}
+                            onBlur={() => setTimeout(() => setShowNuevoRespDropdown(false), 200)}
+                            placeholder="Buscar custodio por nombre o cargo..."
+                          />
+                          {showNuevoRespDropdown && (
+                            <ul className="autocomplete-dropdown">
+                              {filteredResponsables.slice(0, 20).map((r: any) => (
+                                <li
+                                  key={r.codResp}
+                                  className="autocomplete-item"
+                                  onClick={() => handleSelectNuevoResp(r)}
+                                >
+                                  <strong>{r.codEmp.nombre} {r.codEmp.apellido}</strong>
+                                  {r.codEmp.cargo && <span style={{ color: '#64748b', fontSize: '0.75rem', marginLeft: '6px' }}>({r.codEmp.cargo})</span>}
+                                </li>
+                              ))}
+                              {filteredResponsables.length === 0 && (
+                                <li className="autocomplete-no-results">No se encontraron responsables</li>
+                              )}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Fecha de Traslado *</label>
+                        <input
+                          type="date"
+                          value={form.fechaTransf}
+                          onChange={e => setForm({ ...form, fechaTransf: e.target.value })}
+                        />
+                      </div>
+                    </div>
                   </div>
-                )}
+                </div>
 
                 <div className="modal-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
                   <button className="btn btn-secondary" onClick={handleCerrarModal}>Cancelar</button>
-                  <button className="btn btn-primary" onClick={handleCrear}>Crear Transferencia(s)</button>
+                  <button className="btn btn-primary" onClick={handleCrear}>Confirmar y Crear Transferencia(s)</button>
                 </div>
               </>
             ) : (

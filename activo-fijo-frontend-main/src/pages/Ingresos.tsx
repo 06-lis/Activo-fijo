@@ -156,9 +156,9 @@ export default function Ingresos() {
   const [form, setForm] = useState<any>(FORM_VACIO);
 
   // Foto subidas: previsualización y URLs del backend
-  const [fotoBienFile, setFotoBienFile] = useState<File | null>(null);
+  const [, setFotoBienFile] = useState<File | null>(null);
   const [fotoBienPreview, setFotoBienPreview] = useState<string | null>(null);
-  const [fotoPlacaFile, setFotoPlacaFile] = useState<File | null>(null);
+  const [, setFotoPlacaFile] = useState<File | null>(null);
   const [fotoPlacaPreview, setFotoPlacaPreview] = useState<string | null>(null);
   const [subiendoFoto, setSubiendoFoto] = useState<{ bien: boolean; placa: boolean }>({ bien: false, placa: false });
 

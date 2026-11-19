@@ -32,3 +32,5 @@ pdf_docs/
 uagrm_info/
 all_docs.json
 check_modal_footer.py
+cloudflared.exe
+.vscode/

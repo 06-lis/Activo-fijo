@@ -139,7 +139,6 @@ export default function Atributos({ embedded }: { embedded?: boolean } = {}) {
   const [selectedAtrib, setSelectedAtrib] = useState<any>(null);
 
   const [searchGrupo, setSearchGrupo] = useState('');
-  const [showGrupoDropdown, setShowGrupoDropdown] = useState(false);
 
   // Modal states
   const [showAtribModal, setShowAtribModal] = useState(false);

@@ -201,6 +201,7 @@ function getOfficeUnifiedCode(ofic: any): string {
   return parts.join('');
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getGroupFullCode(grupo: any): string {
   if (!grupo) return '';
   const parts = [];
@@ -223,6 +224,7 @@ function getGroupUnifiedCode(grupo: any): string {
   return parts.join('');
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getGroupBreadcrumb(grupo: any): string {
   if (!grupo) return '';
   const parts = [];
@@ -281,7 +283,7 @@ export default function Activos() {
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [form, setForm] = useState<any>(FORM_VACIO);
-  const [grupoSelDes, setGrupoSelDes] = useState('');
+  const [, setGrupoSelDes] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
   const [modalError, setModalError] = useState('');
@@ -322,11 +324,9 @@ export default function Activos() {
 
   // Autocomplete search states for grupos
   const [grupoSearch, setGrupoSearch] = useState('');
-  const [showGruposDropdown, setShowGruposDropdown] = useState(false);
 
   // Autocomplete search states for ingresos
   const [ingresoSearch, setIngresoSearch] = useState('');
-  const [showIngresosDropdown, setShowIngresosDropdown] = useState(false);
 
   // Estado para creación en lote
   const [cantidadLote, setCantidadLote] = useState(1);
@@ -395,20 +395,23 @@ export default function Activos() {
 
 
   // ==================== HANDLERS ====================
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSelectGrupo = (g: any) => {
     setForm({ ...form, codGrupo: g.codGrupo.toString(), codMarca: '', codModelo: '' });
     setGrupoSelDes(g.desGrupo || '');
     const unified = getGroupUnifiedCode(g);
     setGrupoSearch(`[${unified}] ${g.desGrupo}`);
-    setShowGruposDropdown(false);
+
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSelectIngreso = (i: any) => {
     setForm({ ...form, nroIngreso: i.nroIngreso.toString() });
     setIngresoSearch(`#${i.nroIngreso} - ${i.glosa || 'Sin glosa'}`);
-    setShowIngresosDropdown(false);
+
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filteredGrupos = cats?.todosGrupos?.filter((g: any) => {
     const fullCode = getGroupFullCode(g).toLowerCase();
     const unifiedCode = getGroupUnifiedCode(g).toLowerCase();
@@ -417,6 +420,7 @@ export default function Activos() {
     return text.includes(query) || fullCode.includes(query) || unifiedCode.includes(query);
   }) || [];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filteredIngresos = cats?.todosIngresos?.filter((i: any) => {
     const text = i.glosa ? i.glosa.toLowerCase() : '';
     const num = i.nroIngreso.toString();
@@ -466,6 +470,7 @@ export default function Activos() {
         setForm((prev: any) => ({ ...prev, codActivo: nextCode }));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.nroIngreso, form.codGrupo, cats?.todosIngresos, cats?.todosGrupos, cats?.todosActivos, editId]);
 
   const cerrarModal = () => {
@@ -1493,6 +1498,7 @@ function SpecsModal({ activos, onClose }: { activos: any[]; onClose: () => void 
         
         // Check if there is already an active assignment for this specific detail on the base ref
         // We assume existing logic roughly applies: we re-assign everything selected to the whole array
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const existingAssignment = activeSpecs.find(
           (spec: any) => spec.codDetAtrib?.codDetAtrib === parseInt(codDetAtrib)
         );
@@ -1745,11 +1751,6 @@ function VehiculoModal({ activo, onClose }: { activo: any; onClose: () => void }
   useEffect(() => {
     if (data?.vehiculoPorActivo) {
       const v = data.vehiculoPorActivo;
-      let soatAnio = '';
-      if (v.fechaVencimientoSoat) {
-        // Asumiendo formato YYYY-MM-DD
-        soatAnio = v.fechaVencimientoSoat.substring(0, 4);
-      }
       setForm({
         tipo: v.tipo || '',
         marca: v.marca || '',
@@ -2324,8 +2325,11 @@ function LabelModal({ activo, onClose }: { activo: any; onClose: () => void }) {
     };
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const values = getActivoValues(activo);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const location = getActivoLocationName(activo);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const usefulLife = getActivoUsefulLife(activo);
 
   // Construct Universal QR URL for instant light web consultation
