@@ -5,6 +5,7 @@ import { CREAR_ACTIVO, EDITAR_ACTIVO, APROBAR_ACTIVO } from '../graphql/mutation
 import PageLayout from '../components/ui/PageLayout';
 import { useAuth } from '../context/AuthContext';
 import { Code39Barcode, QRCodeImage } from '../utils/barcodes';
+import { getAssetQrUrl } from '../utils/qrConfig';
 import FichaTecnicaModal from '../components/activos/FichaTecnicaModal';
 import HistorialActivoModal from '../components/activos/HistorialActivoModal';
 
@@ -2332,13 +2333,8 @@ function LabelModal({ activo, onClose }: { activo: any; onClose: () => void }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const usefulLife = getActivoUsefulLife(activo);
 
-  // Construct Universal QR URL for instant light web consultation
-  // Si estamos en localhost, usar la IP de la red Wi-Fi local para que los celulares puedan escanearlo
-  const hostname = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? '192.168.0.104'
-    : window.location.hostname;
-  const portStr = window.location.port ? `:${window.location.port}` : '';
-  const qrString = `${window.location.protocol}//${hostname}${portStr}/consulta/${activo.codActivo}`;
+  // Construct Universal QR URL for instant light web consultation (disponible desde internet)
+  const qrString = getAssetQrUrl(activo.codActivo);
 
   return (
     <div

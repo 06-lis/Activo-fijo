@@ -5,9 +5,14 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@ap
 import App from './App';
 import './index.css';
 
-const backendHost = window.location.hostname || 'localhost';
+const isHttps = window.location.protocol === 'https:';
+const isTunnelOrProxy = isHttps || window.location.hostname.includes('trycloudflare.com') || window.location.hostname.includes('loca.lt');
+const graphqlUri = isTunnelOrProxy
+  ? '/graphql/'
+  : `http://${window.location.hostname || 'localhost'}:8000/graphql/`;
+
 const httpLink = createHttpLink({
-  uri: `http://${backendHost}:8000/graphql/`,
+  uri: graphqlUri,
   credentials: 'include',
 });
 

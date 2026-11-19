@@ -4,6 +4,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAuth } from '../context/AuthContext';
 import { GET_ASIGNACIONES_PAGINADAS } from '../graphql/queries';
 import { QRCodeImage, Code39Barcode } from '../utils/barcodes';
+import { getAssetQrUrl } from '../utils/qrConfig';
 
 const GET_CATS = gql`
   query GetCats {
@@ -1468,17 +1469,7 @@ const [printMode, setPrintMode] = useState<'qr' | 'barcode'>('qr');
           {activos.map((activo: any, idx: number) => {
             const values = getActivoValues(activo);
             const usefulLife = getActivoUsefulLife(activo);
-            const qrString = [
-              "U.A.G.R.M. - VSIAF 2.0", "----------------------",
-              `CÓDIGO: ${activo.codActivo}`,
-              `DETALLE: ${activo.descripcion}`,
-              `GRUPO: ${activo.codGrupo?.desGrupo || 'Sin Grupo'}`,
-              `UBICACIÓN: ${location}`,
-              `VIDA ÚTIL: ${usefulLife}`,
-              `COMPRA: ${values.montoCompra.toFixed(2)} Bs.`,
-              `DEP. ACUM.: ${values.depAcum.toFixed(2)} Bs.`,
-              `VALOR ACTUAL: ${values.valActual.toFixed(2)} Bs.`
-            ].join('\n');
+            const qrString = getAssetQrUrl(activo.codActivo);
 
             return (
               <div

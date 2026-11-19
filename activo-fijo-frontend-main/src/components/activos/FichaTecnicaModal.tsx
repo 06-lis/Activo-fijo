@@ -61,12 +61,10 @@ const personName = (empleado: any): string => {
   return [empleado.nombre, empleado.apellido].filter(Boolean).join(' ');
 };
 
+import { getAssetQrUrl } from '../../utils/qrConfig';
+
 const buildQrUrl = (codActivo: string): string => {
-  const hostname = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? '192.168.0.104'
-    : window.location.hostname;
-  const port = window.location.port ? `:${window.location.port}` : '';
-  return `${window.location.protocol}//${hostname}${port}/consulta/${codActivo}`;
+  return getAssetQrUrl(codActivo);
 };
 
 const FICHA_CSS = `
