@@ -71,7 +71,7 @@ const GET_VEHICULOS_AND_ACTIVOS = gql`
       numeroDocumento
       cargo
     }
-    todosActivos {
+    todosActivos(soloActivos: true, tipoFicha: "VEHICULO") {
       nroActivo
       codActivo
       descripcion
@@ -150,12 +150,12 @@ export default function Vehiculos() {
 
   const getSoatBadge = (soatDateStr: string) => {
     if (!soatDateStr) return <span style={{ padding: '3px 6px', borderRadius: '12px', background: '#e2e8f0', color: '#475569', fontSize: '0.7rem', fontWeight: 'bold' }}>S/D</span>;
-    
+
     const soatYear = parseInt(soatDateStr.substring(0, 4));
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth(); // 0-11
-    
+
     if (soatYear < currentYear) {
       return <span style={{ padding: '3px 6px', borderRadius: '12px', background: '#fee2e2', color: '#b91c1c', fontSize: '0.7rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#ef4444'}}></span>VENCIDO</span>;
     } else if (soatYear === currentYear) {
@@ -181,7 +181,7 @@ export default function Vehiculos() {
 
   const [tipoFiltro, setTipoFiltro] = useState('');
   const [marcaFiltro, setMarcaFiltro] = useState('');
-  
+
   // Selection states
   const [selectedVehiculo, setSelectedVehiculo] = useState<any>(null);
   const [editingVehiculo, setEditingVehiculo] = useState<any>(null);
@@ -258,6 +258,7 @@ export default function Vehiculos() {
     return list;
   }, [data, tipoFiltro, marcaFiltro]);
 
+
   const totalCount = data?.todosVehiculosPaginados?.totalCount || 0;
   const totalPaginas = Math.ceil(totalCount / ITEMS_POR_PAGINA);
   const paginaActualSegura = Math.min(paginaActual, totalPaginas || 1);
@@ -265,13 +266,15 @@ export default function Vehiculos() {
   // Get assets that do not have a vehicle file yet
   const availableAssets = useMemo(() => {
     const all = data?.todosActivos || [];
-    const usedIds = new Set(data?.todosVehiculosPaginados?.results?.map((v: any) => v.nroActivo?.nroActivo) || []);
-    return all.filter((a: any) => {
-      if (usedIds.has(a.nroActivo)) return false;
-      const grupo = (a.codGrupo?.desGrupo || '').toLowerCase();
-      return grupo.includes('vehiculo') || grupo.includes('vehículo') || grupo.includes('transporte') || grupo.includes('traccion') || grupo.includes('tracción') || grupo.includes('motor') || grupo.includes('camion');
-    });
+    const usedIds = new Set(
+      data?.todosVehiculosPaginados?.results?.map(
+        (v: any) => v.nroActivo?.nroActivo
+      ) || []
+    );
+
+    return all.filter((a: any) => !usedIds.has(a.nroActivo));
   }, [data]);
+
 
   // Auto-fill values from the selected asset
   useEffect(() => {
@@ -480,7 +483,7 @@ export default function Vehiculos() {
       'Año', 'Color', 'Motor', 'Chasis', 'Cilindrada', 'Industria', 'RUAT',
       'Factura', 'Póliza', 'Nro Serie'
     ];
-    
+
     const rows = filteredVehiculos.map((v: any) => [
       v.nroActivo?.codActivo || '',
       v.nroActivo?.descripcion || '',
@@ -795,8 +798,8 @@ export default function Vehiculos() {
           <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
             <div className="modal-title">
               <span>Ficha Técnica Vehicular</span>
-              <button 
-                onClick={() => setSelectedVehiculo(null)} 
+              <button
+                onClick={() => setSelectedVehiculo(null)}
                 className="modal-close"
               >
                 ✕
@@ -831,7 +834,7 @@ export default function Vehiculos() {
             </div>
 
             <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '70vh', overflowY: 'auto' }}>
-              
+
               {/* Interactive Help Assistant Banner */}
               <div style={{
                 background: 'var(--blue-pale)',
@@ -843,10 +846,10 @@ export default function Vehiculos() {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '4px' }}>Asistente de Llenado Rápido</strong>
-                  <button 
+                  <button
                     type="button"
-                    className="btn btn-secondary btn-sm" 
-                    style={{ padding: '2px 6px', fontSize: '0.65rem' }} 
+                    className="btn btn-secondary btn-sm"
+                    style={{ padding: '2px 6px', fontSize: '0.65rem' }}
                     onClick={() => setShowTutorial(!showTutorial)}
                   >
                     {showTutorial ? 'Ocultar Guía' : 'Ver Guía / Ayuda'}
@@ -904,11 +907,11 @@ export default function Vehiculos() {
                   <span style={{ fontSize: '0.7rem', color: 'var(--text-label)', fontWeight: 700, textTransform: 'uppercase' }}>Fotografía <span style={{ color: 'var(--text-muted)', fontWeight: 'normal' }}>(Opcional)</span></span>
                   <div style={{ width: '100%', height: '120px', background: 'var(--bg-white)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed var(--border)', position: 'relative' }}>
                     {form.imagen ? (
-                      <img 
-                        src={getMediaUrl(form.imagen)} 
-                        alt="Vehículo" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }} 
+                      <img
+                        src={getMediaUrl(form.imagen)}
+                        alt="Vehículo"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
                     ) : (
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 'bold' }}>SIN FOTO</span>
@@ -924,17 +927,17 @@ export default function Vehiculos() {
                     <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
                   </label>
                 </div>
-                
+
                 {/* Foto Encargado */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', background: 'var(--bg-panel)', padding: '8px', border: '1px solid var(--border-light)' }}>
                   <span style={{ fontSize: '0.7rem', color: 'var(--text-label)', fontWeight: 700, textTransform: 'uppercase' }}>Foto Encargado</span>
                   <div style={{ width: '100%', height: '120px', background: 'var(--bg-white)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed var(--border)', position: 'relative' }}>
                     {form.fotoConductor ? (
-                      <img 
-                        src={getMediaUrl(form.fotoConductor)} 
-                        alt="Conductor" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }} 
+                      <img
+                        src={getMediaUrl(form.fotoConductor)}
+                        alt="Conductor"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
                     ) : (
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 'bold' }}>SIN FOTO</span>
@@ -1017,7 +1020,7 @@ export default function Vehiculos() {
                 <div className="form-group">
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <label className="mb-0">RUAT <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
-                    <span 
+                    <span
                       className="cursor-help text-blue-400 hover:text-blue-300 font-bold font-mono text-[10px] select-none bg-blue-500/10 border border-blue-500/20 w-4 h-4 rounded-full flex items-center justify-center transition-all"
                       title="Registro Único para la Administración Tributaria Municipal del vehículo."
                     >
@@ -1209,7 +1212,7 @@ function PrintableSheet({ vehicle }: { vehicle: any }) {
   const v = vehicle;
   return (
     <div style={{ background: 'white', padding: '25px', color: 'black', fontFamily: '"Arial", sans-serif', maxWidth: '780px', margin: '0 auto', fontSize: '11px', lineHeight: '1.3' }}>
-      
+
       {/* Institution Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '10px', marginBottom: '15px' }}>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -1246,7 +1249,7 @@ function PrintableSheet({ vehicle }: { vehicle: any }) {
               <tr>
                 <td style={{ padding: '3px 0', fontWeight: 'bold' }}>Monto Adq. / Fecha:</td>
                 <td style={{ padding: '3px 0' }}>
-                  {v.nroActivo?.monto ? `Bs. ${parseFloat(v.nroActivo.monto).toLocaleString('es-BO', { minimumFractionDigits: 2 })}` : 'S/M'} 
+                  {v.nroActivo?.monto ? `Bs. ${parseFloat(v.nroActivo.monto).toLocaleString('es-BO', { minimumFractionDigits: 2 })}` : 'S/M'}
                   {v.nroActivo?.fecAdqui ? ` — ${v.nroActivo.fecAdqui}` : ''}
                 </td>
               </tr>
@@ -1303,10 +1306,10 @@ function PrintableSheet({ vehicle }: { vehicle: any }) {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ width: '110px', height: '120px', border: '1.5px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', marginBottom: '5px' }}>
               {v.fotoConductor ? (
-                <img 
-                  src={getMediaUrl(v.fotoConductor)} 
-                  alt="Conductor" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                <img
+                  src={getMediaUrl(v.fotoConductor)}
+                  alt="Conductor"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {
                     const img = e.currentTarget;
                     img.style.display = 'none';

@@ -2,7 +2,7 @@ from django.db.models import Q
 from .models import in_activo
 
 GRUPOS_VEHICULO = {'4', 'E'}
-GRUPOS_INMUEBLE = {'A', 'B'}   # agrega 'C' si Infraestructura también cuenta
+GRUPOS_INMUEBLE = {'A', 'B', 'C'}   # agrega 'C' si Infraestructura también cuenta
 
 
 def grupo_raiz(grupo):

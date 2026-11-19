@@ -80,7 +80,6 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Grupos',                 to: '/grupos',         icon: '▥', permission: 'ver_grupos' },
       { label: 'Oficinas',               to: '/oficinas',       icon: '▣', permission: 'ver_ubicaciones' },
       { label: 'Proveedores',            to: '/proveedores',    icon: '◫', permission: 'ver_proveedores' },
-      { label: 'Catálogos y Parámetros', to: '/catalogos',      icon: '▦' },
     ],
   },
 ];

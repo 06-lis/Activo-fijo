@@ -40,12 +40,49 @@ const GET_CATS = gql`
       }
     }
     todosTiposAsig {
-      tipoAsig
-      des
+  tipoAsig
+  des
+  abrev
+}
+  }
+`;
+const GET_ASIGNACIONES_ACTIVAS = gql`
+  query GetAsignacionesActivas {
+    todasAsignacionesPaginadas(
+      limit: 10000
+      offset: 0
+      estado: "A"
+    ) {
+      totalCount
+      results {
+        codAsig
+        estado
+        codOfic {
+          codOfic
+          codDpto
+          desDpto
+          nivel
+          codPadre {
+            codOfic
+            codDpto
+            nivel
+            codPadre {
+              codOfic
+              codDpto
+              nivel
+            }
+          }
+        }
+        inDetAsigSet {
+          nroActivo {
+            nroActivo
+            codActivo
+          }
+        }
+      }
     }
   }
 `;
-
 const CREAR_ASIG = gql`
   mutation CrearAsignacion($tipoAsig: Int!, $tipoResp: Int!, $codResp: Int!, $codOfic: Int!, $fechaAsig: Date!) {
     crearAsignacion(tipoAsig: $tipoAsig, tipoResp: $tipoResp, codResp: $codResp, codOfic: $codOfic, fechaAsig: $fechaAsig) {
@@ -82,6 +119,34 @@ const ANULAR_ASIGNACION = gql`
 const CREAR_TIPO_ASIG = gql`
   mutation CrearTipoAsig($tipoAsig: Int!, $des: String!, $abrev: String!) {
     crearTipoAsig(tipoAsig: $tipoAsig, des: $des, abrev: $abrev) {
+      tipoAsigObj {
+        tipoAsig
+        des
+        abrev
+      }
+    }
+  }
+`;
+
+const ELIMINAR_TIPO_ASIG = gql`
+  mutation EliminarTipoAsig($tipoAsig: Int!) {
+    eliminarTipoAsig(tipoAsig: $tipoAsig) {
+      ok
+    }
+  }
+`;
+
+const EDITAR_TIPO_ASIG = gql`
+  mutation EditarTipoAsig(
+    $tipoAsig: Int!
+    $des: String!
+    $abrev: String!
+  ) {
+    editarTipoAsig(
+      tipoAsig: $tipoAsig
+      des: $des
+      abrev: $abrev
+    ) {
       tipoAsigObj {
         tipoAsig
         des
@@ -156,6 +221,7 @@ export default function Asignaciones() {
   // Tipos de Asignación States
   const [showTiposModal, setShowTiposModal] = useState(false);
   const [formTipoAsig, setFormTipoAsig] = useState({ tipoAsig: '', des: '', abrev: '' });
+  const [tipoAsigEditando, setTipoAsigEditando] = useState<number | null>(null);
 
   // Bulk Print states
   const [printAssetsList, setPrintAssetsList] = useState<any[] | null>(null);
@@ -172,10 +238,33 @@ export default function Asignaciones() {
     }
   });
   const { data: cats, refetch: refetchCats } = useQuery(GET_CATS);
+
+const siguienteCodigoTipoAsig = useMemo(() => {
+  const codigos = new Set(
+    (cats?.todosTiposAsig || []).map((t: any) => Number(t.tipoAsig))
+  );
+
+  let codigo = 1;
+
+  while (codigos.has(codigo)) {
+    codigo++;
+  }
+
+  return codigo;
+}, [cats?.todosTiposAsig]);
+const {
+  data: asignacionesActivasData,
+  refetch: refetchAsignacionesActivas
+} = useQuery(GET_ASIGNACIONES_ACTIVAS, {
+  fetchPolicy: 'network-only'
+});
+
   const [crearAsig] = useMutation(CREAR_ASIG);
   const [asignarActivo] = useMutation(ASIGNAR_ACTIVO);
   const [anularAsignacion] = useMutation(ANULAR_ASIGNACION);
   const [crearTipoAsig] = useMutation(CREAR_TIPO_ASIG);
+  const [editarTipoAsig] = useMutation(EDITAR_TIPO_ASIG);
+  const [eliminarTipoAsig] = useMutation(ELIMINAR_TIPO_ASIG);
 
   // ==================== FILTERING & PAGINATION ====================
   const totalCount = data?.todasAsignacionesPaginadas?.totalCount || 0;
@@ -269,20 +358,20 @@ export default function Asignaciones() {
   // ==================== REAL-TIME ASSET VALIDATION ====================
   // Check if an asset is assigned to another office in an active assignment
   const getAssetAssignmentStatus = useCallback((asset: any) => {
-    const currentAsig = data?.todasAsignaciones?.find((a: any) => 
-      a.estado === 'A' && 
+    const currentAsig = asignacionesActivasData?.todasAsignacionesPaginadas?.results?.find((a: any) =>
+      a.estado === 'A' &&
       a.inDetAsigSet?.some((d: any) => String(d.nroActivo?.nroActivo) === String(asset.nroActivo))
     );
 
     if (currentAsig) {
       const officeName = currentAsig.codOfic?.desDpto || 'Ubicación Desconocida';
       const officeCode = getOfficeUnifiedCode(currentAsig.codOfic);
-      
+
       if (String(currentAsig.codOfic?.codOfic) === String(form.codOfic)) {
         return {
           status: 'warning',
           message: `Ya asignado a esta oficina`,
-          isCritical: false
+          isCritical: true
         };
       } else {
         return {
@@ -298,22 +387,76 @@ export default function Asignaciones() {
       message: 'Disponible',
       isCritical: false
     };
-  }, [data, form.codOfic]);
+  }, [asignacionesActivasData, form.codOfic]);
 
   const hasErrors = useMemo(() => {
     return activosSeleccionados.some(asset => getAssetAssignmentStatus(asset).isCritical);
   }, [activosSeleccionados, getAssetAssignmentStatus]);
 
   // ==================== ACTIONS HANDLERS ====================
-  const handleCrearTipoAsig = async () => {
-    if (!formTipoAsig.tipoAsig || !formTipoAsig.des || !formTipoAsig.abrev) {
-      alert('Por favor complete todos los campos.');
-      return;
+  const handleSeleccionarTipoEditar = (tipo: any) => {
+  setTipoAsigEditando(Number(tipo.tipoAsig));
+
+  setFormTipoAsig({
+    tipoAsig: String(tipo.tipoAsig),
+    des: tipo.des || '',
+    abrev: tipo.abrev || ''
+  });
+};
+
+const handleEditarTipoAsig = async () => {
+  if (tipoAsigEditando === null) return;
+
+  if (!formTipoAsig.des.trim() || !formTipoAsig.abrev.trim()) {
+    alert('Complete la descripción y la abreviación.');
+    return;
+  }
+
+  try {
+    await editarTipoAsig({
+      variables: {
+        tipoAsig: tipoAsigEditando,
+        des: formTipoAsig.des.trim(),
+        abrev: formTipoAsig.abrev.trim()
+      }
+    });
+
+    alert('Tipo de asignación actualizado correctamente.');
+
+    setTipoAsigEditando(null);
+    setFormTipoAsig({ tipoAsig: '', des: '', abrev: '' });
+
+    await refetchCats();
+  } catch (e: any) {
+    alert('Error al editar tipo de asignación: ' + e.message);
+  }
+};
+
+  const handleEliminarTipoAsig = async (tipo: any) => {
+    const codigo = Number(tipo.tipoAsig);
+    if (!window.confirm(`¿Eliminar el tipo #${codigo} (${tipo.des})? Solo se permite si nunca se utilizó en una asignación.`)) return;
+    try {
+      await eliminarTipoAsig({ variables: { tipoAsig: codigo } });
+      if (tipoAsigEditando === codigo) {
+        setTipoAsigEditando(null);
+        setFormTipoAsig({ tipoAsig: '', des: '', abrev: '' });
+      }
+      await refetchCats();
+      alert('Tipo de asignación eliminado correctamente.');
+    } catch (e: any) {
+      alert('No se pudo eliminar el tipo: ' + e.message);
     }
+  };
+
+  const handleCrearTipoAsig = async () => {
+    if (!formTipoAsig.des.trim() || !formTipoAsig.abrev.trim()) {
+  alert('Por favor complete la descripción y la abreviación.');
+  return;
+}
     try {
       await crearTipoAsig({
         variables: {
-          tipoAsig: parseInt(formTipoAsig.tipoAsig),
+          tipoAsig: siguienteCodigoTipoAsig,
           des: formTipoAsig.des,
           abrev: formTipoAsig.abrev
         }
@@ -336,8 +479,8 @@ export default function Asignaciones() {
       return;
     }
     if (hasErrors) {
-      alert('Hay activos asignados a otras oficinas. Por favor remuévalos antes de guardar.');
-      return;
+      alert('No se puede realizar la asignación porque uno o más activos ya tienen un custodio vigente. Retire esos activos de la lista antes de continuar.');
+    return;
     }
 
     setGuardando(true);
@@ -381,6 +524,7 @@ export default function Asignaciones() {
       });
       setOficinaSearch('');
       setRespSearch('');
+      await refetchAsignacionesActivas();
       refetch();
       alert('Asignación masiva creada correctamente.');
     } catch (e: any) {
@@ -401,8 +545,9 @@ export default function Asignaciones() {
           fechaFin: new Date().toISOString().split('T')[0]
         }
       });
-      alert('Asignación anulada.');
+      await refetchAsignacionesActivas();
       refetch();
+      alert('Asignación anulada.');
     } catch (e: any) {
       alert('Error al anular: ' + e.message);
     }
@@ -447,7 +592,7 @@ export default function Asignaciones() {
       actions={[
         ...(puedeCrear ? [
           { label: 'Asignación Masiva', icon: '+', variant: 'primary' as const, onClick: abrirNuevo },
-          { label: 'Tipos de Asignación', icon: '▤', onClick: () => { setFormTipoAsig({ tipoAsig: '', des: '', abrev: '' }); setShowTiposModal(true); } }
+          { label: 'Tipos de Asignación', icon: '▤', onClick: () => { setTipoAsigEditando(null); setFormTipoAsig({ tipoAsig: '', des: '', abrev: '' }); setShowTiposModal(true); } }
         ] : []),
         { label: 'Actualizar', icon: '↺', onClick: () => refetch() },
       ]}
@@ -455,7 +600,7 @@ export default function Asignaciones() {
       {/* Filtros */}
       <div className="bg-white border border-slate-200 rounded-xl p-3 mb-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex-1 autocomplete-container">
+          <div className="flex-1 autocomplete-container" style={{ width: '100%', minWidth: '350px' }}>
             <input
               type="text"
               placeholder="Filtrar por oficina..."
@@ -468,7 +613,15 @@ export default function Asignaciones() {
               onFocus={() => setShowOficinaFilterDropdown(true)}
               onBlur={() => setTimeout(() => setShowOficinaFilterDropdown(false), 200)}
               className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm"
-            />
+           style={{
+  width: '100%',
+  minWidth: '350px',
+  height: '42px',
+  padding: '10px 14px',
+  borderRadius: '8px',
+  boxSizing: 'border-box'
+}}
+/>
             {showOficinaFilterDropdown && (
               <ul className="autocomplete-dropdown" style={{ background: '#ffffff', borderColor: '#e2e8f0' }}>
                 {filteredOficinasFilter.slice(0, 15).map((o: any) => {
@@ -524,7 +677,7 @@ export default function Asignaciones() {
           Object.entries(groupedAsignaciones).map(([oficinaId, list]) => {
             const firstAsig = list[0];
             const office = firstAsig.codOfic;
-            
+
             // Build parent path recursively
             const path: string[] = [];
             let current = office;
@@ -538,45 +691,55 @@ export default function Asignaciones() {
 
             return (
               <div key={oficinaId} className="bg-slate-800 rounded-xl border border-slate-700/60 overflow-hidden shadow-2xl transition-all duration-300 hover:shadow-blue-950/20 hover:border-slate-600/80">
-                {/* Barra de Oficina Super Premium */}
-                <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950/20 border-b border-slate-700/80 border-l-8 border-blue-500 px-6 py-4.5 text-white font-bold text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
-                  <div className="flex items-center gap-4">
-                    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                      <span className="text-xs tracking-widest uppercase bg-blue-600/90 text-blue-50 px-2.5 py-1 rounded border border-blue-400/30 font-extrabold font-mono w-max">
-                        Ubicación / Oficina
-                      </span>
-                      <span className="text-white text-lg md:text-xl font-extrabold tracking-wide drop-shadow-md">
-                        {office ? `[${unified || office.codOfic}] ${path.join(' > ')}` : 'Sin Oficina'}
-                      </span>
-                    </div>
+
+                {/* Encabezado de oficina */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '12px',
+                    padding: '10px 14px',
+                    backgroundColor: '#eaf2fc',
+                    borderBottom: '1px solid #cbd5e1'
+                  }}
+                >
+                  <div style={{ flex: '1 1 300px', minWidth: 0 }}>
+                    <span style={{ fontWeight: 700, color: '#17365d' }}>
+                      Ubicación / Oficina:
+                    </span>{' '}
+                    <span style={{ color: '#1e293b' }}>
+                      {office ? `[${unified || office.codOfic}] ${path.join(' > ')}` : 'Sin Oficina'}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-3 self-start sm:self-center shrink-0">
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <button
+                      type="button"
                       onClick={() => handlePrintOficina(`[${unified || office.codOfic}] ${path.join(' > ')}`, list)}
+                      title="Imprimir etiquetas QR y códigos de barras de los activos de esta oficina"
                       style={{
-                        backgroundColor: '#0f172a',
-                        color: '#f8fafc',
-                        border: '1px solid #475569',
-                        borderRadius: '6px',
-                        padding: '6px 12px',
+                        backgroundColor: '#17365d',
+                        color: '#ffffff',
+                        border: '1px solid #17365d',
+                        borderRadius: '5px',
+                        padding: '6px 10px',
                         fontSize: '12px',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                        fontWeight: 600,
+                        cursor: 'pointer'
                       }}
-                      title="Imprimir etiquetas con código de barras y QR para todos los activos de esta oficina"
                     >
-                      Imprimir Etiquetas QR / Barras
+                      Imprimir etiquetas QR / Barras
                     </button>
-                    <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-700/50 px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 shadow-inner">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                      <span>{list.length} {list.length === 1 ? 'asignación' : 'asignaciones'}</span>
-                    </div>
+
+                    <span style={{ fontSize: '12px', color: '#475569', whiteSpace: 'nowrap' }}>
+                      {list.length} {list.length === 1 ? 'asignación' : 'asignaciones'}
+                    </span>
                   </div>
                 </div>
-                
+
+
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead className="bg-slate-700/50 border-b border-slate-600">
@@ -725,7 +888,7 @@ export default function Asignaciones() {
                   <div className="form-group">
                     <div className="flex items-center gap-1.5 mb-1.5">
                       <label className="mb-0">Tipo Asignación *</label>
-                      <span 
+                      <span
                         className="cursor-help text-blue-400 hover:text-blue-300 font-bold font-mono text-[10px] select-none bg-blue-500/10 border border-blue-500/20 w-4 h-4 rounded-full flex items-center justify-center transition-all"
                         title="Tipo formal de la asignación del bien (ej. Individual, Colectiva, Temporal)."
                       >
@@ -899,8 +1062,15 @@ export default function Asignaciones() {
                               </td>
                               <td className="px-3 py-2 text-right">
                                 <button
-                                  className="text-red-400 hover:text-red-300 font-semibold px-2 py-1"
-                                  onClick={() => setActivosSeleccionados(prev => prev.filter(item => item.nroActivo !== asset.nroActivo))}
+                                  type="button"
+                                  disabled={guardando}
+                                  style={{
+                                    backgroundColor: guardando ? '#94a3b8' : '#b91c1c',
+                                    color: '#ffffff', border: 'none', borderRadius: '6px',
+                                    padding: '6px 12px', fontWeight: 600, fontSize: '12px',
+                                    cursor: guardando ? 'not-allowed' : 'pointer'
+                                  }}
+                                  onClick={() => setActivosSeleccionados(prev => prev.filter(item => String(item.nroActivo) !== String(asset.nroActivo)))}
                                 >
                                   Quitar
                                 </button>
@@ -915,8 +1085,22 @@ export default function Asignaciones() {
 
                 {hasErrors && (
                   <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-2">
-                    <span className="text-xl text-amber-500 font-bold">⚠</span>
-                    <span className="text-amber-700 text-sm">Hay activos con error de ubicación (ya están asignados a otra oficina).</span>
+                    <span className="text-xl text-amber-500 font-bold"></span>
+                    <span
+  style={{
+    display: 'block',
+    color: '#991b1b',
+    backgroundColor: '#fee2e2',
+    border: '1px solid #fca5a5',
+    borderRadius: '8px',
+    padding: '10px 14px',
+    fontSize: '13px',
+    fontWeight: 600,
+    marginTop: '8px'
+  }}
+>
+ ⚠  No se puede registrar la asignación. Uno o más activos ya tienen un custodio vigente. Retírelos de la lista para continuar.
+</span>
                     Por favor, remuévalos antes de poder guardar la asignación.
                   </div>
                 )}
@@ -945,20 +1129,32 @@ export default function Asignaciones() {
         <div className="modal-overlay" onClick={() => setShowTiposModal(false)}>
           <div className="modal" style={{ maxWidth: '600px', width: '90%' }} onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">Administrar Tipos de Asignación</h2>
-            
+
             {/* Formulario Rápido */}
             <div className="bg-slate-900/40 p-4 border border-slate-700/50 rounded-xl mb-4 space-y-3">
-              <h3 className="text-slate-200 text-xs font-semibold uppercase tracking-wider">Nuevo Tipo de Asignación</h3>
+              <h3 className="text-slate-200 text-xs font-semibold uppercase tracking-wider">{tipoAsigEditando !== null ? 'Editar Tipo de Asignación' : 'Nuevo Tipo de Asignación'}</h3>
               <div className="form-grid text-xs">
                 <div className="form-group" style={{ marginBottom: '0px' }}>
-                  <label>Código (Número) *</label>
-                  <input
-                    type="number"
-                    value={formTipoAsig.tipoAsig}
-                    onChange={e => setFormTipoAsig({ ...formTipoAsig, tipoAsig: e.target.value })}
-                    placeholder="Ej: 3"
-                    className="w-full bg-slate-950 border border-slate-700 rounded p-1.5 text-white"
-                  />
+                <label>Código (Número) *</label>
+<input
+  type="number"
+  value={
+    tipoAsigEditando !== null
+      ? tipoAsigEditando
+      : siguienteCodigoTipoAsig
+  }
+  readOnly
+  style={{
+    width: '100%',
+    backgroundColor: '#e2e8f0',
+    color: '#334155',
+    border: '1px solid #cbd5e1',
+    borderRadius: '8px',
+    padding: '10px',
+    cursor: 'not-allowed',
+    boxSizing: 'border-box'
+  }}
+/>
                 </div>
                 <div className="form-group" style={{ marginBottom: '0px' }}>
                   <label>Abreviación *</label>
@@ -973,18 +1169,13 @@ export default function Asignaciones() {
               </div>
               <div className="form-group text-xs" style={{ marginBottom: '0px' }}>
                 <label>Descripción *</label>
-                <input
-                  type="text"
-                  value={formTipoAsig.des}
-                  onChange={e => setFormTipoAsig({ ...formTipoAsig, des: e.target.value })}
-                  placeholder="Ej: Uso Compartido"
-                  className="w-full bg-slate-950 border border-slate-700 rounded p-1.5 text-white"
-                />
-              </div>
-              <div className="text-right" style={{ marginTop: '0.5rem' }}>
-                <button className="btn btn-primary text-xs py-1 px-3" onClick={handleCrearTipoAsig}>
-                  + Registrar Tipo
-                </button>
+<input
+  type="text"
+  value={formTipoAsig.des}
+  onChange={e => setFormTipoAsig({ ...formTipoAsig, des: e.target.value })}
+  placeholder="Ej: Uso Compartido"
+  className="w-full bg-slate-950 border border-slate-700 rounded p-1.5 text-white"
+/>
               </div>
             </div>
 
@@ -996,12 +1187,13 @@ export default function Asignaciones() {
                     <th className="px-3 py-2">Código</th>
                     <th className="px-3 py-2">Descripción</th>
                     <th className="px-3 py-2">Abrev.</th>
+                    <th className="px-3 py-2">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {cats?.todosTiposAsig?.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-3 py-4 text-center text-slate-500 italic">
+                      <td colSpan={4} className="px-3 py-4 text-center text-slate-500 italic">
                         No hay tipos de asignación registrados
                       </td>
                     </tr>
@@ -1010,17 +1202,60 @@ export default function Asignaciones() {
                     <tr key={t.tipoAsig} className="border-b border-slate-800 hover:bg-slate-800/40">
                       <td className="px-3 py-2 font-mono text-blue-400">#{t.tipoAsig}</td>
                       <td className="px-3 py-2 text-slate-200">{t.des}</td>
-                      <td className="px-3 py-2 text-slate-200">{t.abrev}</td>
-                    </tr>
+<td className="px-3 py-2 text-slate-200">{t.abrev}</td>
+
+<td className="px-3 py-2">
+  <button
+    type="button"
+    onClick={() => handleSeleccionarTipoEditar(t)}
+    style={{
+      backgroundColor: '#2563eb',
+      color: 'white',
+      border: 'none',
+      borderRadius: '6px',
+      padding: '6px 12px',
+      cursor: 'pointer',
+      fontSize: '12px'
+    }}
+  >
+    Editar
+  </button>
+  <button
+    type="button"
+    onClick={() => handleEliminarTipoAsig(t)}
+    style={{
+      backgroundColor: '#b91c1c', color: 'white', border: 'none',
+      borderRadius: '6px', padding: '6px 12px', cursor: 'pointer',
+      fontSize: '12px', marginLeft: '6px'
+    }}
+  >
+    Eliminar
+  </button>
+</td>
+</tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
             <div className="modal-actions mt-4" style={{ marginTop: '1rem' }}>
-              <button className="btn btn-secondary text-xs" onClick={() => setShowTiposModal(false)}>
-                Cerrar
-              </button>
+              <button
+  className="btn btn-primary text-xs"
+  onClick={
+    tipoAsigEditando !== null
+      ? handleEditarTipoAsig
+      : handleCrearTipoAsig
+  }
+>
+  {tipoAsigEditando !== null ? 'Guardar Cambios' : '+ Registrar Tipo'}
+</button>
+
+<button
+  className="btn btn-secondary text-xs"
+  onClick={() => setShowTiposModal(false)}
+>
+  Cerrar
+</button>
             </div>
           </div>
         </div>
@@ -1047,7 +1282,8 @@ export default function Asignaciones() {
 
 // ==================== BULK LABEL PRINTING MODAL ====================
 function BulkLabelModal({ activos, location, onClose }: { activos: any[]; location: string; onClose: () => void }) {
-  const [printMode, setPrintMode] = useState<'qr' | 'barcode'>('qr');
+const [printMode, setPrintMode] = useState<'qr' | 'barcode'>('qr');
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   const getActivoUsefulLife = (act: any): string => {
     const activeReval = act.inDetRevalSet?.find((det: any) => det.estado === 'A');
@@ -1091,46 +1327,142 @@ function BulkLabelModal({ activos, location, onClose }: { activos: any[]; locati
             background: transparent !important;
           }
           .print-label {
-            width: 60mm !important;
-            height: 30mm !important;
-            padding: 3mm !important;
-            border: none !important;
-            box-shadow: none !important;
-            page-break-after: always !important;
-            box-sizing: border-box !important;
-            margin: 0 !important;
-            page-break-inside: avoid !important;
-            background: white !important;
-          }
+  display: flex !important;
+  width: 60mm !important;
+  height: 30mm !important;
+  padding: 3mm !important;
+  border: none !important;
+  box-shadow: none !important;
+  page-break-after: always !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  page-break-inside: avoid !important;
+  background: white !important;
+}
           .no-print-btn { display: none !important; }
         }
       `}</style>
-      
-      <div className="bg-white rounded-xl shadow-2xl p-6 flex flex-col gap-4 max-w-4xl w-[95%] h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+
+ <div
+  onClick={e => e.stopPropagation()}
+  style={{
+    backgroundColor: '#ffffff',
+    borderRadius: '16px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.35)',
+    padding: '24px',
+    width: '95%',
+    maxWidth: '600px',
+    maxHeight: '85vh',
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    boxSizing: 'border-box'
+  }}
+>
         <div className="flex items-center justify-between no-print-btn">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-2xl text-slate-800 font-bold">⎙</span>
           <h2 className="text-xl font-bold text-slate-800">Imprimir {activos.length} Etiquetas</h2>
         </div>
           <div className="flex gap-4">
-            <div className="flex bg-slate-100 p-1 rounded-lg">
-              <button
-                onClick={() => setPrintMode('qr')}
-                className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${printMode === 'qr' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'}`}
-              >
-                QR
-              </button>
-              <button
-                onClick={() => setPrintMode('barcode')}
-                className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${printMode === 'barcode' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'}`}
-              >
-                Barras
-              </button>
-            </div>
+            <div style={{
+  display: 'flex',
+  gap: '8px',
+  padding: '4px',
+  backgroundColor: '#e2e8f0',
+  borderRadius: '10px'
+}}>
+  <button
+    type="button"
+    onClick={() => setPrintMode('qr')}
+    style={{
+      padding: '9px 18px',
+      borderRadius: '8px',
+      border: 'none',
+      backgroundColor: printMode === 'qr' ? '#2563eb' : '#ffffff',
+      color: printMode === 'qr' ? '#ffffff' : '#334155',
+      fontWeight: 700,
+      fontSize: '13px',
+      cursor: 'pointer'
+    }}
+  >
+    Código QR
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setPrintMode('barcode')}
+    style={{
+      padding: '9px 18px',
+      borderRadius: '8px',
+      border: 'none',
+      backgroundColor: printMode === 'barcode' ? '#2563eb' : '#ffffff',
+      color: printMode === 'barcode' ? '#ffffff' : '#334155',
+      fontWeight: 700,
+      fontSize: '13px',
+      cursor: 'pointer'
+    }}
+  >
+    Código de Barras
+  </button>
+</div>
             <button className="btn btn-primary px-6" onClick={() => window.print()}>Imprimir ({activos.length})</button>
             <button className="btn btn-secondary px-6" onClick={onClose}>Cerrar</button>
           </div>
         </div>
+
+
+<div
+  className="no-print-btn"
+  style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '15px',
+    padding: '10px'
+  }}
+>
+<button
+  type="button"
+  disabled={previewIndex === 0}
+  onClick={() => setPreviewIndex(prev => prev - 1)}
+  style={{
+    padding: '9px 18px',
+    borderRadius: '8px',
+    border: 'none',
+    backgroundColor: previewIndex === 0 ? '#e2e8f0' : '#2563eb',
+    color: previewIndex === 0 ? '#94a3b8' : '#ffffff',
+    fontWeight: 700,
+    fontSize: '13px',
+    cursor: previewIndex === 0 ? 'not-allowed' : 'pointer'
+  }}
+>
+  Anterior
+</button>
+
+  <span style={{ color: '#1e293b', fontWeight: 'bold' }}>
+    Etiqueta {previewIndex + 1} de {activos.length}
+  </span>
+
+  <button
+  type="button"
+  disabled={previewIndex === activos.length - 1}
+  onClick={() => setPreviewIndex(prev => prev + 1)}
+  style={{
+    padding: '9px 18px',
+    borderRadius: '8px',
+    border: 'none',
+    backgroundColor: previewIndex === activos.length - 1 ? '#e2e8f0' : '#2563eb',
+    color: previewIndex === activos.length - 1 ? '#94a3b8' : '#ffffff',
+    fontWeight: 700,
+    fontSize: '13px',
+    cursor: previewIndex === activos.length - 1 ? 'not-allowed' : 'pointer'
+  }}
+>
+  Siguiente
+</button>
+</div>
 
         <div id="bulk-print-container" className="flex-1 overflow-y-auto bg-slate-100 p-4 rounded-lg flex flex-wrap gap-4 justify-center items-start content-start">
           {activos.map((activo: any, idx: number) => {
@@ -1150,11 +1482,12 @@ function BulkLabelModal({ activos, location, onClose }: { activos: any[]; locati
 
             return (
               <div
-                key={idx}
-                className="print-label"
-                style={{
-                  width: '240px',
-                  height: '120px',
+  key={idx}
+  className="print-label"
+  style={{
+    display: idx === previewIndex ? 'flex' : 'none',
+    width: '320px',
+                  height: '160px',
                   border: '2px solid #0f172a',
                   borderRadius: '6px',
                   padding: '8px',
@@ -1162,7 +1495,6 @@ function BulkLabelModal({ activos, location, onClose }: { activos: any[]; locati
                   backgroundColor: '#ffffff',
                   color: '#0f172a',
                   fontFamily: 'system-ui, sans-serif',
-                  display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   position: 'relative'
@@ -1196,7 +1528,7 @@ function BulkLabelModal({ activos, location, onClose }: { activos: any[]; locati
                   {/* Right QR */}
                   {printMode === 'qr' && (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <QRCodeImage value={qrString} size={60} />
+                      <QRCodeImage value={qrString} size={90} />
                     </div>
                   )}
                 </div>
@@ -1243,8 +1575,15 @@ function FormularioOficialUAGRMModal({ data, onClose }: { data: { asig: any; ofi
       }}
       onClick={onClose}
     >
-      <style>{`
-        @media print {
+       <style>{`
+        @media screen {
+       .preview-hidden {
+       display: none !important;
+      }
+      }
+
+    @media print {
+    body * { visibility: hidden !important; }
           @page {
             size: letter portrait;
             margin: 10mm 12mm;

@@ -22,8 +22,7 @@ const GET_INMUEBLES = gql`
 `;
 
 const GET_ACTIVOS_SELECT = gql`
-  query GetActivosParaInmuebles {
-    todosActivos(soloActivos: true) {
+  query GetActivosParaInmuebles {todosActivos(soloActivos: true, tipoFicha: "INMUEBLE") {
       nroActivo
       codActivo
       descripcion

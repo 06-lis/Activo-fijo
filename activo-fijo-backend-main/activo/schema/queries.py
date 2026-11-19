@@ -1,4 +1,5 @@
 import graphene
+from ..grupos_validacion import filtro_por_raiz, GRUPOS_VEHICULO, GRUPOS_INMUEBLE
 from ..models import in_semoviente
 from .types import InSemovienteType
 from ..models import in_pase_salida
@@ -129,7 +130,7 @@ class Query(graphene.ObjectType):
     ingresos_por_prov  = graphene.List(InIngresoType, cod_prov=graphene.Int(required=True))
 
     # ── Activos ─────────────────────────────────────────────────
-    todos_activos          = graphene.List(InActivoType, solo_activos=graphene.Boolean(), solo_aprobados=graphene.Boolean())
+    todos_activos = graphene.List(InActivoType, solo_activos=graphene.Boolean(), solo_aprobados=graphene.Boolean(), tipo_ficha=graphene.String())
     dashboard_resumen      = graphene.Field(DashboardResumenType)
     historial_activo       = graphene.Field(HistorialActivoType, nro_activo=graphene.Int(required=True))
     activo                 = graphene.Field(InActivoType, nro_activo=graphene.Int(required=True))
@@ -464,7 +465,7 @@ class Query(graphene.ObjectType):
         return in_ingreso.objects.filter(cod_prov_id=cod_prov)
 
     # ── Resolvers — Activos ─────────────────────────────────────
-    def resolve_todos_activos(root, info, solo_activos=True, solo_aprobados=None):
+    def resolve_todos_activos(root, info, solo_activos=True, solo_aprobados=None, tipo_ficha=None):
         qs = in_activo.objects.select_related(
             'cod_gest', 'cod_grupo', 'cod_unidad', 'cod_marca',
             'cod_modelo', 'cod_prove', 'cod_cond', 'cod_estado', 'nro_ingreso'
@@ -473,6 +474,10 @@ class Query(graphene.ObjectType):
             qs = qs.exclude(a_b='B')
         if solo_aprobados:
             qs = qs.filter(estado_registro='APROBADO')
+        if tipo_ficha == 'VEHICULO':
+            qs = qs.filter(filtro_por_raiz(GRUPOS_VEHICULO, campo='cod_grupo'))
+        elif tipo_ficha == 'INMUEBLE':
+            qs = qs.filter(filtro_por_raiz(GRUPOS_INMUEBLE, campo='cod_grupo'))
         return qs
     def resolve_activo(root, info, nro_activo):
         return in_activo.objects.get(pk=nro_activo)

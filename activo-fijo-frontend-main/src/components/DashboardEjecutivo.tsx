@@ -129,12 +129,12 @@ interface KpiProps {
   valor: number;
   formato?: (n: number) => string;
   sub: string;
-  icono: string;
+ icono?: string;
   colores: [string, string];
   progreso?: number; // 0 a 100
 }
 
-function Kpi({ titulo, valor, formato, sub, icono, colores, progreso }: KpiProps) {
+function Kpi({ titulo, valor, formato, sub, colores, progreso }: KpiProps) {
   const animado = useContador(valor);
   return (
     <div
@@ -148,15 +148,6 @@ function Kpi({ titulo, valor, formato, sub, icono, colores, progreso }: KpiProps
         overflow: 'hidden',
       }}
     >
-      <div
-        style={{
-          position: 'absolute', right: '-14px', top: '-14px', width: '86px', height: '86px',
-          borderRadius: '50%', background: 'rgba(255,255,255,0.14)', display: 'flex',
-          alignItems: 'flex-end', justifyContent: 'flex-start', padding: '0 0 16px 18px', fontSize: '1.5rem',
-        }}
-      >
-        {icono}
-      </div>
       <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', opacity: 0.9 }}>
         {titulo}
       </div>
@@ -358,7 +349,6 @@ export default function DashboardEjecutivo({ vista = 'resumen' }: { vista?: stri
               titulo="Activos aprobados"
               valor={total}
               sub={`${r.enUso} en uso · ${r.enAlmacen} en almacén`}
-              icono="📦"
               colores={['#1d4ed8', '#3b82f6']}
               progreso={pctUso}
             />
@@ -367,7 +357,6 @@ export default function DashboardEjecutivo({ vista = 'resumen' }: { vista?: stri
               valor={r.valorTotal}
               formato={formatoBs}
               sub={hayDeps ? `Valor en libros: ${formatoBs(valorLibros)}` : 'Suma del costo de adquisición'}
-              icono="💰"
               colores={['#15803d', '#22c55e']}
               progreso={hayDeps ? 100 - pctDep : undefined}
             />
@@ -376,7 +365,6 @@ export default function DashboardEjecutivo({ vista = 'resumen' }: { vista?: stri
               valor={pctCobertura}
               formato={n => `${Math.round(n)}%`}
               sub={`${conResponsable} de ${total} bienes con custodio`}
-              icono="🧑‍💼"
               colores={['#7e22ce', '#a855f7']}
               progreso={pctCobertura}
             />
@@ -384,7 +372,7 @@ export default function DashboardEjecutivo({ vista = 'resumen' }: { vista?: stri
               titulo="Requieren atención"
               valor={atencion}
               sub={`${r.sinAsignar} sin asignar · ${r.pendientesAprobacion} sin aprobar`}
-              icono="⚠️"
+
               colores={atencion > 0 ? ['#c2410c', '#f97316'] : ['#475569', '#94a3b8']}
             />
           </div>

@@ -150,6 +150,24 @@ class CrearTipoAsig(graphene.Mutation):
         obj = in_tipo_asig.objects.create(tipo_asig=tipo_asig, des=des, abrev=abrev)
         return CrearTipoAsig(tipo_asig_obj=obj)
 
+class EliminarTipoAsig(graphene.Mutation):
+    class Arguments:
+        tipo_asig = graphene.Int(required=True)
+    ok = graphene.Boolean(required=True)
+
+    def mutate(root, info, tipo_asig):
+        from django.db.models.deletion import ProtectedError
+        obj = in_tipo_asig.objects.filter(pk=tipo_asig).first()
+        if obj is None:
+            raise Exception('El tipo de asignación no existe.')
+        if in_asignado.objects.filter(tipo_asig_id=tipo_asig).exists():
+            raise Exception('No se puede eliminar: el tipo ya fue utilizado en asignaciones, incluso históricas.')
+        try:
+            obj.delete()
+        except ProtectedError:
+            raise Exception('No se puede eliminar: existen registros relacionados con este tipo.')
+        return EliminarTipoAsig(ok=True)
+
 class EditarTipoAsig(graphene.Mutation):
     class Arguments:
         tipo_asig = graphene.Int(required=True)
@@ -1488,33 +1506,31 @@ class AsignarActivo(graphene.Mutation):
         cantidad   = graphene.Int()
     det_asig = graphene.Field(InDetAsigType)
     def mutate(root, info, cod_asig, nro_activo, cantidad=1):
-        # Al reasignar un activo, cerramos las asignaciones activas previas que lo contenían
-        prev_asigs = in_det_asig.objects.filter(
-            nro_activo_id=nro_activo,
-            cod_asig__estado='A'
-        ).exclude(cod_asig_id=cod_asig).select_related('cod_asig')
-        for prev in prev_asigs:
-            prev_asig = prev.cod_asig
-            prev_asig.fecha_fin = timezone.now().date()
-            prev_asig.estado = 'H'  # Histórico / Reasignado
-            prev_asig.save()
-
-        obj = in_det_asig.objects.create(
-            cod_asig_id=cod_asig, nro_activo_id=nro_activo,
-            cantidad=cantidad, fecha_trans=timezone.now().date()
-        )
-        in_log_det_asig.objects.create(
-            cod_asig=obj.cod_asig_id,
-            nro_activo=obj.nro_activo_id,
-            cantidad=obj.cantidad,
-            fecha_trans=obj.fecha_trans,
-            tipo_trans=1,
-            cod_trans=obj.cod_asig_id,
-            tipo_trans_act=1,
-            cod_trans_act=obj.cod_asig_id,
-            fecha_trans_act=timezone.now(),
-            tipo_actual='I'
-        )
+        from django.db import transaction
+        with transaction.atomic():
+            # Lock the asset so concurrent assignments of the same asset serialize.
+            asset = in_activo.objects.select_for_update().get(pk=nro_activo)
+            asignacion = in_asignado.objects.get(pk=cod_asig)
+            if asignacion.estado != 'A':
+                raise Exception('No se pueden agregar activos a una asignación no vigente.')
+            if in_det_asig.objects.filter(nro_activo_id=asset.pk, cod_asig__estado='A').exists():
+                raise Exception('El activo ya tiene una asignación vigente. Anule o cierre la asignación anterior antes de continuar.')
+            obj = in_det_asig.objects.create(
+                cod_asig_id=cod_asig, nro_activo_id=nro_activo,
+                cantidad=cantidad, fecha_trans=timezone.now().date()
+            )
+            in_log_det_asig.objects.create(
+                cod_asig=obj.cod_asig_id,
+                nro_activo=obj.nro_activo_id,
+                cantidad=obj.cantidad,
+                fecha_trans=obj.fecha_trans,
+                tipo_trans=1,
+                cod_trans=obj.cod_asig_id,
+                tipo_trans_act=1,
+                cod_trans_act=obj.cod_asig_id,
+                fecha_trans_act=timezone.now(),
+                tipo_actual='I'
+            )
         return AsignarActivo(det_asig=obj)
 
 class EditarDetAsig(graphene.Mutation):
@@ -2908,6 +2924,7 @@ class Mutation(graphene.ObjectType):
     editar_unidad        = EditarUnidad.Field()
     crear_tipo_asig      = CrearTipoAsig.Field()
     editar_tipo_asig     = EditarTipoAsig.Field()
+    eliminar_tipo_asig   = EliminarTipoAsig.Field()
     crear_tipomat        = CrearTipomat.Field()
     editar_tipomat       = EditarTipomat.Field()
     crear_tipo           = CrearTipo.Field()
