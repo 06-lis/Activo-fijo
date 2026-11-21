@@ -310,19 +310,10 @@ export default function Bajas() {
                   {activosBaja.map((b: any) => (
                     <tr key={b.nro} className="border-b border-slate-700 hover:bg-slate-700/30 transition">
                       <td><strong>#{b.nro}</strong></td>
-                      <td>
-                        <div className="font-semibold text-slate-200">
-                          {b.nroActivo ? b.nroActivo.descripcion : 'Activo Eliminado'}
-                        </div>
-                        <div className="text-xs text-blue-400 font-mono">
-                          {b.nroActivo ? b.nroActivo.codActivo : '-'}
-                        </div>
-                      </td>
-                      <td>
-                        <span className="badge badge-danger text-xs font-semibold px-2 py-0.5 rounded">
-                          {getMotivoDescription(b.motivo)}
-                        </span>
-                      </td>
+                      <td>{b.nroActivo?.codActivo ?? '-'}</td>
+
+                      <td>{b.motivo ?? '-'}</td>
+
                       <td>
                         {b.unidadTecnica ? (
                           <div className="text-xs">
@@ -348,7 +339,8 @@ export default function Bajas() {
                           <span className="text-slate-500 text-xs italic">Pendiente</span>
                         )}
                       </td>
-                      <td className="text-slate-300 text-sm">{getEmpleadoName(b.codEmpAut)}</td>
+                      <td className="text-slate-300 text-sm">{b.codEmpAut ?? '-'}</td>
+
                       <td className="text-slate-300 text-sm">{b.documento || '-'}</td>
                       <td className="text-slate-300 text-sm font-mono">{b.fechaBajaTe}</td>
                       <td className="text-slate-300 text-sm font-mono">

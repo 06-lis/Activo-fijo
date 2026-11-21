@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { createPortal } from 'react-dom';
 import { GET_FICHA_TECNICA_ACTIVO } from '../../graphql/queries';
 import { QRCodeImage } from '../../utils/barcodes';
+import { getAssetQrUrl } from '../../utils/qrConfig';
 
 interface FichaTecnicaModalProps {
   activo: any;
@@ -60,8 +61,6 @@ const personName = (empleado: any): string => {
   if (!empleado) return '';
   return [empleado.nombre, empleado.apellido].filter(Boolean).join(' ');
 };
-
-import { getAssetQrUrl } from '../../utils/qrConfig';
 
 const buildQrUrl = (codActivo: string): string => {
   return getAssetQrUrl(codActivo);

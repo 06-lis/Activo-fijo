@@ -760,16 +760,20 @@ const handleEditarTipoAsig = async () => {
                         return (
                           <tr key={a.codAsig} className="border-b border-slate-700 hover:bg-slate-700/30 transition">
                             <td className="px-4 py-3 font-mono text-blue-400 text-sm">#{a.codAsig}</td>
+<td className="px-4 py-3 text-slate-300 text-sm">
+  {a.codResp ?? '-'}
+</td>
                             <td className="px-4 py-3 text-slate-300 text-sm">
-                              {resp ? `[${resp.codEstprog}] ${resp.codEmp.nombre} ${resp.codEmp.apellido}` : `ID: ${a.codResp}`}
-                            </td>
-                            <td className="px-4 py-3 text-slate-300 text-sm">{a.tipoAsig?.des || '-'}</td>
+  {a.tipoAsig?.tipoAsig ?? '-'}
+</td>
                             <td className="px-4 py-3 text-slate-300 text-sm">{a.fechaAsig || '-'}</td>
                             <td className="px-4 py-3 text-slate-300 text-xs">
                               <div className="flex flex-col gap-1 max-w-md">
                                 {a.inDetAsigSet?.map((d: any) => (
                                   <div key={d.nroActivo.nroActivo} className="bg-slate-700/50 px-2 py-0.5 rounded border border-slate-600/30 font-mono">
-                                    <span className="text-blue-300">[{d.nroActivo.codActivo}]</span> <span className="inline-block max-w-[200px] truncate align-bottom" title={d.nroActivo.descripcion}>{d.nroActivo.descripcion}</span>
+                                    <span className="text-blue-300">
+                                    {d.nroActivo.codActivo}
+                                    </span>
                                   </div>
                                 ))}
                                 {(!a.inDetAsigSet || a.inDetAsigSet.length === 0) && '-'}

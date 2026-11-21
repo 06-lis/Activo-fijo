@@ -910,7 +910,8 @@ export default function Activos() {
                       {a.monto ? parseFloat(a.monto).toLocaleString('es-BO', { minimumFractionDigits: 2 }) : '-'}
                     </td>
                     <td>{a.fecAdqui || '-'}</td>
-                    <td>{a.codCond?.desCond || '-'}</td>
+                    <td>{a.codCond?.codCond ?? '-'}</td>
+
                     <td>
                       <span className={`badge ${
                         a.codEstado?.desEstado === 'ACTIVO' ? 'badge-success' :

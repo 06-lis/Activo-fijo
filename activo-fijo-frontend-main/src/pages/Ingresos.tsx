@@ -39,7 +39,11 @@ const GET_INGRESOS = gql`
       nroFactura
       fechaFactura
       nroEgreso
-      codProv { nombre }
+      
+codProv {
+  codProv
+  nombre
+}
       codOficDest {
         codOfic
         codDpto
@@ -394,18 +398,25 @@ export default function Ingresos() {
                 {data?.todosIngresos?.length === 0 && (
                   <tr><td colSpan={10} className="empty">No hay ingresos registrados</td></tr>
                 )}
-                {data?.todosIngresos?.map((i: any) => (
+                
+{[...(data?.todosIngresos || [])]
+  .sort((a: any, b: any) => Number(a.nroIngreso) - Number(b.nroIngreso))
+  .map((i: any) => (
+
                   <tr key={i.nroIngreso} className="border-b border-slate-700 hover:bg-slate-700/30 transition">
                     <td><strong>#{i.nroIngreso}</strong></td>
                     <td>{i.gestion || '-'}</td>
                     <td>{i.actaRecep || '-'}</td>
                     <td className="max-w-[200px] truncate" title={i.glosa}>{i.glosa || '-'}</td>
-                <td>{i.codProv?.nombre || '-'}</td>
-                <td>
-                  {i.codOficDest
-                    ? `[${getOfficeUnifiedCode(i.codOficDest)}] ${i.codOficDest.desDpto}`
-                    : '-'}
-                </td>
+                   <td>{i.codProv?.codProv ?? '-'}</td>
+
+                
+<td>
+  {i.codOficDest
+    ? getOfficeUnifiedCode(i.codOficDest)
+    : '-'}
+</td>
+
                 <td>{i.fechaRecep || '-'}</td>
                 <td>{i.nroFactura || '-'}</td>
                 <td>

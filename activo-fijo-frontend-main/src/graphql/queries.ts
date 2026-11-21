@@ -719,8 +719,8 @@ export const GET_VEHICULOS_PAGINADOS = gql`
   }
 `;
 
-export const GET_ASIGNACIONES_PAGINADAS = gql`
-  query GetAsignacionesPaginadas($limit: Int, $offset: Int, $search: String, $estado: String) {
+
+export const GET_ASIGNACIONES_PAGINADAS = gql`  query GetAsignacionesPaginadas($limit: Int, $offset: Int, $search: String, $estado: String) {
     todasAsignacionesPaginadas(limit: $limit, offset: $offset, search: $search, estado: $estado) {
       totalCount
       results {
