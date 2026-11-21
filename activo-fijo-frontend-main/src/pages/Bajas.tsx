@@ -366,7 +366,7 @@ export default function Bajas() {
               <tr>
                 <th>Código</th>
                 <th>Descripción</th>
-                {(puedeEditarMotivo || puedeEliminarMotivo) && <th className="text-right">Acciones</th>}
+                {(puedeEditarMotivo || puedeEliminarMotivo) && <th style={{ width: "160px", textAlign: "center" }}>Acciones</th>}
               </tr>
             </thead>
             <tbody>
@@ -376,7 +376,7 @@ export default function Bajas() {
                     <td><div className="h-4 bg-slate-700 rounded w-8"></div></td>
                     <td><div className="h-4 bg-slate-700 rounded w-60"></div></td>
                     {(puedeEditarMotivo || puedeEliminarMotivo) && (
-                      <td className="text-right">
+                      <td style={{ textAlign: "center" }}>
                         <div className="h-6 bg-slate-700 rounded-lg w-24 ml-auto"></div>
                       </td>
                     )}
@@ -396,11 +396,11 @@ export default function Bajas() {
                       <td><strong>#{m.motivo}</strong></td>
                       <td className="text-slate-200">{m.descripcion}</td>
                       {(puedeEditarMotivo || puedeEliminarMotivo) && (
-                        <td className="text-right">
-                          <div className="flex gap-2 justify-end">
+                        <td style={{ textAlign: "center" }}>
+                          <div className="btn-group" style={{ justifyContent: 'center', gap: '6px' }}>
                             {puedeEditarMotivo && (
                               <button
-                                className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-lg text-xs font-medium transition"
+                                className="btn btn-warning btn-sm"
                                 onClick={() => {
                                   setEditingMotivo(m.motivo);
                                   setMotivoForm({ motivo: m.motivo.toString(), descripcion: m.descripcion });
@@ -412,7 +412,7 @@ export default function Bajas() {
                             )}
                             {puedeEliminarMotivo && (
                               <button
-                                className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg text-xs font-medium transition"
+                                className="btn btn-danger btn-sm"
                                 onClick={() => handleEliminarMotivo(m.motivo)}
                               >
                                 Eliminar
