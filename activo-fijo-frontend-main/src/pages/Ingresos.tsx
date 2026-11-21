@@ -35,6 +35,7 @@ const GET_INGRESOS = gql`
       actaRecep
       glosa
       estado
+      tieneBajas
       fechaRecep
       nroFactura
       fechaFactura
@@ -159,27 +160,6 @@ export default function Ingresos() {
   const [editando, setEditando] = useState<any>(null);
   const [form, setForm] = useState<any>(FORM_VACIO);
 
-  // Foto subidas: previsualización y URLs del backend
-  const [, setFotoBienFile] = useState<File | null>(null);
-  const [fotoBienPreview, setFotoBienPreview] = useState<string | null>(null);
-  const [, setFotoPlacaFile] = useState<File | null>(null);
-  const [fotoPlacaPreview, setFotoPlacaPreview] = useState<string | null>(null);
-  const [subiendoFoto, setSubiendoFoto] = useState<{ bien: boolean; placa: boolean }>({ bien: false, placa: false });
-
-  // Subir una imagen al endpoint /upload_ingreso_image/ y devolver la filePath
-  const uploadIngresoImage = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const res = await fetch('http://localhost:8000/upload_ingreso_image/', {
-      method: 'POST',
-      credentials: 'include',
-      body: formData,
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error || 'Error al subir imagen');
-    return data.filePath;
-  };
-
   // Autocomplete search states
   const [oficinaSearch, setOficinaSearch] = useState('');
   const [showOficinasDropdown, setShowOficinasDropdown] = useState(false);
@@ -201,20 +181,20 @@ export default function Ingresos() {
     setOficinaSearch('');
     setRecepSearch('');
     setDestSearch('');
-    setFotoBienFile(null);
-    setFotoBienPreview(null);
-    setFotoPlacaFile(null);
-    setFotoPlacaPreview(null);
+
     setShowModal(true);
   };
 
   const abrirEditar = (i: any) => {
+    if (i.tieneBajas) {
+      alert('No se puede editar un ingreso que tiene activos dados de baja.');
+      return;
+    }
     setEditando(i);
     setForm({ ...FORM_VACIO, glosa: i.glosa || '', estado: i.estado || 'E', nroFactura: i.nroFactura || '', actaRecep: i.actaRecep || '',
       fotoBien: i.fotoBien || '', fotoPlaca: i.fotoPlaca || '',
       voBoNombre: i.voBoNombre || '', voBoCargo: i.voBoCargo || '', voBoFecha: i.voBoFecha || '', voBoAprobadoPor: i.voBoAprobadoPor || '' });
-    setFotoBienPreview(i.fotoBien || null);
-    setFotoPlacaPreview(i.fotoPlaca || null);
+
     setShowModal(true);
   };
 
@@ -224,10 +204,7 @@ export default function Ingresos() {
         alert('Por favor selecciona un Proveedor, Oficina Destino y ambos Responsables.');
         return;
       }
-      if (!form.fotoBien || !form.fotoPlaca) {
-        alert('Debe subir ambas fotografías (del bien físico y de la placa / número de serie) antes de registrar el ingreso.');
-        return;
-      }
+
     }
 
     try {
@@ -294,38 +271,7 @@ export default function Ingresos() {
     setShowDestDropdown(false);
   };
 
-  // Manejo de selección de archivos de foto
-  const handleFotoBienChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setFotoBienFile(file);
-    setFotoBienPreview(URL.createObjectURL(file));
-    try {
-      setSubiendoFoto({ ...subiendoFoto, bien: true });
-      const path = await uploadIngresoImage(file);
-      setForm({ ...form, fotoBien: path });
-    } catch (err: any) {
-      alert('Error subiendo foto del bien: ' + err.message);
-    } finally {
-      setSubiendoFoto({ ...subiendoFoto, bien: false });
-    }
-  };
 
-  const handleFotoPlacaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setFotoPlacaFile(file);
-    setFotoPlacaPreview(URL.createObjectURL(file));
-    try {
-      setSubiendoFoto({ ...subiendoFoto, placa: true });
-      const path = await uploadIngresoImage(file);
-      setForm({ ...form, fotoPlaca: path });
-    } catch (err: any) {
-      alert('Error subiendo foto de placa: ' + err.message);
-    } finally {
-      setSubiendoFoto({ ...subiendoFoto, placa: false });
-    }
-  };
 
   // Autocomplete filtering helpers
   const filteredOficinas = cats?.todasOficinas?.filter((o: any) => {
@@ -420,14 +366,31 @@ export default function Ingresos() {
                 <td>{i.fechaRecep || '-'}</td>
                 <td>{i.nroFactura || '-'}</td>
                 <td>
-                  <span className={`badge ${estadoClass[i.estado] || 'badge-secondary'}`}>
-                    {estadoLabel[i.estado] || i.estado || '-'}
-                  </span>
+                  {i.tieneBajas ? (
+                    <span className="badge badge-danger" title="El ingreso tiene activos dados de baja y no puede editarse">
+                      De baja
+                    </span>
+                  ) : (
+                    <span className={`badge ${estadoClass[i.estado] || 'badge-secondary'}`}>
+                      {estadoLabel[i.estado] || i.estado || '-'}
+                    </span>
+                  )}
                 </td>
                 <td>
                   {puedeEditar && (
                     <div className="btn-group">
-                      <button className="btn btn-warning btn-sm" onClick={() => abrirEditar(i)}>Editar</button>
+                      {i.tieneBajas ? (
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          disabled
+                          title="No editable: el ingreso tiene activos dados de baja"
+                          style={{ opacity: 0.55, cursor: 'not-allowed' }}
+                        >
+                          No editable
+                        </button>
+                      ) : (
+                        <button className="btn btn-warning btn-sm" onClick={() => abrirEditar(i)}>Editar</button>
+                      )}
                     </div>
                   )}
                 </td>
@@ -646,44 +609,7 @@ export default function Ingresos() {
                 </select>
               </div>
 
-              {/* ── Fotografías del ingreso ──────────────────────────── */}
-              <div className="section-label">Fotografías del Ingreso</div>
-              <div className="form-group">
-                <label>Fotografía del bien físico *</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    onChange={handleFotoBienChange}
-                    disabled={subiendoFoto.bien}
-                    className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white"
-                  />
-                  {fotoBienPreview && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <img src={fotoBienPreview} alt="Vista previa" style={{ width: '60px', height: '60px', objectFit: 'cover', border: '1px solid #475569', borderRadius: '4px' }} />
-                      <span style={{ fontSize: '0.75rem', color: '#22c55e' }}>{subiendoFoto.bien ? 'Subiendo...' : 'Listo'}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="form-group">
-                <label>Fotografía de placa / número de serie *</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    onChange={handleFotoPlacaChange}
-                    disabled={subiendoFoto.placa}
-                    className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white"
-                  />
-                  {fotoPlacaPreview && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <img src={fotoPlacaPreview} alt="Vista previa" style={{ width: '60px', height: '60px', objectFit: 'cover', border: '1px solid #475569', borderRadius: '4px' }} />
-                      <span style={{ fontSize: '0.75rem', color: '#22c55e' }}>{subiendoFoto.placa ? 'Subiendo...' : 'Listo'}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+
 
               {/* ── Visto Bueno de autoridad ─────────────────────────── */}
               <div className="section-label">Visto Bueno de Autoridad Facultativa</div>
@@ -708,7 +634,7 @@ export default function Ingresos() {
 
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleSubmit} disabled={subiendoFoto.bien || subiendoFoto.placa}>
+              <button className="btn btn-primary" onClick={handleSubmit} >
                 {editando ? 'Guardar Cambios' : 'Registrar Ingreso'}
               </button>
             </div>

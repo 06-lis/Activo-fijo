@@ -762,6 +762,7 @@ export const GET_ASIGNACIONES_PAGINADAS = gql`  query GetAsignacionesPaginadas($
             codActivo
             descripcion
             monto
+            aB
             codGrupo {
               desGrupo
               vidaUtilDefault

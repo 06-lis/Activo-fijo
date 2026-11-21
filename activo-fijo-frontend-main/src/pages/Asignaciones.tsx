@@ -12,6 +12,7 @@ const GET_CATS = gql`
       nroActivo
       codActivo
       descripcion
+      aB
     }
     todasOficinas {
       codOfic
@@ -78,6 +79,7 @@ const GET_ASIGNACIONES_ACTIVAS = gql`
           nroActivo {
             nroActivo
             codActivo
+            aB
           }
         }
       }
@@ -350,6 +352,7 @@ const {
   };
 
   const filteredActivosModal = cats?.todosActivos?.filter((a: any) => {
+    if (a.aB === 'B') return false;
     const code = a.codActivo.toLowerCase();
     const desc = a.descripcion.toLowerCase();
     const query = activoSearch.toLowerCase();
@@ -361,7 +364,9 @@ const {
   const getAssetAssignmentStatus = useCallback((asset: any) => {
     const currentAsig = asignacionesActivasData?.todasAsignacionesPaginadas?.results?.find((a: any) =>
       a.estado === 'A' &&
-      a.inDetAsigSet?.some((d: any) => String(d.nroActivo?.nroActivo) === String(asset.nroActivo))
+      a.inDetAsigSet
+        ?.filter((d: any) => d.nroActivo?.aB !== 'B')
+        .some((d: any) => String(d.nroActivo?.nroActivo) === String(asset.nroActivo))
     );
 
     if (currentAsig) {
@@ -558,9 +563,11 @@ const handleEditarTipoAsig = async () => {
     const assetsToPrint: any[] = [];
     list.forEach(asig => {
       if (asig.estado === 'A' && asig.inDetAsigSet) {
-        asig.inDetAsigSet.forEach((det: any) => {
-          assetsToPrint.push(det.nroActivo);
-        });
+        asig.inDetAsigSet
+          .filter((det: any) => det.nroActivo?.aB !== 'B')
+          .forEach((det: any) => {
+            assetsToPrint.push(det.nroActivo);
+          });
       }
     });
     if (assetsToPrint.length === 0) {
@@ -769,14 +776,24 @@ const handleEditarTipoAsig = async () => {
                             <td className="px-4 py-3 text-slate-300 text-sm">{a.fechaAsig || '-'}</td>
                             <td className="px-4 py-3 text-slate-300 text-xs">
                               <div className="flex flex-col gap-1 max-w-md">
-                                {a.inDetAsigSet?.map((d: any) => (
-                                  <div key={d.nroActivo.nroActivo} className="bg-slate-700/50 px-2 py-0.5 rounded border border-slate-600/30 font-mono">
-                                    <span className="text-blue-300">
-                                    {d.nroActivo.codActivo}
-                                    </span>
-                                  </div>
-                                ))}
-                                {(!a.inDetAsigSet || a.inDetAsigSet.length === 0) && '-'}
+{(() => {
+  const activosVigentes = (a.inDetAsigSet || []).filter(
+    (d: any) => d.nroActivo?.aB !== 'B'
+  );
+
+  return activosVigentes.length > 0
+    ? activosVigentes.map((d: any) => (
+        <div
+          key={d.nroActivo.nroActivo}
+          className="bg-slate-700/50 px-2 py-0.5 rounded border border-slate-600/30 font-mono"
+        >
+          <span className="text-blue-300">
+            {d.nroActivo.codActivo}
+          </span>
+        </div>
+      ))
+    : '-';
+})()}
                               </div>
                             </td>
                             <td className="px-4 py-3 text-sm">
@@ -1550,7 +1567,7 @@ function FormularioOficialUAGRMModal({ data, onClose }: { data: { asig: any; ofi
   const nombreCompleto = emp ? `${emp.nombre || ''} ${emp.apellido || ''}`.trim() : `ID: ${asig.codResp}`;
   const cargo = emp?.cargo || 'Docente / Administrativo';
   const ci = emp?.numeroDocumento || '-';
-  const activos = asig.inDetAsigSet || [];
+  const activos = (asig.inDetAsigSet || []).filter((d: any) => d.nroActivo?.aB !== 'B');
 
   return (
     <div

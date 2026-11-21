@@ -179,7 +179,7 @@ class in_log_baja_act(models.Model):
     cod_emp_aut = models.IntegerField()
     documento = models.CharField(max_length=100, null=True, blank=True)
     fecha_baja_te = models.DateField()
-    motivo = models.CharField(max_length=1)
+    motivo = models.CharField(max_length=10)
     fecha_baja_ef = models.DateField(null=True, blank=True)
     observacion = models.CharField(max_length=150, null=True, blank=True)
     tipo_trans = models.SmallIntegerField(null=True, blank=True)

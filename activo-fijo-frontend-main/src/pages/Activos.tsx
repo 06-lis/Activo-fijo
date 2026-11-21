@@ -339,6 +339,7 @@ export default function Activos() {
       limit: ITEMS_POR_PAGINA,
       offset: (paginaActual - 1) * ITEMS_POR_PAGINA,
       search: debouncedBusqueda.trim() || "",
+      soloActivos: false,
       soloPendientes: soloPendientes
     }
   });
@@ -576,6 +577,10 @@ export default function Activos() {
   };
 
   const handleEdit = (a: any) => {
+    if (a.aB === 'B') {
+      alert('No se puede editar un activo que se encuentra dado de baja.');
+      return;
+    }
     setEditId(a.nroActivo);
     setForm({
       codGest: String(a.nroIngreso?.gestion?.codGest || ''),
@@ -648,14 +653,15 @@ export default function Activos() {
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      const allIds = activosPaginados.map((a: any) => a.nroActivo);
+      const allIds = activosPaginados.filter((a: any) => a.aB !== 'B').map((a: any) => a.nroActivo);
       setSelectedActivos(allIds);
     } else {
       setSelectedActivos([]);
     }
   };
 
-  const handleSelectRow = (nroActivo: number) => {
+  const handleSelectRow = (nroActivo: number, esBaja?: boolean) => {
+    if (esBaja) return;
     setSelectedActivos(prev => 
       prev.includes(nroActivo) ? prev.filter(id => id !== nroActivo) : [...prev, nroActivo]
     );
@@ -890,18 +896,36 @@ export default function Activos() {
                 {activosPaginados.length === 0 && (
                   <tr><td colSpan={11} className="table-empty">No hay activos registrados</td></tr>
                 )}
-                {activosPaginados.map((a: any) => (
-                  <tr key={a.nroActivo} className={`border-b border-slate-700 hover:bg-slate-700/30 transition ${selectedActivos.includes(a.nroActivo) ? 'bg-slate-700/20' : ''}`}>
+                {activosPaginados.map((a: any) => {
+                  const esBaja = a.aB === 'B';
+                  return (
+                  <tr
+                    key={a.nroActivo}
+                    className={`border-b border-slate-700 hover:bg-slate-700/30 transition ${selectedActivos.includes(a.nroActivo) ? 'bg-slate-700/20' : ''}`}
+                    style={esBaja ? {
+                      backgroundColor: 'rgba(127, 29, 29, 0.18)',
+                      borderLeft: '3px solid #ef4444',
+                      opacity: 0.82
+                    } : undefined}
+                  >
                     <td style={{ textAlign: 'center' }}>
                       <input 
                         type="checkbox" 
                         checked={selectedActivos.includes(a.nroActivo)}
-                        onChange={() => handleSelectRow(a.nroActivo)}
-                        className="form-checkbox h-4 w-4 text-blue-600 rounded bg-slate-800 border-slate-600 cursor-pointer"
+                        onChange={() => handleSelectRow(a.nroActivo, esBaja)}
+                        disabled={esBaja}
+                        className="form-checkbox h-4 w-4 text-blue-600 rounded bg-slate-800 border-slate-600 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
                       />
                     </td>
                     <td><strong style={{ fontFamily: 'monospace', color: 'var(--primary)' }}>{a.codActivo}</strong></td>
-                    <td className="max-w-[200px] truncate" title={a.descripcion}>{a.descripcion}</td>
+                    <td className="max-w-[200px] truncate" title={a.descripcion}>
+                      {a.descripcion}
+                      {esBaja && (
+                        <span className="ml-2 inline-block rounded bg-red-500/15 border border-red-500/30 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-300">
+                          Baja
+                        </span>
+                      )}
+                    </td>
                     <td>{a.codGrupo?.desGrupo || '-'}</td>
                     <td>
                       {a.codMarca?.desMarca ? `${a.codMarca.desMarca}${a.codModelo?.desModelo ? ' / ' + a.codModelo.desModelo : ''}` : '-'}
@@ -913,11 +937,17 @@ export default function Activos() {
                     <td>{a.codCond?.codCond ?? '-'}</td>
 
                     <td>
-                      <span className={`badge ${
-                        a.codEstado?.desEstado === 'ACTIVO' ? 'badge-success' :
-                        a.codEstado?.desEstado === 'BAJA'   ? 'badge-danger'  :
-                        'badge-secondary'
-                      }`}>{a.codEstado?.desEstado || '-'}</span>
+                      {esBaja ? (
+                        <span className="badge badge-danger" title="El activo fue dado de baja y no puede editarse">
+                          Activo dado de baja
+                        </span>
+                      ) : (
+                        <span className={`badge ${
+                          a.codEstado?.desEstado === 'ACTIVO' ? 'badge-success' :
+                          a.codEstado?.desEstado === 'BAJA'   ? 'badge-danger'  :
+                          'badge-secondary'
+                        }`}>{a.codEstado?.desEstado || '-'}</span>
+                      )}
                     </td>
                     <td>
                       <span className={`badge ${
@@ -965,7 +995,7 @@ export default function Activos() {
                         }}
                         onClick={e => e.stopPropagation()}
                       >
-                        {puedeEditar && (
+                        {puedeEditar && !esBaja && (
                           <button
                             style={{
                               background: 'none', border: 'none', padding: '8px 16px',
@@ -978,7 +1008,7 @@ export default function Activos() {
                             Editar
                           </button>
                         )}
-                        {puedeEditar && a.estadoRegistro !== 'APROBADO' && (
+                        {puedeEditar && !esBaja && a.estadoRegistro !== 'APROBADO' && (
                           <button
                             style={{
                               background: 'none', border: 'none', padding: '8px 16px',
@@ -991,17 +1021,19 @@ export default function Activos() {
                             Aprobar
                           </button>
                         )}
-                        <button
-                          style={{
-                            background: 'none', border: 'none', padding: '8px 16px',
-                            textAlign: 'left', fontSize: '0.85rem', color: '#2563eb', cursor: 'pointer'
-                          }}
-                          onClick={() => { setOpenDropdownId(null); setSelectedActivoSpecs(a); setShowSpecsModal(true); }}
-                          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
-                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          Especificaciones
-                        </button>
+                        {!esBaja && (
+                          <button
+                            style={{
+                              background: 'none', border: 'none', padding: '8px 16px',
+                              textAlign: 'left', fontSize: '0.85rem', color: '#2563eb', cursor: 'pointer'
+                            }}
+                            onClick={() => { setOpenDropdownId(null); setSelectedActivoSpecs(a); setShowSpecsModal(true); }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            Especificaciones
+                          </button>
+                        )}
                         <button
                           style={{
                             background: 'none', border: 'none', padding: '8px 16px',
@@ -1035,23 +1067,26 @@ export default function Activos() {
                         >
                           Generar Etiqueta
                         </button>
-                        <button
-                          style={{
-                            background: 'none', border: 'none', padding: '8px 16px',
-                            textAlign: 'left', fontSize: '0.85rem', color: '#0d9488', cursor: 'pointer'
-                          }}
-                          onClick={() => { setOpenDropdownId(null); setSelectedActivoVehiculo(a); setShowVehiculoModal(true); }}
-                          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
-                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          Datos Vehículo
-                        </button>
+                        {!esBaja && (
+                          <button
+                            style={{
+                              background: 'none', border: 'none', padding: '8px 16px',
+                              textAlign: 'left', fontSize: '0.85rem', color: '#0d9488', cursor: 'pointer'
+                            }}
+                            onClick={() => { setOpenDropdownId(null); setSelectedActivoVehiculo(a); setShowVehiculoModal(true); }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            Datos Vehículo
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
                 </td>
                   </tr>
-                ))}
+                  );
+                })}
               </>
             )}
           </tbody>

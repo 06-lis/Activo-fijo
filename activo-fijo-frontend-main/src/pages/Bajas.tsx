@@ -80,11 +80,6 @@ export default function Bajas() {
     setShowEmpRespDropdown(false);
   };
 
-  const getMotivoDescription = (motivoCode: string) => {
-    const mObj = data?.todosMotivos?.find((m: any) => String(m.motivo) === String(motivoCode));
-    return mObj ? mObj.descripcion : `Motivo ${motivoCode}`;
-  };
-
   const getEmpleadoName = (empId: number) => {
     const eObj = data?.todosEmpleados?.find((e: any) => String(e.idEmpleado) === String(empId));
     return eObj ? `${eObj.nombre} ${eObj.apellido} (${eObj.cargo || 'Sin cargo'})` : `ID: ${empId}`;
@@ -310,10 +305,8 @@ export default function Bajas() {
                   {activosBaja.map((b: any) => (
                     <tr key={b.nro} className="border-b border-slate-700 hover:bg-slate-700/30 transition">
                       <td><strong>#{b.nro}</strong></td>
-                      <td>{b.nroActivo?.codActivo ?? '-'}</td>
-
-                      <td>{b.motivo ?? '-'}</td>
-
+<td>{b.nroActivo?.codActivo ?? '-'}</td>
+<td>{b.motivo ?? '-'}</td>
                       <td>
                         {b.unidadTecnica ? (
                           <div className="text-xs">
@@ -363,7 +356,7 @@ export default function Bajas() {
               <tr>
                 <th>Código</th>
                 <th>Descripción</th>
-                {(puedeEditarMotivo || puedeEliminarMotivo) && <th className="text-right">Acciones</th>}
+                {(puedeEditarMotivo || puedeEliminarMotivo) && <th style={{ width: "160px", textAlign: "center" }}>Acciones</th>}
               </tr>
             </thead>
             <tbody>
@@ -373,7 +366,7 @@ export default function Bajas() {
                     <td><div className="h-4 bg-slate-700 rounded w-8"></div></td>
                     <td><div className="h-4 bg-slate-700 rounded w-60"></div></td>
                     {(puedeEditarMotivo || puedeEliminarMotivo) && (
-                      <td className="text-right">
+                      <td style={{ textAlign: "center" }}>
                         <div className="h-6 bg-slate-700 rounded-lg w-24 ml-auto"></div>
                       </td>
                     )}
@@ -393,11 +386,11 @@ export default function Bajas() {
                       <td><strong>#{m.motivo}</strong></td>
                       <td className="text-slate-200">{m.descripcion}</td>
                       {(puedeEditarMotivo || puedeEliminarMotivo) && (
-                        <td className="text-right">
-                          <div className="flex gap-2 justify-end">
+                        <td style={{ textAlign: "center" }}>
+                          <div className="btn-group" style={{ justifyContent: 'center', gap: '6px' }}>
                             {puedeEditarMotivo && (
                               <button
-                                className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-lg text-xs font-medium transition"
+                                className="btn btn-warning btn-sm"
                                 onClick={() => {
                                   setEditingMotivo(m.motivo);
                                   setMotivoForm({ motivo: m.motivo.toString(), descripcion: m.descripcion });
@@ -409,7 +402,7 @@ export default function Bajas() {
                             )}
                             {puedeEliminarMotivo && (
                               <button
-                                className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg text-xs font-medium transition"
+                                className="btn btn-danger btn-sm"
                                 onClick={() => handleEliminarMotivo(m.motivo)}
                               >
                                 Eliminar
@@ -479,7 +472,7 @@ export default function Bajas() {
                     <option value="">Seleccionar motivo...</option>
                     {data?.todosMotivos?.map((m: any) => (
                       <option key={m.motivo} value={m.motivo.toString()}>
-                        {m.descripcion}
+                        #{m.motivo}
                       </option>
                     ))}
                   </select>

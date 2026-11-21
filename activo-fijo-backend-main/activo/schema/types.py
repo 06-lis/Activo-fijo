@@ -159,9 +159,14 @@ class InOrdenCompraType(DjangoObjectType):
         fields = '__all__'
 
 class InIngresoType(DjangoObjectType):
+    tiene_bajas = graphene.Boolean()
+
     class Meta:
         model = in_ingreso
         fields = '__all__'
+
+    def resolve_tiene_bajas(self, info):
+        return in_activo.objects.filter(nro_ingreso_id=self.pk, a_b='B').exists()
 
 class InActivoType(DjangoObjectType):
     vehiculo = graphene.Field(lambda: InVehicType)

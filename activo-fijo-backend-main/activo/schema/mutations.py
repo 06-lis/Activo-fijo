@@ -1025,6 +1025,8 @@ class EditarIngreso(graphene.Mutation):
                foto_bien=None, foto_placa=None, vo_bo_nombre=None, vo_bo_cargo=None,
                vo_bo_fecha=None, vo_bo_aprobado_por=None):
         obj = in_ingreso.objects.get(pk=nro_ingreso)
+        if in_activo.objects.filter(nro_ingreso_id=nro_ingreso, a_b='B').exists():
+            raise Exception("No se puede editar un ingreso que tiene activos dados de baja.")
         if glosa         is not None: obj.glosa = glosa
         if cod_ofic_dest is not None: obj.cod_ofic_dest_id = cod_ofic_dest
         if cod_prov      is not None: obj.cod_prov_id = cod_prov
@@ -1203,7 +1205,10 @@ class EditarActivo(graphene.Mutation):
                cod_unidad=None, monto=None, nro_serie=None, fec_adqui=None,
                organismo_financiador=None, cod_rube=None, nro_convenio=None):
         obj = in_activo.objects.get(pk=nro_activo)
-        
+
+        if obj.a_b == 'B':
+            raise Exception("No se puede editar un activo que se encuentra dado de baja.")
+
         if obj.estado_registro == 'APROBADO':
             if (cod_grupo is not None and cod_grupo != obj.cod_grupo_id) or \
                (cod_marca is not None and cod_marca != obj.cod_marca_id) or \
@@ -1250,6 +1255,8 @@ class AprobarActivo(graphene.Mutation):
     activo = graphene.Field(InActivoType)
     def mutate(root, info, nro_activo):
         obj = in_activo.objects.get(pk=nro_activo)
+        if obj.a_b == 'B':
+            raise Exception("No se puede aprobar un activo que se encuentra dado de baja.")
         obj.estado_registro = 'APROBADO'
         obj.save()
         registrar_log_activo(obj, 'U', 2)
@@ -1283,7 +1290,17 @@ class CrearBajaAct(graphene.Mutation):
                unidad_tecnica=None, nro_informe=None, fecha_informe=None, destino_final=None):
         
         activo_obj = in_activo.objects.get(pk=nro_activo)
-        
+
+        if activo_obj.a_b == 'B':
+            raise Exception("El activo ya se encuentra dado de baja.")
+
+        try:
+            motivo_code = str(int(str(motivo).strip()))
+        except (TypeError, ValueError):
+            raise Exception("El motivo de baja seleccionado no es válido.")
+        if not in_motivo.objects.filter(pk=motivo_code).exists():
+            raise Exception("El motivo de baja seleccionado no existe.")
+
         if not cod_asig:
             det_asig = in_det_asig.objects.filter(nro_activo=activo_obj).order_by('-cod_asig_id').first()
             cod_asig_val = det_asig.cod_asig_id if det_asig else 0
@@ -1308,7 +1325,7 @@ class CrearBajaAct(graphene.Mutation):
             documento=documento,
             fecha_baja_te=fecha_baja_te,
             fecha_baja_ef=fecha_baja_ef,
-            motivo=motivo[:1],
+            motivo=motivo_code,
             observacion=observacion,
             tipo_per_resp=tipo_per_resp,
             cod_emp_resp=cod_emp_resp,
@@ -1363,6 +1380,11 @@ class CrearMotivoBaja(graphene.Mutation):
     motivo_obj = graphene.Field(InMotivoType)
     
     def mutate(root, info, motivo, descripcion):
+        descripcion = (descripcion or '').strip()
+        if not descripcion:
+            raise Exception("La descripción del motivo es obligatoria.")
+        if in_motivo.objects.filter(pk=motivo).exists():
+            raise Exception(f"Ya existe un motivo de baja con el código #{motivo}.")
         obj = in_motivo.objects.create(motivo=motivo, descripcion=descripcion)
         return CrearMotivoBaja(motivo_obj=obj)
 
@@ -1375,7 +1397,12 @@ class EditarMotivoBaja(graphene.Mutation):
     motivo_obj = graphene.Field(InMotivoType)
     
     def mutate(root, info, motivo, descripcion):
-        obj = in_motivo.objects.get(pk=motivo)
+        descripcion = (descripcion or '').strip()
+        if not descripcion:
+            raise Exception("La descripción del motivo es obligatoria.")
+        obj = in_motivo.objects.filter(pk=motivo).first()
+        if not obj:
+            raise Exception(f"No existe un motivo de baja con el código #{motivo}.")
         obj.descripcion = descripcion
         obj.save()
         return EditarMotivoBaja(motivo_obj=obj)
@@ -1388,7 +1415,15 @@ class EliminarMotivoBaja(graphene.Mutation):
     success = graphene.Boolean()
     
     def mutate(root, info, motivo):
-        obj = in_motivo.objects.get(pk=motivo)
+        obj = in_motivo.objects.filter(pk=motivo).first()
+        if not obj:
+            raise Exception(f"No existe un motivo de baja con el código #{motivo}.")
+        motivo_code = str(motivo)
+        if in_baja_act.objects.filter(motivo=motivo_code).exists() or \
+           in_log_baja_act.objects.filter(motivo=motivo_code).exists():
+            raise Exception(
+                f"No se puede eliminar el motivo #{motivo} porque está siendo utilizado en una o más bajas registradas."
+            )
         obj.delete()
         return EliminarMotivoBaja(success=True)
 
@@ -1513,6 +1548,8 @@ class AsignarActivo(graphene.Mutation):
             asignacion = in_asignado.objects.get(pk=cod_asig)
             if asignacion.estado != 'A':
                 raise Exception('No se pueden agregar activos a una asignación no vigente.')
+            if asset.a_b == 'B':
+                raise Exception('No se puede asignar un activo que se encuentra dado de baja.')
             if in_det_asig.objects.filter(nro_activo_id=asset.pk, cod_asig__estado='A').exists():
                 raise Exception('El activo ya tiene una asignación vigente. Anule o cierre la asignación anterior antes de continuar.')
             obj = in_det_asig.objects.create(
@@ -1879,6 +1916,8 @@ class AsignarAtribActivo(graphene.Mutation):
         unidad        = graphene.Int()
     atrib_activo = graphene.Field(InAtribActivoType)
     def mutate(root, info, cod_det_atrib, nro_activo, ok='S', valor='', unidad=0):
+        if in_activo.objects.filter(pk=nro_activo, a_b='B').exists():
+            raise Exception("No se puede modificar un activo que se encuentra dado de baja.")
         obj, _ = in_atrib_activo.objects.get_or_create(
             cod_det_atrib_id=cod_det_atrib,
             nro_activo_id=nro_activo,
@@ -1895,6 +1934,8 @@ class EditarAtribActivo(graphene.Mutation):
         unidad        = graphene.Int()
     atrib_activo = graphene.Field(InAtribActivoType)
     def mutate(root, info, cod_det_atrib, nro_activo, ok=None, valor=None, unidad=None):
+        if in_activo.objects.filter(pk=nro_activo, a_b='B').exists():
+            raise Exception("No se puede modificar un activo que se encuentra dado de baja.")
         obj = in_atrib_activo.objects.get(cod_det_atrib_id=cod_det_atrib, nro_activo_id=nro_activo)
         if ok     is not None: obj.ok = ok
         if valor  is not None: obj.valor = valor
@@ -2529,6 +2570,8 @@ class GuardarVehiculo(graphene.Mutation):
     vehiculo = graphene.Field(InVehicType)
 
     def mutate(root, info, nro_activo, **kwargs):
+        if in_activo.objects.filter(pk=nro_activo, a_b='B').exists():
+            raise Exception("No se puede editar un activo que se encuentra dado de baja.")
         from ..grupos_validacion import validar_activo, GRUPOS_VEHICULO
         validar_activo(nro_activo, GRUPOS_VEHICULO, 'vehículo')
         obj, created = in_vehic.objects.update_or_create(
