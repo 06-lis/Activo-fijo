@@ -80,11 +80,6 @@ export default function Bajas() {
     setShowEmpRespDropdown(false);
   };
 
-  const getMotivoDescription = (motivoCode: string) => {
-    const mObj = data?.todosMotivos?.find((m: any) => String(m.motivo) === String(motivoCode));
-    return mObj ? mObj.descripcion : `Motivo ${motivoCode}`;
-  };
-
   const getEmpleadoName = (empId: number) => {
     const eObj = data?.todosEmpleados?.find((e: any) => String(e.idEmpleado) === String(empId));
     return eObj ? `${eObj.nombre} ${eObj.apellido} (${eObj.cargo || 'Sin cargo'})` : `ID: ${empId}`;
@@ -319,8 +314,8 @@ export default function Bajas() {
                         </div>
                       </td>
                       <td>
-                        <span className="badge badge-danger text-xs font-semibold px-2 py-0.5 rounded">
-                          {getMotivoDescription(b.motivo)}
+                        <span className="badge badge-danger text-xs font-semibold px-2 py-0.5 rounded" title={`Motivo #${b.motivo}`}>
+                          #{b.motivo}
                         </span>
                       </td>
                       <td>
@@ -487,7 +482,7 @@ export default function Bajas() {
                     <option value="">Seleccionar motivo...</option>
                     {data?.todosMotivos?.map((m: any) => (
                       <option key={m.motivo} value={m.motivo.toString()}>
-                        {m.descripcion}
+                        #{m.motivo}
                       </option>
                     ))}
                   </select>

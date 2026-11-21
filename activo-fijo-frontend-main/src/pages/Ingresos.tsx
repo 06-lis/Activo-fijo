@@ -35,6 +35,7 @@ const GET_INGRESOS = gql`
       actaRecep
       glosa
       estado
+      tieneBajas
       fechaRecep
       nroFactura
       fechaFactura
@@ -205,6 +206,10 @@ export default function Ingresos() {
   };
 
   const abrirEditar = (i: any) => {
+    if (i.tieneBajas) {
+      alert('No se puede editar un ingreso que tiene activos dados de baja.');
+      return;
+    }
     setEditando(i);
     setForm({ ...FORM_VACIO, glosa: i.glosa || '', estado: i.estado || 'E', nroFactura: i.nroFactura || '', actaRecep: i.actaRecep || '',
       fotoBien: i.fotoBien || '', fotoPlaca: i.fotoPlaca || '',
@@ -409,14 +414,31 @@ export default function Ingresos() {
                 <td>{i.fechaRecep || '-'}</td>
                 <td>{i.nroFactura || '-'}</td>
                 <td>
-                  <span className={`badge ${estadoClass[i.estado] || 'badge-secondary'}`}>
-                    {estadoLabel[i.estado] || i.estado || '-'}
-                  </span>
+                  {i.tieneBajas ? (
+                    <span className="badge badge-danger" title="El ingreso tiene activos dados de baja y no puede editarse">
+                      De baja
+                    </span>
+                  ) : (
+                    <span className={`badge ${estadoClass[i.estado] || 'badge-secondary'}`}>
+                      {estadoLabel[i.estado] || i.estado || '-'}
+                    </span>
+                  )}
                 </td>
                 <td>
                   {puedeEditar && (
                     <div className="btn-group">
-                      <button className="btn btn-warning btn-sm" onClick={() => abrirEditar(i)}>Editar</button>
+                      {i.tieneBajas ? (
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          disabled
+                          title="No editable: el ingreso tiene activos dados de baja"
+                          style={{ opacity: 0.55, cursor: 'not-allowed' }}
+                        >
+                          No editable
+                        </button>
+                      ) : (
+                        <button className="btn btn-warning btn-sm" onClick={() => abrirEditar(i)}>Editar</button>
+                      )}
                     </div>
                   )}
                 </td>
