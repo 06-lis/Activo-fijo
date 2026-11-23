@@ -767,33 +767,21 @@ const handleEditarTipoAsig = async () => {
                         return (
                           <tr key={a.codAsig} className="border-b border-slate-700 hover:bg-slate-700/30 transition">
                             <td className="px-4 py-3 font-mono text-blue-400 text-sm">#{a.codAsig}</td>
-<td className="px-4 py-3 text-slate-300 text-sm">
-  {a.codResp ?? '-'}
-</td>
                             <td className="px-4 py-3 text-slate-300 text-sm">
-  {a.tipoAsig?.tipoAsig ?? '-'}
-</td>
+                              {resp ? `[${resp.codEstprog}] ${resp.codEmp.nombre} ${resp.codEmp.apellido}` : `ID: ${a.codResp}`}
+                            </td>
+                            <td className="px-4 py-3 text-slate-300 text-sm">{a.tipoAsig?.des || '-'}</td>
                             <td className="px-4 py-3 text-slate-300 text-sm">{a.fechaAsig || '-'}</td>
                             <td className="px-4 py-3 text-slate-300 text-xs">
                               <div className="flex flex-col gap-1 max-w-md">
-{(() => {
-  const activosVigentes = (a.inDetAsigSet || []).filter(
-    (d: any) => d.nroActivo?.aB !== 'B'
-  );
-
-  return activosVigentes.length > 0
-    ? activosVigentes.map((d: any) => (
-        <div
-          key={d.nroActivo.nroActivo}
-          className="bg-slate-700/50 px-2 py-0.5 rounded border border-slate-600/30 font-mono"
-        >
-          <span className="text-blue-300">
-            {d.nroActivo.codActivo}
-          </span>
-        </div>
-      ))
-    : '-';
-})()}
+                                {(() => {
+                                  const activosVigentes = (a.inDetAsigSet || []).filter((d: any) => d.nroActivo?.aB !== 'B');
+                                  return activosVigentes.length > 0 ? activosVigentes.map((d: any) => (
+                                    <div key={d.nroActivo.nroActivo} className="bg-slate-700/50 px-2 py-0.5 rounded border border-slate-600/30 font-mono">
+                                      <span className="text-blue-300">[{d.nroActivo.codActivo}]</span> <span className="inline-block max-w-[200px] truncate align-bottom" title={d.nroActivo.descripcion}>{d.nroActivo.descripcion}</span>
+                                    </div>
+                                  )) : '-';
+                                })()}
                               </div>
                             </td>
                             <td className="px-4 py-3 text-sm">
@@ -1307,6 +1295,7 @@ function BulkLabelModal({ activos, location, onClose }: { activos: any[]; locati
 const [printMode, setPrintMode] = useState<'qr' | 'barcode'>('qr');
   const [previewIndex, setPreviewIndex] = useState(0);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getActivoUsefulLife = (act: any): string => {
     const activeReval = act.inDetRevalSet?.find((det: any) => det.estado === 'A');
     if (activeReval) return `${activeReval.vidaUtilAno}a ${activeReval.vidaUtilMes}m`;
@@ -1315,6 +1304,7 @@ const [printMode, setPrintMode] = useState<'qr' | 'barcode'>('qr');
     return 'No definida';
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getActivoValues = (act: any) => {
     const montoCompra = typeof act.monto === 'number' ? act.monto : (parseFloat(act.monto) || 0);
     const depSet = act.inDepAcumuladaSet || [];
@@ -1488,8 +1478,6 @@ const [printMode, setPrintMode] = useState<'qr' | 'barcode'>('qr');
 
         <div id="bulk-print-container" className="flex-1 overflow-y-auto bg-slate-100 p-4 rounded-lg flex flex-wrap gap-4 justify-center items-start content-start">
           {activos.map((activo: any, idx: number) => {
-            const values = getActivoValues(activo);
-            const usefulLife = getActivoUsefulLife(activo);
             const qrString = getAssetQrUrl(activo.codActivo);
 
             return (

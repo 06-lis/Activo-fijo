@@ -474,6 +474,7 @@ export default function Activos() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.nroIngreso, cats?.todosIngresos]);
 
   useEffect(() => {
@@ -946,8 +947,7 @@ export default function Activos() {
                       {a.monto ? parseFloat(a.monto).toLocaleString('es-BO', { minimumFractionDigits: 2 }) : '-'}
                     </td>
                     <td>{a.fecAdqui || '-'}</td>
-                    <td>{a.codCond?.codCond ?? '-'}</td>
-
+                    <td>{a.codCond?.desCond || '-'}</td>
                     <td>
                       {esBaja ? (
                         <span className="badge badge-danger" title="El activo fue dado de baja y no puede editarse">
