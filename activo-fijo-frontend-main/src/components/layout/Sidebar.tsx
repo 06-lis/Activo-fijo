@@ -79,7 +79,10 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Grupos',                 to: '/grupos',         icon: '▥', permission: 'ver_grupos' },
       { label: 'Oficinas',               to: '/oficinas',       icon: '▣', permission: 'ver_ubicaciones' },
-      { label: 'Proveedores',            to: '/proveedores',    icon: '◫', permission: 'ver_proveedores' },
+      { label: 'Proveedores',            to: '/proveedores',       icon: '◫', permission: 'ver_proveedores' },
+      { label: 'Marcas y Modelos',       to: '/marcas',            icon: '™', permission: 'ver_marcas' },
+      { label: 'Materiales, Partes y Unid.', to: '/especificaciones', icon: '◈' },
+      { label: 'Otros Catálogos',        to: '/catalogos',         icon: '▦' },
     ],
   },
 ];

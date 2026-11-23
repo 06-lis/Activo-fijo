@@ -1,0 +1,6308 @@
+[
+{
+  "model": "activo.in_grupo",
+  "pk": 1,
+  "fields": {
+    "cod_hijo": "1",
+    "des_grupo": "Muebles de oficina",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "B"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 2,
+  "fields": {
+    "cod_hijo": "1-01",
+    "des_grupo": "Mesa",
+    "cod_padre": 1,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "B"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 3,
+  "fields": {
+    "cod_hijo": "1-01-1",
+    "des_grupo": "Metalica",
+    "cod_padre": 2,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "B"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 4,
+  "fields": {
+    "cod_hijo": "2",
+    "des_grupo": "Equipos de oficina",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "B"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 5,
+  "fields": {
+    "cod_hijo": "1",
+    "des_grupo": "Muebles de Oficina",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 6,
+  "fields": {
+    "cod_hijo": "2",
+    "des_grupo": "Equipos de Oficina",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 7,
+  "fields": {
+    "cod_hijo": "3",
+    "des_grupo": "Maquinarias y Equipo de produccion",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 8,
+  "fields": {
+    "cod_hijo": "4",
+    "des_grupo": "Equipo de Transporte. Traccion y eleva",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 9,
+  "fields": {
+    "cod_hijo": "5",
+    "des_grupo": "Equipo Medico y de laboratorio ",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 10,
+  "fields": {
+    "cod_hijo": "6",
+    "des_grupo": "Equipo de Comunicacion",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 11,
+  "fields": {
+    "cod_hijo": "7",
+    "des_grupo": "Equipo Educacional y Recreativo",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 12,
+  "fields": {
+    "cod_hijo": "8",
+    "des_grupo": "Otros equipos",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 13,
+  "fields": {
+    "cod_hijo": "9",
+    "des_grupo": "Otros activos",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 14,
+  "fields": {
+    "cod_hijo": "A",
+    "des_grupo": "Edificios",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 15,
+  "fields": {
+    "cod_hijo": "B",
+    "des_grupo": "Terrenos",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 16,
+  "fields": {
+    "cod_hijo": "C",
+    "des_grupo": "Infraestructura e instalaciones ",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 17,
+  "fields": {
+    "cod_hijo": "D",
+    "des_grupo": "Activos intangibles",
+    "cod_padre": null,
+    "nivel": 1,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 18,
+  "fields": {
+    "cod_hijo": "1-02",
+    "des_grupo": "Mesa",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 19,
+  "fields": {
+    "cod_hijo": "1-03",
+    "des_grupo": " Silla",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 20,
+  "fields": {
+    "cod_hijo": "1-04",
+    "des_grupo": " Estante",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 21,
+  "fields": {
+    "cod_hijo": "1-01",
+    "des_grupo": "Sofa",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 22,
+  "fields": {
+    "cod_hijo": "2-01",
+    "des_grupo": "Computadora",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 23,
+  "fields": {
+    "cod_hijo": "2-02",
+    "des_grupo": "Impresora",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 24,
+  "fields": {
+    "cod_hijo": "2-03",
+    "des_grupo": "Adaptador de corriente",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 25,
+  "fields": {
+    "cod_hijo": "2-04",
+    "des_grupo": "Proyector",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 26,
+  "fields": {
+    "cod_hijo": "1-02-1",
+    "des_grupo": " Metalica",
+    "cod_padre": 18,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 27,
+  "fields": {
+    "cod_hijo": "1-03-1",
+    "des_grupo": " Madera",
+    "cod_padre": 19,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 28,
+  "fields": {
+    "cod_hijo": "1-04-1",
+    "des_grupo": "Plastica",
+    "cod_padre": 20,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 29,
+  "fields": {
+    "cod_hijo": "1-01-1",
+    "des_grupo": "Cuerina",
+    "cod_padre": 21,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 30,
+  "fields": {
+    "cod_hijo": "2-01-1",
+    "des_grupo": "De escritorio",
+    "cod_padre": 22,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 31,
+  "fields": {
+    "cod_hijo": "2-04-1",
+    "des_grupo": "Laser monocromatica",
+    "cod_padre": 25,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 32,
+  "fields": {
+    "cod_hijo": "2-03-1",
+    "des_grupo": "Fuente de poder",
+    "cod_padre": 24,
+    "nivel": 3,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 33,
+  "fields": {
+    "cod_hijo": "A-01",
+    "des_grupo": "EDIFICIOS",
+    "cod_padre": 14,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 34,
+  "fields": {
+    "cod_hijo": "A-02",
+    "des_grupo": "PROPIEDAD HORIZONTAL",
+    "cod_padre": 14,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 35,
+  "fields": {
+    "cod_hijo": "C-01",
+    "des_grupo": "ACERAS INTERNAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 36,
+  "fields": {
+    "cod_hijo": "C-02",
+    "des_grupo": "ALAMBRADOS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 37,
+  "fields": {
+    "cod_hijo": "C-03",
+    "des_grupo": "ALMACENES",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 38,
+  "fields": {
+    "cod_hijo": "C-04",
+    "des_grupo": "BAÑADEROS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 39,
+  "fields": {
+    "cod_hijo": "C-05",
+    "des_grupo": "BARDAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 40,
+  "fields": {
+    "cod_hijo": "C-06",
+    "des_grupo": "BEBEDEROS DE CEMENTO (Pecuarios)",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 41,
+  "fields": {
+    "cod_hijo": "C-07",
+    "des_grupo": "BRETE",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 42,
+  "fields": {
+    "cod_hijo": "C-08",
+    "des_grupo": "CAMPOS DEPORTIVOS (Simples)",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 43,
+  "fields": {
+    "cod_hijo": "C-09",
+    "des_grupo": "CASETAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 44,
+  "fields": {
+    "cod_hijo": "C-10",
+    "des_grupo": "CEPO",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 45,
+  "fields": {
+    "cod_hijo": "C-11",
+    "des_grupo": "CERCAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 46,
+  "fields": {
+    "cod_hijo": "C-12",
+    "des_grupo": "COBERTIZOS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 47,
+  "fields": {
+    "cod_hijo": "C-13",
+    "des_grupo": "ENMALLADOS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 48,
+  "fields": {
+    "cod_hijo": "C-14",
+    "des_grupo": "ESTABLO-CORRAL",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 49,
+  "fields": {
+    "cod_hijo": "C-15",
+    "des_grupo": "ESTACION METEOROLOGICA",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 50,
+  "fields": {
+    "cod_hijo": "C-16",
+    "des_grupo": "ESTACIONAMIENTO INTERNO",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 51,
+  "fields": {
+    "cod_hijo": "C-17",
+    "des_grupo": "ESTANQUES",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 52,
+  "fields": {
+    "cod_hijo": "C-18",
+    "des_grupo": "GALPONES DE MADERA",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 53,
+  "fields": {
+    "cod_hijo": "C-19",
+    "des_grupo": "GRADERIAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 54,
+  "fields": {
+    "cod_hijo": "C-20",
+    "des_grupo": "HORNO CREMATORIO",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 55,
+  "fields": {
+    "cod_hijo": "C-21",
+    "des_grupo": "INSTALACIONES ELECTRICAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 56,
+  "fields": {
+    "cod_hijo": "C-22",
+    "des_grupo": "INVERNADEROS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 57,
+  "fields": {
+    "cod_hijo": "C-23",
+    "des_grupo": "PASILLO",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 58,
+  "fields": {
+    "cod_hijo": "C-24",
+    "des_grupo": "PATIOS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 59,
+  "fields": {
+    "cod_hijo": "C-25",
+    "des_grupo": "PISCINAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 60,
+  "fields": {
+    "cod_hijo": "C-26",
+    "des_grupo": "PLANTA DE TRATAMIENTO DE ESTIERCOL",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 61,
+  "fields": {
+    "cod_hijo": "C-27",
+    "des_grupo": "CULTIVOS Y PLANTACIONES",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 62,
+  "fields": {
+    "cod_hijo": "C-28",
+    "des_grupo": "PLAZUELAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 63,
+  "fields": {
+    "cod_hijo": "C-29",
+    "des_grupo": "POZOS ARTESANALES",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 64,
+  "fields": {
+    "cod_hijo": "C-30",
+    "des_grupo": "REJAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 65,
+  "fields": {
+    "cod_hijo": "C-31",
+    "des_grupo": "SILOS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 66,
+  "fields": {
+    "cod_hijo": "C-32",
+    "des_grupo": "SUBESTACIONES ELECTRICAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 67,
+  "fields": {
+    "cod_hijo": "C-33",
+    "des_grupo": "TANQUES (Almacenamiento)",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 68,
+  "fields": {
+    "cod_hijo": "C-34",
+    "des_grupo": "TINGLADOS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 69,
+  "fields": {
+    "cod_hijo": "C-35",
+    "des_grupo": "TRANQUERAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 70,
+  "fields": {
+    "cod_hijo": "C-36",
+    "des_grupo": "VERJAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 71,
+  "fields": {
+    "cod_hijo": "C-37",
+    "des_grupo": "VIAS INTERNAS",
+    "cod_padre": 16,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 72,
+  "fields": {
+    "cod_hijo": "B-01",
+    "des_grupo": "TIERRAS Y TERRENOS",
+    "cod_padre": 15,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 73,
+  "fields": {
+    "cod_hijo": "A-03",
+    "des_grupo": "FABRICAS",
+    "cod_padre": 14,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 74,
+  "fields": {
+    "cod_hijo": "A-04",
+    "des_grupo": "GRANJAS",
+    "cod_padre": 14,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 75,
+  "fields": {
+    "cod_hijo": "1-05",
+    "des_grupo": "ALACENA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 76,
+  "fields": {
+    "cod_hijo": "1-06",
+    "des_grupo": "ARCHIVADOR",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 77,
+  "fields": {
+    "cod_hijo": "1-07",
+    "des_grupo": "ARMARIO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 78,
+  "fields": {
+    "cod_hijo": "1-08",
+    "des_grupo": "ATRIL",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 79,
+  "fields": {
+    "cod_hijo": "1-09",
+    "des_grupo": "BANCO - BANCA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 80,
+  "fields": {
+    "cod_hijo": "1-10",
+    "des_grupo": "BANQUETA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 81,
+  "fields": {
+    "cod_hijo": "1-11",
+    "des_grupo": "BASURERO DE METAL - MADERA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 82,
+  "fields": {
+    "cod_hijo": "1-12",
+    "des_grupo": "BIOMBO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 83,
+  "fields": {
+    "cod_hijo": "1-13",
+    "des_grupo": "BUTACA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 84,
+  "fields": {
+    "cod_hijo": "1-14",
+    "des_grupo": "CAJA - BAUL",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 85,
+  "fields": {
+    "cod_hijo": "1-15",
+    "des_grupo": "CARRO MOVIL",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 86,
+  "fields": {
+    "cod_hijo": "1-16",
+    "des_grupo": "CASILLERO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 87,
+  "fields": {
+    "cod_hijo": "1-17",
+    "des_grupo": "CATRE",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 88,
+  "fields": {
+    "cod_hijo": "1-18",
+    "des_grupo": "COMODA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 89,
+  "fields": {
+    "cod_hijo": "1-19",
+    "des_grupo": "COUNTER (Mueble para recepción)",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 90,
+  "fields": {
+    "cod_hijo": "1-20",
+    "des_grupo": "CREDENZA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 91,
+  "fields": {
+    "cod_hijo": "1-21",
+    "des_grupo": "CUNA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 92,
+  "fields": {
+    "cod_hijo": "1-22",
+    "des_grupo": "DIVAN",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 93,
+  "fields": {
+    "cod_hijo": "1-23",
+    "des_grupo": "ESCALERA MOVIL",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 94,
+  "fields": {
+    "cod_hijo": "1-24",
+    "des_grupo": "ESCRITORIO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 95,
+  "fields": {
+    "cod_hijo": "1-25",
+    "des_grupo": "ESQUINERO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 96,
+  "fields": {
+    "cod_hijo": "1-26",
+    "des_grupo": "ESTACION DE TRABAJO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 97,
+  "fields": {
+    "cod_hijo": "1-27",
+    "des_grupo": "GAVETERO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 98,
+  "fields": {
+    "cod_hijo": "1-28",
+    "des_grupo": "GRADILLA DE PELDAÑOS",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 99,
+  "fields": {
+    "cod_hijo": "1-29",
+    "des_grupo": "MAMPARA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 100,
+  "fields": {
+    "cod_hijo": "1-30",
+    "des_grupo": "MESA AUXILIAR",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 101,
+  "fields": {
+    "cod_hijo": "1-31",
+    "des_grupo": "MESA PARA COMPUTADORA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 102,
+  "fields": {
+    "cod_hijo": "1-32",
+    "des_grupo": "MESA PARA DIBUJO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 103,
+  "fields": {
+    "cod_hijo": "1-33",
+    "des_grupo": "MESON MOVIL",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 104,
+  "fields": {
+    "cod_hijo": "1-34",
+    "des_grupo": "MODULAR",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 105,
+  "fields": {
+    "cod_hijo": "1-35",
+    "des_grupo": "MOSTRADOR",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 106,
+  "fields": {
+    "cod_hijo": "1-36",
+    "des_grupo": "MUEBLE COLGANTE",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 107,
+  "fields": {
+    "cod_hijo": "1-37",
+    "des_grupo": "MUEBLE ESPECIAL",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 108,
+  "fields": {
+    "cod_hijo": "1-38",
+    "des_grupo": "MUESTRARIO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 109,
+  "fields": {
+    "cod_hijo": "1-39",
+    "des_grupo": "PANEL DE INFORMACION",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 110,
+  "fields": {
+    "cod_hijo": "1-40",
+    "des_grupo": "PEDESTAL",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 111,
+  "fields": {
+    "cod_hijo": "1-41",
+    "des_grupo": "PERCHERO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 112,
+  "fields": {
+    "cod_hijo": "1-42",
+    "des_grupo": "PUFF SOFA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 113,
+  "fields": {
+    "cod_hijo": "1-43",
+    "des_grupo": "RACK - GABINETE",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 114,
+  "fields": {
+    "cod_hijo": "1-44",
+    "des_grupo": "REPISA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 115,
+  "fields": {
+    "cod_hijo": "1-45",
+    "des_grupo": "ROPERO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 116,
+  "fields": {
+    "cod_hijo": "1-46",
+    "des_grupo": "SILLA GIRATORIA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 117,
+  "fields": {
+    "cod_hijo": "1-47",
+    "des_grupo": "SILLA PLEGABLE",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 118,
+  "fields": {
+    "cod_hijo": "1-48",
+    "des_grupo": "SILLON",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 119,
+  "fields": {
+    "cod_hijo": "1-49",
+    "des_grupo": "SILLON GIRATORIO",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 120,
+  "fields": {
+    "cod_hijo": "1-50",
+    "des_grupo": "SOPORTE PARA TV (y otros)",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 121,
+  "fields": {
+    "cod_hijo": "1-51",
+    "des_grupo": "TABURETE (excluye plástico)",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 122,
+  "fields": {
+    "cod_hijo": "1-52",
+    "des_grupo": "TANDEM DE ASIENTOS",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 123,
+  "fields": {
+    "cod_hijo": "1-53",
+    "des_grupo": "TOCADOR",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 124,
+  "fields": {
+    "cod_hijo": "1-54",
+    "des_grupo": "VELADOR",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 125,
+  "fields": {
+    "cod_hijo": "1-55",
+    "des_grupo": "VITRINA",
+    "cod_padre": 5,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 126,
+  "fields": {
+    "cod_hijo": "2-05",
+    "des_grupo": "ANILLADORA MANUAL",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 127,
+  "fields": {
+    "cod_hijo": "2-06",
+    "des_grupo": "BEBEDERO DE AGUA ELECTRICO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 128,
+  "fields": {
+    "cod_hijo": "2-07",
+    "des_grupo": "CAFETERA ELECTRICA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 129,
+  "fields": {
+    "cod_hijo": "2-08",
+    "des_grupo": "CAJA FUERTE",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 130,
+  "fields": {
+    "cod_hijo": "2-09",
+    "des_grupo": "CAJA REGISTRADORA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 131,
+  "fields": {
+    "cod_hijo": "2-10",
+    "des_grupo": "CALCULADORA WINCHADORA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 132,
+  "fields": {
+    "cod_hijo": "2-11",
+    "des_grupo": "CONTADOR DE BILLETES",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 133,
+  "fields": {
+    "cod_hijo": "2-12",
+    "des_grupo": "DESTRUCTOR DE DOCUMENTOS",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 134,
+  "fields": {
+    "cod_hijo": "2-13",
+    "des_grupo": "DETECTOR DE BILLETES",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 135,
+  "fields": {
+    "cod_hijo": "2-14",
+    "des_grupo": "EQUIPOS PARA BIOSEGURIDAD",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 136,
+  "fields": {
+    "cod_hijo": "2-15",
+    "des_grupo": "EQUIPO CONVERSOR (Ondas – Corriente)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 137,
+  "fields": {
+    "cod_hijo": "2-16",
+    "des_grupo": "FOTOCOPIADORA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 138,
+  "fields": {
+    "cod_hijo": "2-17",
+    "des_grupo": "GUILLOTINA (para corte de papel)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 139,
+  "fields": {
+    "cod_hijo": "2-18",
+    "des_grupo": "LAMPARA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 140,
+  "fields": {
+    "cod_hijo": "2-19",
+    "des_grupo": "LECTOR BIOMETRICO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 141,
+  "fields": {
+    "cod_hijo": "2-20",
+    "des_grupo": "LECTOR DE BANDA MAGNETICA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 142,
+  "fields": {
+    "cod_hijo": "2-21",
+    "des_grupo": "LECTOR DE BARRAS/QR",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 143,
+  "fields": {
+    "cod_hijo": "2-22",
+    "des_grupo": "LICUADORA/EXTRACTORA (semi industrial)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 144,
+  "fields": {
+    "cod_hijo": "2-23",
+    "des_grupo": "MAQUINA DE ESCRIBIR",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 145,
+  "fields": {
+    "cod_hijo": "2-24",
+    "des_grupo": "MAQUINA PLASTIFICADORA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 146,
+  "fields": {
+    "cod_hijo": "2-25",
+    "des_grupo": "RELOJ BIOMETRICO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 147,
+  "fields": {
+    "cod_hijo": "2-26",
+    "des_grupo": "RELOJ TARJETERO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 148,
+  "fields": {
+    "cod_hijo": "2-27",
+    "des_grupo": "SELLO SECO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 149,
+  "fields": {
+    "cod_hijo": "2-28",
+    "des_grupo": "TERMO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 150,
+  "fields": {
+    "cod_hijo": "2-29",
+    "des_grupo": "CABINA INFORMATICA (CPU)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 151,
+  "fields": {
+    "cod_hijo": "2-30",
+    "des_grupo": "COMPUTADORA PORTATIL",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 152,
+  "fields": {
+    "cod_hijo": "2-31",
+    "des_grupo": "CONTROLADOR PROGRAMABLE MICROLOGIX",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 153,
+  "fields": {
+    "cod_hijo": "2-32",
+    "des_grupo": "CPU DE ESCRITORIO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 154,
+  "fields": {
+    "cod_hijo": "2-33",
+    "des_grupo": "CONSOLA DE SERVIDOR",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 155,
+  "fields": {
+    "cod_hijo": "2-34",
+    "des_grupo": "CONSOLA RACKEABLE (Para Servidor)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 156,
+  "fields": {
+    "cod_hijo": "2-35",
+    "des_grupo": "DATA LOGGER (Registrador de datos)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 157,
+  "fields": {
+    "cod_hijo": "2-36",
+    "des_grupo": "DISCO DURO EXTERNO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 158,
+  "fields": {
+    "cod_hijo": "2-37",
+    "des_grupo": "ESCANER",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 159,
+  "fields": {
+    "cod_hijo": "2-38",
+    "des_grupo": "ESTABILIZADOR (Res. Rectoral 567/2018)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 160,
+  "fields": {
+    "cod_hijo": "2-39",
+    "des_grupo": "LECTOR OPTICO (De Documentos)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 161,
+  "fields": {
+    "cod_hijo": "2-40",
+    "des_grupo": "MICROCONTROLADOR PLC",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 162,
+  "fields": {
+    "cod_hijo": "2-41",
+    "des_grupo": "MODULO DE EXPANSION (Discos Duros)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 163,
+  "fields": {
+    "cod_hijo": "2-42",
+    "des_grupo": "MONITOR PARA COMPUTADORA",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 164,
+  "fields": {
+    "cod_hijo": "2-43",
+    "des_grupo": "PLOTTER",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 165,
+  "fields": {
+    "cod_hijo": "2-44",
+    "des_grupo": "QUEMADOR LECTOR EXTERNO (cd, dvd, bluray)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 166,
+  "fields": {
+    "cod_hijo": "2-45",
+    "des_grupo": "SERVIDOR (CPU)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 167,
+  "fields": {
+    "cod_hijo": "2-46",
+    "des_grupo": "SERVIDOR BLADE (Para Centros de Computo)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 168,
+  "fields": {
+    "cod_hijo": "2-47",
+    "des_grupo": "SISTEMA DE ALMACENAMIENTO MASIVO",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 169,
+  "fields": {
+    "cod_hijo": "2-48",
+    "des_grupo": "UPS (Sistema de Alimentación de Energía)",
+    "cod_padre": 6,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 170,
+  "fields": {
+    "cod_hijo": "3-01",
+    "des_grupo": "ALVEOGRAFO",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 171,
+  "fields": {
+    "cod_hijo": "3-02",
+    "des_grupo": "BALANZA INDUSTRIAL",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 172,
+  "fields": {
+    "cod_hijo": "3-03",
+    "des_grupo": "BASCULA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 173,
+  "fields": {
+    "cod_hijo": "3-04",
+    "des_grupo": "BATIDORA INDUSTRIAL",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 174,
+  "fields": {
+    "cod_hijo": "3-05",
+    "des_grupo": "BOMBA DE AGUA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 175,
+  "fields": {
+    "cod_hijo": "3-06",
+    "des_grupo": "BOMBA SUMERGIBLE",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 176,
+  "fields": {
+    "cod_hijo": "3-07",
+    "des_grupo": "BOMBA CENTRIFUGADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 177,
+  "fields": {
+    "cod_hijo": "3-08",
+    "des_grupo": "CALDEROS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 178,
+  "fields": {
+    "cod_hijo": "3-09",
+    "des_grupo": "CAMARA DE REFRIGERACION",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 179,
+  "fields": {
+    "cod_hijo": "3-10",
+    "des_grupo": "CLASIFICADOR DE GRANOS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 180,
+  "fields": {
+    "cod_hijo": "3-11",
+    "des_grupo": "CLIPADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 181,
+  "fields": {
+    "cod_hijo": "3-12",
+    "des_grupo": "CORTADORA-TROCEADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 182,
+  "fields": {
+    "cod_hijo": "3-13",
+    "des_grupo": "COMEDERO-ABREVADERO",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 183,
+  "fields": {
+    "cod_hijo": "3-14",
+    "des_grupo": "CORTAPICO DE GALLINA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 184,
+  "fields": {
+    "cod_hijo": "3-15",
+    "des_grupo": "DESHIDRATADORA DE ALIMENTOS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 185,
+  "fields": {
+    "cod_hijo": "3-16",
+    "des_grupo": "DESPULPADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 186,
+  "fields": {
+    "cod_hijo": "3-17",
+    "des_grupo": "EMBUTIDORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 187,
+  "fields": {
+    "cod_hijo": "3-18",
+    "des_grupo": "ENVASADORA DE ALIMENTOS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 188,
+  "fields": {
+    "cod_hijo": "3-19",
+    "des_grupo": "EQUIPO GENERADOR DE CORRIENTE(TRANSFORMADOR)",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 189,
+  "fields": {
+    "cod_hijo": "3-20",
+    "des_grupo": "EQUIPO DE PRODUCCION DE ALIMENTOS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 190,
+  "fields": {
+    "cod_hijo": "3-21",
+    "des_grupo": "ABONADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 191,
+  "fields": {
+    "cod_hijo": "3-22",
+    "des_grupo": "APORCADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 192,
+  "fields": {
+    "cod_hijo": "3-23",
+    "des_grupo": "ARADO",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 193,
+  "fields": {
+    "cod_hijo": "3-24",
+    "des_grupo": "BARREDORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 194,
+  "fields": {
+    "cod_hijo": "3-25",
+    "des_grupo": "COSECHADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 195,
+  "fields": {
+    "cod_hijo": "3-26",
+    "des_grupo": "CULTIVADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 196,
+  "fields": {
+    "cod_hijo": "3-27",
+    "des_grupo": "DESBROZADORAS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 197,
+  "fields": {
+    "cod_hijo": "3-28",
+    "des_grupo": "FUMIGADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 198,
+  "fields": {
+    "cod_hijo": "3-29",
+    "des_grupo": "ORDEÑADORA MANUAL",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 199,
+  "fields": {
+    "cod_hijo": "3-30",
+    "des_grupo": "PALAS HIDRAULICAS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 200,
+  "fields": {
+    "cod_hijo": "3-31",
+    "des_grupo": "PICADORA DE FORRAJE",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 201,
+  "fields": {
+    "cod_hijo": "3-32",
+    "des_grupo": "RASTRA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 202,
+  "fields": {
+    "cod_hijo": "3-33",
+    "des_grupo": "ROMPLOW",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 203,
+  "fields": {
+    "cod_hijo": "3-34",
+    "des_grupo": "ROTOEMPACADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 204,
+  "fields": {
+    "cod_hijo": "3-35",
+    "des_grupo": "SEGADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 205,
+  "fields": {
+    "cod_hijo": "3-36",
+    "des_grupo": "SEMBRADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 206,
+  "fields": {
+    "cod_hijo": "3-37",
+    "des_grupo": "SUBSOLADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 207,
+  "fields": {
+    "cod_hijo": "3-38",
+    "des_grupo": "SURCADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 208,
+  "fields": {
+    "cod_hijo": "3-39",
+    "des_grupo": "TALADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 209,
+  "fields": {
+    "cod_hijo": "3-40",
+    "des_grupo": "TRILLADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 210,
+  "fields": {
+    "cod_hijo": "3-41",
+    "des_grupo": "HORNO DE SECADO DE MADERA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 211,
+  "fields": {
+    "cod_hijo": "3-42",
+    "des_grupo": "INCUBADORA AVICOLA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 212,
+  "fields": {
+    "cod_hijo": "3-43",
+    "des_grupo": "KIT TATUADOR",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 213,
+  "fields": {
+    "cod_hijo": "3-44",
+    "des_grupo": "LICUADORA-BATIDORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 214,
+  "fields": {
+    "cod_hijo": "3-45",
+    "des_grupo": "MAQUINA EMBOTELLADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 215,
+  "fields": {
+    "cod_hijo": "3-46",
+    "des_grupo": "MAQUINA EVAPORADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 216,
+  "fields": {
+    "cod_hijo": "3-47",
+    "des_grupo": "MAQUINA MOLEDORA DE CARNE",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 217,
+  "fields": {
+    "cod_hijo": "3-48",
+    "des_grupo": "MAQUINA MOLEDORA DE CEREALES",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 218,
+  "fields": {
+    "cod_hijo": "3-49",
+    "des_grupo": "MAQUINA SELECCIONADORA DE SEMILLAS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 219,
+  "fields": {
+    "cod_hijo": "3-50",
+    "des_grupo": "MAQUINA ORDEÑADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 220,
+  "fields": {
+    "cod_hijo": "3-51",
+    "des_grupo": "MEZCLADORA AMASADORA",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 221,
+  "fields": {
+    "cod_hijo": "3-52",
+    "des_grupo": "MOLINO",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 222,
+  "fields": {
+    "cod_hijo": "3-53",
+    "des_grupo": "PROCESADORA DE ALIMENTOS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 223,
+  "fields": {
+    "cod_hijo": "3-54",
+    "des_grupo": "SELLADOR DE BOLSAS DE POLIETILENO",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 224,
+  "fields": {
+    "cod_hijo": "3-55",
+    "des_grupo": "TACHO LECHERO",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 225,
+  "fields": {
+    "cod_hijo": "3-56",
+    "des_grupo": "TOSTADORA DE CEREALES",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 226,
+  "fields": {
+    "cod_hijo": "3-57",
+    "des_grupo": "TURBINAS",
+    "cod_padre": 7,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 227,
+  "fields": {
+    "cod_hijo": "4-01",
+    "des_grupo": "BICICLETA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 228,
+  "fields": {
+    "cod_hijo": "4-02",
+    "des_grupo": "CUADRATRACK",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 229,
+  "fields": {
+    "cod_hijo": "4-03",
+    "des_grupo": "MOTOCICLETA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 230,
+  "fields": {
+    "cod_hijo": "4-04",
+    "des_grupo": "SCOOTER (Eléctrico)",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 231,
+  "fields": {
+    "cod_hijo": "4-05",
+    "des_grupo": "AMBULANCIA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 232,
+  "fields": {
+    "cod_hijo": "4-06",
+    "des_grupo": "AUTOGUIA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 233,
+  "fields": {
+    "cod_hijo": "4-07",
+    "des_grupo": "AUTOMOVIL",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 234,
+  "fields": {
+    "cod_hijo": "4-08",
+    "des_grupo": "AVIONETA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 235,
+  "fields": {
+    "cod_hijo": "4-09",
+    "des_grupo": "BUS",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 236,
+  "fields": {
+    "cod_hijo": "4-10",
+    "des_grupo": "CAMION",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 237,
+  "fields": {
+    "cod_hijo": "4-11",
+    "des_grupo": "CAMION FRIGORIFICO",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 238,
+  "fields": {
+    "cod_hijo": "4-12",
+    "des_grupo": "CAMIONETA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 239,
+  "fields": {
+    "cod_hijo": "4-13",
+    "des_grupo": "CARRETA – CHATA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 240,
+  "fields": {
+    "cod_hijo": "4-14",
+    "des_grupo": "CARRO BOMBERO",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 241,
+  "fields": {
+    "cod_hijo": "4-15",
+    "des_grupo": "CISTERNA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 242,
+  "fields": {
+    "cod_hijo": "4-16",
+    "des_grupo": "GRUA PARA REMOLCAR VEHICULOS",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 243,
+  "fields": {
+    "cod_hijo": "4-17",
+    "des_grupo": "JEEP",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 244,
+  "fields": {
+    "cod_hijo": "4-18",
+    "des_grupo": "MICROBUS",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 245,
+  "fields": {
+    "cod_hijo": "4-19",
+    "des_grupo": "MONTACARGA CON RUEDAS",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 246,
+  "fields": {
+    "cod_hijo": "4-20",
+    "des_grupo": "MOTONIVELADORA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 247,
+  "fields": {
+    "cod_hijo": "4-21",
+    "des_grupo": "PLANTA ASFALTICA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 248,
+  "fields": {
+    "cod_hijo": "4-22",
+    "des_grupo": "REMOLQUE DE PLATAFORMA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 249,
+  "fields": {
+    "cod_hijo": "4-23",
+    "des_grupo": "RETROEXCAVADORA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 250,
+  "fields": {
+    "cod_hijo": "4-24",
+    "des_grupo": "TRACTOR",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 251,
+  "fields": {
+    "cod_hijo": "4-25",
+    "des_grupo": "TRAILER",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 252,
+  "fields": {
+    "cod_hijo": "4-26",
+    "des_grupo": "VOLQUETA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 253,
+  "fields": {
+    "cod_hijo": "4-27",
+    "des_grupo": "VAGONETA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 254,
+  "fields": {
+    "cod_hijo": "4-28",
+    "des_grupo": "ANDAMIO COLGANTE MOTORIZADO",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 255,
+  "fields": {
+    "cod_hijo": "4-29",
+    "des_grupo": "ASCENSOR",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 256,
+  "fields": {
+    "cod_hijo": "4-30",
+    "des_grupo": "ELEVADOR DE AUTOS",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 257,
+  "fields": {
+    "cod_hijo": "4-31",
+    "des_grupo": "ESCALERA MECANICA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 258,
+  "fields": {
+    "cod_hijo": "4-32",
+    "des_grupo": "GRUA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 259,
+  "fields": {
+    "cod_hijo": "4-33",
+    "des_grupo": "MONTACARGAS DE OBRA",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 260,
+  "fields": {
+    "cod_hijo": "4-34",
+    "des_grupo": "PLUMA HIDRAULICA INDUSTRIAL",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_grupo",
+  "pk": 261,
+  "fields": {
+    "cod_hijo": "4-35",
+    "des_grupo": "WINCHE O TECLE INDUSTRIALES",
+    "cod_padre": 8,
+    "nivel": 2,
+    "cod_gest": 1,
+    "cod_tipo": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 1,
+  "fields": {
+    "cod_grupo": 1,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 2,
+  "fields": {
+    "cod_grupo": 2,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 3,
+  "fields": {
+    "cod_grupo": 3,
+    "vida_util_mes": 0,
+    "vida_util_ano": 15,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 4,
+  "fields": {
+    "cod_grupo": 4,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 5,
+  "fields": {
+    "cod_grupo": 26,
+    "vida_util_mes": 0,
+    "vida_util_ano": 20,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 6,
+  "fields": {
+    "cod_grupo": 18,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 7,
+  "fields": {
+    "cod_grupo": 21,
+    "vida_util_mes": 0,
+    "vida_util_ano": 20,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 8,
+  "fields": {
+    "cod_grupo": 29,
+    "vida_util_mes": 0,
+    "vida_util_ano": 20,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 9,
+  "fields": {
+    "cod_grupo": 20,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 10,
+  "fields": {
+    "cod_grupo": 28,
+    "vida_util_mes": 0,
+    "vida_util_ano": 20,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 11,
+  "fields": {
+    "cod_grupo": 19,
+    "vida_util_mes": 0,
+    "vida_util_ano": 20,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 12,
+  "fields": {
+    "cod_grupo": 27,
+    "vida_util_mes": 0,
+    "vida_util_ano": 20,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 13,
+  "fields": {
+    "cod_grupo": 5,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 14,
+  "fields": {
+    "cod_grupo": 6,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 15,
+  "fields": {
+    "cod_grupo": 7,
+    "vida_util_mes": 0,
+    "vida_util_ano": 8,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 16,
+  "fields": {
+    "cod_grupo": 8,
+    "vida_util_mes": 0,
+    "vida_util_ano": 5,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 17,
+  "fields": {
+    "cod_grupo": 9,
+    "vida_util_mes": 0,
+    "vida_util_ano": 8,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 18,
+  "fields": {
+    "cod_grupo": 10,
+    "vida_util_mes": 0,
+    "vida_util_ano": 8,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 19,
+  "fields": {
+    "cod_grupo": 11,
+    "vida_util_mes": 0,
+    "vida_util_ano": 8,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 20,
+  "fields": {
+    "cod_grupo": 12,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 21,
+  "fields": {
+    "cod_grupo": 13,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 22,
+  "fields": {
+    "cod_grupo": 14,
+    "vida_util_mes": 0,
+    "vida_util_ano": 40,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 23,
+  "fields": {
+    "cod_grupo": 15,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 24,
+  "fields": {
+    "cod_grupo": 16,
+    "vida_util_mes": 0,
+    "vida_util_ano": 20,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 25,
+  "fields": {
+    "cod_grupo": 17,
+    "vida_util_mes": 0,
+    "vida_util_ano": 5,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 26,
+  "fields": {
+    "cod_grupo": 22,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 27,
+  "fields": {
+    "cod_grupo": 30,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 28,
+  "fields": {
+    "cod_grupo": 24,
+    "vida_util_mes": 0,
+    "vida_util_ano": 10,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 29,
+  "fields": {
+    "cod_grupo": 23,
+    "vida_util_mes": 0,
+    "vida_util_ano": 8,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 30,
+  "fields": {
+    "cod_grupo": 32,
+    "vida_util_mes": 0,
+    "vida_util_ano": 5,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 31,
+  "fields": {
+    "cod_grupo": 25,
+    "vida_util_mes": 0,
+    "vida_util_ano": 5,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 32,
+  "fields": {
+    "cod_grupo": 31,
+    "vida_util_mes": 0,
+    "vida_util_ano": 8,
+    "cuenta_cont": 0,
+    "cuenta_presup": 0
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 33,
+  "fields": {
+    "cod_grupo": 33,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 34,
+  "fields": {
+    "cod_grupo": 34,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 35,
+  "fields": {
+    "cod_grupo": 35,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 36,
+  "fields": {
+    "cod_grupo": 36,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 37,
+  "fields": {
+    "cod_grupo": 37,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 38,
+  "fields": {
+    "cod_grupo": 38,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 39,
+  "fields": {
+    "cod_grupo": 39,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 40,
+  "fields": {
+    "cod_grupo": 40,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 41,
+  "fields": {
+    "cod_grupo": 41,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 42,
+  "fields": {
+    "cod_grupo": 42,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 43,
+  "fields": {
+    "cod_grupo": 43,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 44,
+  "fields": {
+    "cod_grupo": 44,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 45,
+  "fields": {
+    "cod_grupo": 45,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 46,
+  "fields": {
+    "cod_grupo": 46,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 47,
+  "fields": {
+    "cod_grupo": 47,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 48,
+  "fields": {
+    "cod_grupo": 48,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 49,
+  "fields": {
+    "cod_grupo": 49,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 50,
+  "fields": {
+    "cod_grupo": 50,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 51,
+  "fields": {
+    "cod_grupo": 51,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 52,
+  "fields": {
+    "cod_grupo": 52,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 53,
+  "fields": {
+    "cod_grupo": 53,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 54,
+  "fields": {
+    "cod_grupo": 54,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 55,
+  "fields": {
+    "cod_grupo": 55,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 56,
+  "fields": {
+    "cod_grupo": 56,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 57,
+  "fields": {
+    "cod_grupo": 57,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 58,
+  "fields": {
+    "cod_grupo": 58,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 59,
+  "fields": {
+    "cod_grupo": 59,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 60,
+  "fields": {
+    "cod_grupo": 60,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 61,
+  "fields": {
+    "cod_grupo": 61,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 62,
+  "fields": {
+    "cod_grupo": 62,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 63,
+  "fields": {
+    "cod_grupo": 63,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 64,
+  "fields": {
+    "cod_grupo": 64,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 65,
+  "fields": {
+    "cod_grupo": 65,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 66,
+  "fields": {
+    "cod_grupo": 66,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 67,
+  "fields": {
+    "cod_grupo": 67,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 68,
+  "fields": {
+    "cod_grupo": 68,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 69,
+  "fields": {
+    "cod_grupo": 69,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 70,
+  "fields": {
+    "cod_grupo": 70,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 71,
+  "fields": {
+    "cod_grupo": 71,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41100
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 72,
+  "fields": {
+    "cod_grupo": 72,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 73,
+  "fields": {
+    "cod_grupo": 73,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41300
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 74,
+  "fields": {
+    "cod_grupo": 74,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 41300
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 75,
+  "fields": {
+    "cod_grupo": 75,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 76,
+  "fields": {
+    "cod_grupo": 76,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 77,
+  "fields": {
+    "cod_grupo": 77,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 78,
+  "fields": {
+    "cod_grupo": 78,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 79,
+  "fields": {
+    "cod_grupo": 79,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 80,
+  "fields": {
+    "cod_grupo": 80,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 81,
+  "fields": {
+    "cod_grupo": 81,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 82,
+  "fields": {
+    "cod_grupo": 82,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 83,
+  "fields": {
+    "cod_grupo": 83,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 84,
+  "fields": {
+    "cod_grupo": 84,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 85,
+  "fields": {
+    "cod_grupo": 85,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 86,
+  "fields": {
+    "cod_grupo": 86,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 87,
+  "fields": {
+    "cod_grupo": 87,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 88,
+  "fields": {
+    "cod_grupo": 88,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 89,
+  "fields": {
+    "cod_grupo": 89,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 90,
+  "fields": {
+    "cod_grupo": 90,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 91,
+  "fields": {
+    "cod_grupo": 91,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 92,
+  "fields": {
+    "cod_grupo": 92,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 93,
+  "fields": {
+    "cod_grupo": 93,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 94,
+  "fields": {
+    "cod_grupo": 94,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 95,
+  "fields": {
+    "cod_grupo": 95,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 96,
+  "fields": {
+    "cod_grupo": 96,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 97,
+  "fields": {
+    "cod_grupo": 97,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 98,
+  "fields": {
+    "cod_grupo": 98,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 99,
+  "fields": {
+    "cod_grupo": 99,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 100,
+  "fields": {
+    "cod_grupo": 100,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 101,
+  "fields": {
+    "cod_grupo": 101,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 102,
+  "fields": {
+    "cod_grupo": 102,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 103,
+  "fields": {
+    "cod_grupo": 103,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 104,
+  "fields": {
+    "cod_grupo": 104,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 105,
+  "fields": {
+    "cod_grupo": 105,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 106,
+  "fields": {
+    "cod_grupo": 106,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 107,
+  "fields": {
+    "cod_grupo": 107,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 108,
+  "fields": {
+    "cod_grupo": 108,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 109,
+  "fields": {
+    "cod_grupo": 109,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 110,
+  "fields": {
+    "cod_grupo": 110,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 111,
+  "fields": {
+    "cod_grupo": 111,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 112,
+  "fields": {
+    "cod_grupo": 112,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 113,
+  "fields": {
+    "cod_grupo": 113,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 114,
+  "fields": {
+    "cod_grupo": 114,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 115,
+  "fields": {
+    "cod_grupo": 115,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 116,
+  "fields": {
+    "cod_grupo": 116,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 117,
+  "fields": {
+    "cod_grupo": 117,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 118,
+  "fields": {
+    "cod_grupo": 118,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 119,
+  "fields": {
+    "cod_grupo": 119,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 120,
+  "fields": {
+    "cod_grupo": 120,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 121,
+  "fields": {
+    "cod_grupo": 121,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 122,
+  "fields": {
+    "cod_grupo": 122,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 123,
+  "fields": {
+    "cod_grupo": 123,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 124,
+  "fields": {
+    "cod_grupo": 124,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 125,
+  "fields": {
+    "cod_grupo": 125,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 126,
+  "fields": {
+    "cod_grupo": 126,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 127,
+  "fields": {
+    "cod_grupo": 127,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 128,
+  "fields": {
+    "cod_grupo": 128,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 129,
+  "fields": {
+    "cod_grupo": 129,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 130,
+  "fields": {
+    "cod_grupo": 130,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 131,
+  "fields": {
+    "cod_grupo": 131,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 132,
+  "fields": {
+    "cod_grupo": 132,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 133,
+  "fields": {
+    "cod_grupo": 133,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 134,
+  "fields": {
+    "cod_grupo": 134,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 135,
+  "fields": {
+    "cod_grupo": 135,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 136,
+  "fields": {
+    "cod_grupo": 136,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 137,
+  "fields": {
+    "cod_grupo": 137,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 138,
+  "fields": {
+    "cod_grupo": 138,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 139,
+  "fields": {
+    "cod_grupo": 139,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 140,
+  "fields": {
+    "cod_grupo": 140,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 141,
+  "fields": {
+    "cod_grupo": 141,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 142,
+  "fields": {
+    "cod_grupo": 142,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 143,
+  "fields": {
+    "cod_grupo": 143,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 144,
+  "fields": {
+    "cod_grupo": 144,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 145,
+  "fields": {
+    "cod_grupo": 145,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 146,
+  "fields": {
+    "cod_grupo": 146,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 147,
+  "fields": {
+    "cod_grupo": 147,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 148,
+  "fields": {
+    "cod_grupo": 148,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 149,
+  "fields": {
+    "cod_grupo": 149,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43110
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 150,
+  "fields": {
+    "cod_grupo": 150,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 151,
+  "fields": {
+    "cod_grupo": 151,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 152,
+  "fields": {
+    "cod_grupo": 152,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 153,
+  "fields": {
+    "cod_grupo": 153,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 154,
+  "fields": {
+    "cod_grupo": 154,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 155,
+  "fields": {
+    "cod_grupo": 155,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 156,
+  "fields": {
+    "cod_grupo": 156,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 157,
+  "fields": {
+    "cod_grupo": 157,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 158,
+  "fields": {
+    "cod_grupo": 158,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 159,
+  "fields": {
+    "cod_grupo": 159,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 160,
+  "fields": {
+    "cod_grupo": 160,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 161,
+  "fields": {
+    "cod_grupo": 161,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 162,
+  "fields": {
+    "cod_grupo": 162,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 163,
+  "fields": {
+    "cod_grupo": 163,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 164,
+  "fields": {
+    "cod_grupo": 164,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 165,
+  "fields": {
+    "cod_grupo": 165,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 166,
+  "fields": {
+    "cod_grupo": 166,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 167,
+  "fields": {
+    "cod_grupo": 167,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 168,
+  "fields": {
+    "cod_grupo": 168,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 169,
+  "fields": {
+    "cod_grupo": 169,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43120
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 170,
+  "fields": {
+    "cod_grupo": 170,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 171,
+  "fields": {
+    "cod_grupo": 171,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 172,
+  "fields": {
+    "cod_grupo": 172,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 173,
+  "fields": {
+    "cod_grupo": 173,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 174,
+  "fields": {
+    "cod_grupo": 174,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 175,
+  "fields": {
+    "cod_grupo": 175,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 176,
+  "fields": {
+    "cod_grupo": 176,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 177,
+  "fields": {
+    "cod_grupo": 177,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 178,
+  "fields": {
+    "cod_grupo": 178,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 179,
+  "fields": {
+    "cod_grupo": 179,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 180,
+  "fields": {
+    "cod_grupo": 180,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 181,
+  "fields": {
+    "cod_grupo": 181,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 182,
+  "fields": {
+    "cod_grupo": 182,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 183,
+  "fields": {
+    "cod_grupo": 183,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 184,
+  "fields": {
+    "cod_grupo": 184,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 185,
+  "fields": {
+    "cod_grupo": 185,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 186,
+  "fields": {
+    "cod_grupo": 186,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 187,
+  "fields": {
+    "cod_grupo": 187,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 188,
+  "fields": {
+    "cod_grupo": 188,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 189,
+  "fields": {
+    "cod_grupo": 189,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 190,
+  "fields": {
+    "cod_grupo": 190,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 191,
+  "fields": {
+    "cod_grupo": 191,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 192,
+  "fields": {
+    "cod_grupo": 192,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 193,
+  "fields": {
+    "cod_grupo": 193,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 194,
+  "fields": {
+    "cod_grupo": 194,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 195,
+  "fields": {
+    "cod_grupo": 195,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 196,
+  "fields": {
+    "cod_grupo": 196,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 197,
+  "fields": {
+    "cod_grupo": 197,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 198,
+  "fields": {
+    "cod_grupo": 198,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 199,
+  "fields": {
+    "cod_grupo": 199,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 200,
+  "fields": {
+    "cod_grupo": 200,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 201,
+  "fields": {
+    "cod_grupo": 201,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 202,
+  "fields": {
+    "cod_grupo": 202,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 203,
+  "fields": {
+    "cod_grupo": 203,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 204,
+  "fields": {
+    "cod_grupo": 204,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 205,
+  "fields": {
+    "cod_grupo": 205,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 206,
+  "fields": {
+    "cod_grupo": 206,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 207,
+  "fields": {
+    "cod_grupo": 207,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 208,
+  "fields": {
+    "cod_grupo": 208,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 209,
+  "fields": {
+    "cod_grupo": 209,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 210,
+  "fields": {
+    "cod_grupo": 210,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 211,
+  "fields": {
+    "cod_grupo": 211,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 212,
+  "fields": {
+    "cod_grupo": 212,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 213,
+  "fields": {
+    "cod_grupo": 213,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 214,
+  "fields": {
+    "cod_grupo": 214,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 215,
+  "fields": {
+    "cod_grupo": 215,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 216,
+  "fields": {
+    "cod_grupo": 216,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 217,
+  "fields": {
+    "cod_grupo": 217,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 218,
+  "fields": {
+    "cod_grupo": 218,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 219,
+  "fields": {
+    "cod_grupo": 219,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 220,
+  "fields": {
+    "cod_grupo": 220,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 221,
+  "fields": {
+    "cod_grupo": 221,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 222,
+  "fields": {
+    "cod_grupo": 222,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 223,
+  "fields": {
+    "cod_grupo": 223,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 224,
+  "fields": {
+    "cod_grupo": 224,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 225,
+  "fields": {
+    "cod_grupo": 225,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 226,
+  "fields": {
+    "cod_grupo": 226,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43200
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 227,
+  "fields": {
+    "cod_grupo": 227,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43310
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 228,
+  "fields": {
+    "cod_grupo": 228,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43310
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 229,
+  "fields": {
+    "cod_grupo": 229,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43310
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 230,
+  "fields": {
+    "cod_grupo": 230,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43310
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 231,
+  "fields": {
+    "cod_grupo": 231,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 232,
+  "fields": {
+    "cod_grupo": 232,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 233,
+  "fields": {
+    "cod_grupo": 233,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 234,
+  "fields": {
+    "cod_grupo": 234,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 235,
+  "fields": {
+    "cod_grupo": 235,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 236,
+  "fields": {
+    "cod_grupo": 236,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 237,
+  "fields": {
+    "cod_grupo": 237,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 238,
+  "fields": {
+    "cod_grupo": 238,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 239,
+  "fields": {
+    "cod_grupo": 239,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 240,
+  "fields": {
+    "cod_grupo": 240,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 241,
+  "fields": {
+    "cod_grupo": 241,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 242,
+  "fields": {
+    "cod_grupo": 242,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 243,
+  "fields": {
+    "cod_grupo": 243,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 244,
+  "fields": {
+    "cod_grupo": 244,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 245,
+  "fields": {
+    "cod_grupo": 245,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 246,
+  "fields": {
+    "cod_grupo": 246,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 247,
+  "fields": {
+    "cod_grupo": 247,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 248,
+  "fields": {
+    "cod_grupo": 248,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 249,
+  "fields": {
+    "cod_grupo": 249,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 250,
+  "fields": {
+    "cod_grupo": 250,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 251,
+  "fields": {
+    "cod_grupo": 251,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 252,
+  "fields": {
+    "cod_grupo": 252,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 253,
+  "fields": {
+    "cod_grupo": 253,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43330
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 254,
+  "fields": {
+    "cod_grupo": 254,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 255,
+  "fields": {
+    "cod_grupo": 255,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 256,
+  "fields": {
+    "cod_grupo": 256,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 257,
+  "fields": {
+    "cod_grupo": 257,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 258,
+  "fields": {
+    "cod_grupo": 258,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 259,
+  "fields": {
+    "cod_grupo": 259,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 260,
+  "fields": {
+    "cod_grupo": 260,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_det_grp",
+  "pk": 261,
+  "fields": {
+    "cod_grupo": 261,
+    "vida_util_mes": 0,
+    "vida_util_ano": 0,
+    "cuenta_cont": 0,
+    "cuenta_presup": 43340
+  }
+},
+{
+  "model": "activo.in_gestion",
+  "pk": 1,
+  "fields": {
+    "gest_ini": 2026,
+    "gest_fin": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_gestion",
+  "pk": 2,
+  "fields": {
+    "gest_ini": 2025,
+    "gest_fin": null,
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_tipo",
+  "pk": 1,
+  "fields": {
+    "des_tipo": "Tangible Mueble",
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_tipo",
+  "pk": 2,
+  "fields": {
+    "des_tipo": "Tangible Inmueble",
+    "a_b": "A"
+  }
+},
+{
+  "model": "activo.in_tipo",
+  "pk": 3,
+  "fields": {
+    "des_tipo": "Intangible",
+    "a_b": "A"
+  }
+}
+]

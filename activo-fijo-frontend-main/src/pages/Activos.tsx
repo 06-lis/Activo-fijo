@@ -465,6 +465,18 @@ export default function Activos() {
 
   // Autocomplete code generator
   useEffect(() => {
+    if (form.nroIngreso && cats?.todosIngresos) {
+      const selectedIng = cats.todosIngresos.find((i: any) => String(i.nroIngreso) === String(form.nroIngreso));
+      if (selectedIng?.codProv?.codProv) {
+        const provStr = String(selectedIng.codProv.codProv);
+        if (form.codProve !== provStr) {
+          setForm((prev: any) => ({ ...prev, codProve: provStr }));
+        }
+      }
+    }
+  }, [form.nroIngreso, cats?.todosIngresos]);
+
+  useEffect(() => {
     if (editId) return; // Do not auto-generate code when editing an existing asset
     if (form.nroIngreso && form.codGrupo) {
       const nextCode = autoGenerateCode(form.nroIngreso, form.codGrupo);
@@ -1185,9 +1197,15 @@ export default function Activos() {
                 value={form.nroIngreso}
                 onChange={e => {
                   const val = e.target.value;
+                  const selectedIng = cats?.todosIngresos?.find((i: any) => String(i.nroIngreso) === String(val));
                   setForm((prev: any) => {
                     const nextCode = val && prev.codGrupo ? autoGenerateCode(val, prev.codGrupo) : '';
-                    return { ...prev, nroIngreso: val, codActivo: nextCode };
+                    return {
+                      ...prev,
+                      nroIngreso: val,
+                      codActivo: nextCode,
+                      codProve: selectedIng?.codProv?.codProv ? String(selectedIng.codProv.codProv) : prev.codProve
+                    };
                   });
                 }}
                 disabled={editId !== null}
@@ -1321,7 +1339,13 @@ export default function Activos() {
 
           <div className="form-group form-group-full">
             <label>Proveedor</label>
-            <select name="codProve" value={form.codProve} onChange={handleChange} disabled={editId !== null}>
+            <select
+              name="codProve"
+              value={form.codProve}
+              onChange={handleChange}
+              disabled={editId !== null || !!form.nroIngreso}
+              style={form.nroIngreso ? { backgroundColor: '#f1f5f9', cursor: 'not-allowed' } : undefined}
+            >
               <option value="">Seleccionar...</option>
               {cats?.todosProvedores?.map((p: any) => (
                 <option key={p.codProv} value={p.codProv}>{p.nombre}</option>

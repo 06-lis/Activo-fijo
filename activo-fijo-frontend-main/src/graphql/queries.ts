@@ -349,6 +349,12 @@ export const GET_CATALOGOS_ACTIVOS = gql`
       nroIngreso
       glosa
       gestion
+      codProv {
+        codProv
+        nombre
+      }
+      fechaFactura
+      fechaRecep
       codOficDest {
         codOfic
         codDpto

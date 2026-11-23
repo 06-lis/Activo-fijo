@@ -77,6 +77,9 @@ const GET_VEHICULOS_AND_ACTIVOS = gql`
       descripcion
       nroSerie
       fecAdqui
+      vehiculo {
+        placa
+      }
       codGrupo {
         codGrupo
         desGrupo
@@ -266,13 +269,7 @@ export default function Vehiculos() {
   // Get assets that do not have a vehicle file yet
   const availableAssets = useMemo(() => {
     const all = data?.todosActivos || [];
-    const usedIds = new Set(
-      data?.todosVehiculosPaginados?.results?.map(
-        (v: any) => v.nroActivo?.nroActivo
-      ) || []
-    );
-
-    return all.filter((a: any) => !usedIds.has(a.nroActivo));
+    return all.filter((a: any) => !a.vehiculo);
   }, [data]);
 
 
@@ -284,10 +281,10 @@ export default function Vehiculos() {
       if (asset) {
         setForm((prev: any) => ({
           ...prev,
-          marca: prev.marca || asset.codMarca?.desMarca || '',
-          modelo: prev.modelo || asset.codModelo?.desModelo || '',
-          chasis: prev.chasis || asset.nroSerie || '',
-          anio: prev.anio || (asset.fecAdqui ? new Date(asset.fecAdqui).getFullYear().toString() : '')
+          marca: asset.codMarca?.desMarca || prev.marca || '',
+          modelo: asset.codModelo?.desModelo || prev.modelo || '',
+          chasis: asset.nroSerie || prev.chasis || '',
+          anio: (asset.fecAdqui ? new Date(asset.fecAdqui).getFullYear().toString() : '') || prev.anio || ''
         }));
       }
     }
@@ -877,23 +874,30 @@ export default function Vehiculos() {
               <div className="form-group">
                 <label>Activo Fijo Relacionado *</label>
                 {isCreating ? (
-                  <>
-                    <input
-                      list="activos-list"
-                      name="nroActivo"
-                      value={form.nroActivo}
-                      onChange={handleChange}
-                      placeholder="Escribe para buscar..."
-                      style={{ width: '100%' }}
-                    />
-                    <datalist id="activos-list">
-                      {availableAssets.map((a: any) => (
-                        <option key={a.nroActivo} value={a.nroActivo}>
-                          [{a.codActivo}] {a.descripcion}
-                        </option>
-                      ))}
-                    </datalist>
-                  </>
+                  <select
+                    name="nroActivo"
+                    value={form.nroActivo}
+                    onChange={e => {
+                      const val = e.target.value;
+                      const asset = data?.todosActivos?.find((a: any) => String(a.nroActivo) === String(val));
+                      setForm((prev: any) => ({
+                        ...prev,
+                        nroActivo: val,
+                        marca: asset?.codMarca?.desMarca || '',
+                        modelo: asset?.codModelo?.desModelo || '',
+                        chasis: asset?.nroSerie || '',
+                        anio: asset?.fecAdqui ? new Date(asset.fecAdqui).getFullYear().toString() : ''
+                      }));
+                    }}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="">Seleccione el Activo Fijo...</option>
+                    {availableAssets.map((a: any) => (
+                      <option key={a.nroActivo} value={String(a.nroActivo)}>
+                        [{a.codActivo}] {a.descripcion}
+                      </option>
+                    ))}
+                  </select>
                 ) : (
                   <div style={{ background: 'var(--blue-pale)', padding: '6px 10px', border: '1px solid var(--border-light)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy)' }}>
                     [{editingVehiculo?.nroActivo?.codActivo}] {editingVehiculo?.nroActivo?.descripcion}
@@ -978,15 +982,39 @@ export default function Vehiculos() {
                   </div>
                   <div className="form-group">
                     <label>Marca <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
-                    <input type="text" name="marca" value={form.marca} onChange={handleChange} placeholder="Ej: Toyota" />
+                    <input
+                      type="text"
+                      name="marca"
+                      value={form.marca}
+                      onChange={handleChange}
+                      placeholder="Ej: Toyota"
+                      readOnly={isCreating && !!form.nroActivo && !!form.marca}
+                      style={isCreating && form.nroActivo && form.marca ? { backgroundColor: '#f1f5f9', cursor: 'not-allowed' } : undefined}
+                    />
                   </div>
                   <div className="form-group">
                     <label>Modelo <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
-                    <input type="text" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Ej: Hilux" />
+                    <input
+                      type="text"
+                      name="modelo"
+                      value={form.modelo}
+                      onChange={handleChange}
+                      placeholder="Ej: Hilux"
+                      readOnly={isCreating && !!form.nroActivo && !!form.modelo}
+                      style={isCreating && form.nroActivo && form.modelo ? { backgroundColor: '#f1f5f9', cursor: 'not-allowed' } : undefined}
+                    />
                   </div>
                   <div className="form-group">
                     <label>Año <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
-                    <input type="number" name="anio" value={form.anio} onChange={handleChange} placeholder="Ej: 2020" />
+                    <input
+                      type="number"
+                      name="anio"
+                      value={form.anio}
+                      onChange={handleChange}
+                      placeholder="Ej: 2020"
+                      readOnly={isCreating && !!form.nroActivo && !!form.anio}
+                      style={isCreating && form.nroActivo && form.anio ? { backgroundColor: '#f1f5f9', cursor: 'not-allowed' } : undefined}
+                    />
                   </div>
                   <div className="form-group">
                     <label>Color <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
@@ -1007,7 +1035,15 @@ export default function Vehiculos() {
                 </div>
                 <div className="form-group">
                   <label>Chasis <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
-                  <input type="text" name="chasis" value={form.chasis} onChange={handleChange} placeholder="Nro de Chasis" />
+                  <input
+                    type="text"
+                    name="chasis"
+                    value={form.chasis}
+                    onChange={handleChange}
+                    placeholder="Nro de Chasis"
+                    readOnly={isCreating && !!form.nroActivo && !!form.chasis}
+                    style={isCreating && form.nroActivo && form.chasis ? { backgroundColor: '#f1f5f9', cursor: 'not-allowed' } : undefined}
+                  />
                 </div>
                 <div className="form-group">
                   <label>Cilindrada (cc) <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '0.7rem' }}>(Opcional)</span></label>
