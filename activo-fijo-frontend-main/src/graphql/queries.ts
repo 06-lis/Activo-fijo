@@ -129,26 +129,6 @@ export const GET_GRUPOS = gql`
         codGrupo
         desGrupo
         codHijo
-        codPadre {
-          codGrupo
-          desGrupo
-          codHijo
-          codPadre {
-            codGrupo
-            desGrupo
-            codHijo
-            codPadre {
-              codGrupo
-              desGrupo
-              codHijo
-              codPadre {
-                codGrupo
-                desGrupo
-                codHijo
-              }
-            }
-          }
-        }
       }
     }
   }

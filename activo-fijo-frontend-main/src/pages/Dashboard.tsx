@@ -5,6 +5,163 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import DashboardEjecutivo, { BarraPestanas } from '../components/DashboardEjecutivo';
 
+type ExcelValue = string | number | null | undefined;
+
+const escapeXml = (value: string) => value
+  .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&apos;');
+
+const crc32 = (bytes: Uint8Array) => {
+  let crc = 0xffffffff;
+  bytes.forEach(byte => {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+    }
+  });
+  return (crc ^ 0xffffffff) >>> 0;
+};
+
+const zipStore = (files: { name: string; content: string }[]) => {
+  const encoder = new TextEncoder();
+  const localParts: Uint8Array[] = [];
+  const centralParts: Uint8Array[] = [];
+  let localOffset = 0;
+  let centralSize = 0;
+
+  files.forEach(file => {
+    const name = encoder.encode(file.name);
+    const content = encoder.encode(file.content);
+    const checksum = crc32(content);
+
+    const localHeader = new Uint8Array(30 + name.length);
+    const localView = new DataView(localHeader.buffer);
+    localView.setUint32(0, 0x04034b50, true);
+    localView.setUint16(4, 20, true);
+    localView.setUint16(6, 0x0800, true);
+    localView.setUint32(14, checksum, true);
+    localView.setUint32(18, content.length, true);
+    localView.setUint32(22, content.length, true);
+    localView.setUint16(26, name.length, true);
+    localHeader.set(name, 30);
+    const localFile = new Uint8Array(localHeader.length + content.length);
+    localFile.set(localHeader);
+    localFile.set(content, localHeader.length);
+    localParts.push(localFile);
+
+    const centralHeader = new Uint8Array(46 + name.length);
+    const centralView = new DataView(centralHeader.buffer);
+    centralView.setUint32(0, 0x02014b50, true);
+    centralView.setUint16(4, 20, true);
+    centralView.setUint16(6, 20, true);
+    centralView.setUint16(8, 0x0800, true);
+    centralView.setUint32(16, checksum, true);
+    centralView.setUint32(20, content.length, true);
+    centralView.setUint32(24, content.length, true);
+    centralView.setUint16(28, name.length, true);
+    centralView.setUint32(42, localOffset, true);
+    centralHeader.set(name, 46);
+    centralParts.push(centralHeader);
+
+    localOffset += localFile.length;
+    centralSize += centralHeader.length;
+  });
+
+  const centralOffset = localOffset;
+  const endRecord = new Uint8Array(22);
+  const endView = new DataView(endRecord.buffer);
+  endView.setUint32(0, 0x06054b50, true);
+  endView.setUint16(8, files.length, true);
+  endView.setUint16(10, files.length, true);
+  endView.setUint32(12, centralSize, true);
+  endView.setUint32(16, centralOffset, true);
+
+  const archive = new Uint8Array(localOffset + centralSize + endRecord.length);
+  let offset = 0;
+  [...localParts, ...centralParts, endRecord].forEach(part => {
+    archive.set(part, offset);
+    offset += part.length;
+  });
+  return archive;
+};
+
+const excelColumn = (zeroBasedIndex: number) => {
+  let index = zeroBasedIndex + 1;
+  let column = '';
+  while (index > 0) {
+    const remainder = (index - 1) % 26;
+    column = String.fromCharCode(65 + remainder) + column;
+    index = Math.floor((index - 1) / 26);
+  }
+  return column;
+};
+
+const createXlsx = (sheets: { name: string; rows: ExcelValue[][] }[]) => {
+  const sheetFiles = sheets.map((sheet, sheetIndex) => {
+    const rows = sheet.rows.map((row, rowIndex) => {
+      const cells = row.map((value, columnIndex) => {
+        const reference = `${excelColumn(columnIndex)}${rowIndex + 1}`;
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          return `<c r="${reference}"><v>${value}</v></c>`;
+        }
+        return `<c r="${reference}" t="inlineStr"><is><t xml:space="preserve">${escapeXml(String(value ?? ''))}</t></is></c>`;
+      }).join('');
+      return `<row r="${rowIndex + 1}">${cells}</row>`;
+    }).join('');
+    return {
+      name: `xl/worksheets/sheet${sheetIndex + 1}.xml`,
+      content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows}</sheetData></worksheet>`,
+    };
+  });
+  const worksheetOverrides = sheets.map((_, index) =>
+    `<Override PartName="/xl/worksheets/sheet${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`
+  ).join('');
+  const relationships = sheets.map((_, index) =>
+    `<Relationship Id="rId${index + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${index + 1}.xml"/>`
+  ).join('');
+  const workbookSheets = sheets.map((sheet, index) =>
+    `<sheet name="${escapeXml(sheet.name)}" sheetId="${index + 1}" r:id="rId${index + 1}"/>`
+  ).join('');
+  const files = [
+    {
+      name: '[Content_Types].xml',
+      content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${worksheetOverrides}</Types>`,
+    },
+    {
+      name: '_rels/.rels',
+      content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
+    },
+    {
+      name: 'xl/workbook.xml',
+      content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${workbookSheets}</sheets></workbook>`,
+    },
+    {
+      name: 'xl/_rels/workbook.xml.rels',
+      content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships}</Relationships>`,
+    },
+    ...sheetFiles,
+  ];
+  return zipStore(files);
+};
+
+const downloadExcelWorkbook = (sheets: { name: string; rows: ExcelValue[][] }[], filename: string) => {
+  const blob = new Blob([createXlsx(sheets)], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+};
+
 const GET_DASHBOARD_DATA = gql`
   query GetDashboardData {
     todosActivos(soloActivos: false) {
@@ -189,6 +346,80 @@ export default function Dashboard() {
     document.body.removeChild(link);
   };
 
+  const handleExportExcel = () => {
+    if (!data) return;
+
+    const summaryRows: (string | number)[][] = [['Indicador', 'Valor', 'Detalle']];
+    const sheets: { name: string; rows: ExcelValue[][] }[] = [];
+
+    if (puedeVerActivos && statsActivos) {
+      summaryRows.push(
+        ['Activos vigentes', statsActivos.activosCount, 'Bienes no dados de baja'],
+        ['Activos dados de baja', statsActivos.bajasCount, 'Bienes marcados como baja'],
+        ['Valoración total', statsActivos.valoracion, 'Bolivianos'],
+        ['Valor promedio por activo', statsActivos.promedio, 'Bolivianos']
+      );
+      sheets.push({ name: 'Activos', rows: [
+        ['Nro. Activo', 'Código', 'Descripción', 'Monto (Bs.)', 'Estado', 'Registro'],
+        ...(data.todosActivos || []).map((a: any) => [
+          a.nroActivo ?? '',
+          a.codActivo || '',
+          a.descripcion || '',
+          Number(a.monto) || 0,
+          a.aB === 'B' ? 'Baja' : 'Activo',
+          a.estadoRegistro || '',
+        ]),
+      ] });
+    }
+
+    if (puedeVerIngresos && data.todosIngresos) {
+      summaryRows.push(['Ingresos', statsIngresos?.total || 0, 'Total de registros']);
+      sheets.push({ name: 'Ingresos', rows: [
+        ['Nro. Ingreso', 'Glosa', 'Estado'],
+        ...data.todosIngresos.map((i: any) => [
+          i.nroIngreso ?? '',
+          i.glosa || '',
+          i.estado === 'A' || i.estado === '1' ? 'Activo' : 'Cerrado',
+        ]),
+      ] });
+    }
+
+    if (puedeVerAsignaciones && data.todasAsignaciones) {
+      summaryRows.push(['Asignaciones activas', statsAsignaciones?.activasCount || 0, '']);
+      sheets.push({ name: 'Asignaciones', rows: [
+        ['Código de asignación', 'Estado'],
+        ...data.todasAsignaciones.map((a: any) => [a.codAsig ?? '', a.estado || '']),
+      ] });
+    }
+
+    if (puedeVerDepreciaciones && data.ultimasDepreciaciones) {
+      summaryRows.push(
+        ['Depreciación acumulada', statsDepreciaciones?.acumulada || 0, 'Bolivianos'],
+        ['Valor actual neto', statsDepreciaciones?.actual || 0, 'Bolivianos']
+      );
+      sheets.push({ name: 'Depreciaciones', rows: [
+        ['Nro. Serie', 'Depreciación del período (Bs.)', 'Acumulada (Bs.)', 'Valor actual (Bs.)'],
+        ...data.ultimasDepreciaciones.map((d: any) => [
+          d.nroSerie ?? '',
+          Number(d.depresiacion) || 0,
+          Number(d.acumulada) || 0,
+          Number(d.valorActual) || 0,
+        ]),
+      ] });
+    }
+
+    if (puedeVerBajas && data.todasBajasDetalladas) {
+      summaryRows.push(['Bajas registradas', statsBajas?.total || 0, '']);
+      sheets.push({ name: 'Bajas', rows: [
+        ['Nro. Baja', 'Valor final (Bs.)'],
+        ...data.todasBajasDetalladas.map((b: any) => [b.nro ?? '', Number(b.valorFinal) || 0]),
+      ] });
+    }
+
+    sheets.unshift({ name: 'Resumen', rows: summaryRows });
+    downloadExcelWorkbook(sheets, `dashboard_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
   return (
     <>
       {/* CSS overrides for print layout */}
@@ -218,6 +449,7 @@ export default function Dashboard() {
         title="Panel de Control (Dashboard)"
         subtitle="Resumen ejecutivo y estadísticas clave del sistema"
         actions={[
+          { label: 'Exportar Excel', icon: '↓', variant: 'primary', onClick: handleExportExcel, disabled: !data, show: hasAnyReport },
           { label: 'Exportar Reporte (PDF)', icon: '↓', variant: 'primary', onClick: handlePrint },
           { label: 'Actualizar', icon: '↺', onClick: () => refetch() }
         ]}

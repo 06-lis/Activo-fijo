@@ -14,24 +14,26 @@ import { showToast } from '../utils/toast';
 export default function CertificadoLiberacion() {
   const [searchId, setSearchId] = useState('');
   const [empleadoSel, setEmpleadoSel] = useState<any>(null);
-  const [solvencia] = useState<string>('');
   const [certificado, setCertificado] = useState<any>(null);
   const [certificadoSeleccionado, setCertificadoSeleccionado] = useState<any>(null);
   const [nroDevolucion, setNroDevolucion] = useState('');
 
-  useQuery(VALIDAR_SOLVENCIA, {
+  const {
+    data: solvenciaData,
+    loading: validandoSolvencia,
+    error: errorSolvencia,
+  } = useQuery(VALIDAR_SOLVENCIA, {
     variables: { idEmpleado: empleadoSel ? empleadoSel.idEmpleado : 0 },
     skip: !empleadoSel,
     fetchPolicy: 'network-only',
   });
+  const solvencia = solvenciaData?.validarSolvencia || '';
 
   const { data: certsData, refetch: refetchCerts } = useQuery(TODOS_CERTIFICADOS, {
     fetchPolicy: 'cache-and-network',
   });
 
-  const [generarCertificado] = useMutation(GENERAR_CERTIFICADO_LIBERACION, {
-    refetchQueries: [{ query: VALIDAR_SOLVENCIA }, { query: TODOS_CERTIFICADOS }],
-  });
+  const [generarCertificado, { loading: generandoCertificado }] = useMutation(GENERAR_CERTIFICADO_LIBERACION);
 
   const { data: certPorIdData } = useQuery(CERTIFICADO_POR_ID, {
     variables: { nroCertificado: certificadoSeleccionado ? certificadoSeleccionado.nroCertificado : 0 },
@@ -39,13 +41,22 @@ export default function CertificadoLiberacion() {
     fetchPolicy: 'network-only',
   });
 
-  const esSolvente = solvencia === 'OK';
+  const esSolvente = !validandoSolvencia && !errorSolvencia && solvencia === 'OK';
   const activosPendientesMsg = solvencia.startsWith('PENDIENTE:') ? solvencia.replace('PENDIENTE:', '') : '';
+  const sinResponsable = solvencia === 'SIN_RESPONSABLE';
 
   const dateFmt = (v?: string | null) => {
     if (!v) return '-';
     const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
     return m ? `${m[3]}/${m[2]}/${m[1]}` : String(v);
+  };
+
+  const dateInWords = (v?: string | null) => {
+    const m = v && String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return 'la fecha de emisión registrada';
+    const date = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+    const month = new Intl.DateTimeFormat('es-BO', { month: 'long', timeZone: 'UTC' }).format(date);
+    return `los ${Number(m[3])} días del mes de ${month} del año ${m[1]}`;
   };
 
   const handleGenerar = async () => {
@@ -54,7 +65,14 @@ export default function CertificadoLiberacion() {
       return;
     }
     if (!esSolvente) {
-      alert('No se puede emitir el certificado: el funcionario tiene activos pendientes.\n' + activosPendientesMsg);
+      const motivo = validandoSolvencia
+        ? 'Espera a que termine la validación de solvencia.'
+        : errorSolvencia
+        ? 'No se pudo validar la solvencia. Intenta nuevamente.'
+        : sinResponsable
+          ? 'El funcionario no tiene un registro de responsable vigente.'
+          : `No se puede emitir el certificado: el funcionario tiene activos pendientes.\n${activosPendientesMsg}`;
+      alert(motivo);
       return;
     }
 
@@ -70,7 +88,7 @@ export default function CertificadoLiberacion() {
         setCertificado(nuevo);
         setCertificadoSeleccionado(nuevo);
         showToast('✅ Certificado de Liberación generado');
-        refetchCerts();
+        await refetchCerts();
       }
     } catch (err: any) {
       alert('Error al generar el certificado: ' + err.message);
@@ -120,8 +138,24 @@ export default function CertificadoLiberacion() {
         {empleadoSel && (
           <div style={{ marginTop: '10px', padding: '12px', background: esSolvente ? '#ecfdf5' : '#fef2f2', borderRadius: '6px', border: `1px solid ${esSolvente ? '#86efac' : '#fca5a5'}` }}>
             <strong>Funcionario ID:</strong> {empleadoSel.idEmpleado}&nbsp;&nbsp;
-            <strong>Estado:</strong> {esSolvente ? '✅ Solvente — puede emitirse certificado' : '❌ No solvente — tiene activos pendientes'}
-            {!esSolvente && (
+            <strong>Estado:</strong>{' '}
+            {validandoSolvencia
+              ? 'Validando solvencia...'
+              : errorSolvencia
+                ? 'No se pudo completar la validación'
+              : !solvencia
+                ? 'Esperando resultado de validación'
+                : esSolvente
+                  ? '✅ Solvente — puede emitirse certificado'
+                  : sinResponsable
+                    ? '❌ No tiene un registro de responsable vigente'
+                    : '❌ No solvente — tiene activos pendientes'}
+            {errorSolvencia && (
+              <div style={{ marginTop: '6px', color: '#92400e', fontSize: '0.8rem' }}>
+                {errorSolvencia.message}
+              </div>
+            )}
+            {activosPendientesMsg && (
               <div style={{ marginTop: '6px', color: '#92400e', fontSize: '0.8rem' }}>
                 Activos pendientes: {activosPendientesMsg}
               </div>
@@ -155,9 +189,10 @@ export default function CertificadoLiberacion() {
             <div style={{ display: 'flex', alignItems: 'end', gap: '8px' }}>
               <button
                 onClick={handleGenerar}
-                style={{ padding: '10px 20px', border: 'none', borderRadius: '6px', background: '#1a3c6e', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                disabled={generandoCertificado}
+                style={{ padding: '10px 20px', border: 'none', borderRadius: '6px', background: '#1a3c6e', color: '#fff', fontWeight: 700, cursor: generandoCertificado ? 'wait' : 'pointer' }}
               >
-                Generar Certificado
+                {generandoCertificado ? 'Generando...' : 'Generar Certificado'}
               </button>
             </div>
           </div>
@@ -218,7 +253,7 @@ export default function CertificadoLiberacion() {
                 Todos los bienes muebles que estaban bajo su custodia fueron devueltos y el registro de custodia se encuentra actualizado, conforme al proceso de devolución N° {certActual.nroDevolucion?.nroDevolucion || '—'}.
               </p>
               <p className="cert-par">
-                El presente certificado se extiende a solicitud del interesado para los fines legales que estime conveniente, en la ciudad de Santa Cruz de la Sierra, a los {dateFmt(certActual.fechaEmision)} días del mes de {dateFmt(certActual.fechaEmision)} del año {dateFmt(certActual.fechaEmision)}.
+                El presente certificado se extiende a solicitud del interesado para los fines legales que estime conveniente, en la ciudad de Santa Cruz de la Sierra, a {dateInWords(certActual.fechaEmision)}.
               </p>
             </div>
 

@@ -1,4 +1,5 @@
 import graphene
+from django.db.models import Prefetch
 from ..grupos_validacion import filtro_por_raiz, GRUPOS_VEHICULO, GRUPOS_INMUEBLE
 from ..models import in_semoviente
 from .types import InSemovienteType
@@ -374,7 +375,9 @@ class Query(graphene.ObjectType):
 
     # ── Resolvers — Jerarquías ──────────────────────────────────
     def resolve_todos_grupos(root, info, solo_activos=True):
-        qs = in_grupo.objects.select_related('cod_padre', 'cod_gest', 'cod_tipo')
+        qs = in_grupo.objects.select_related('cod_padre').prefetch_related(
+            Prefetch('in_det_grp_set', queryset=in_det_grp.objects.order_by('pk'))
+        )
         if solo_activos:
             qs = qs.exclude(a_b='B')
         return qs.order_by('cod_hijo')
@@ -592,19 +595,16 @@ class Query(graphene.ObjectType):
 
     def resolve_validar_solvencia(root, info, id_empleado):
         """Devuelve 'OK' si el empleado no tiene activos pendientes, o lista los activos pendientes."""
-        try:
-            responsable = in_responsable.objects.filter(cod_emp_id=id_empleado, a_b='A').first()
-            if not responsable:
-                return 'OK'
-            asigs = in_asignado.objects.filter(cod_resp=responsable.cod_resp, estado='A').values_list('cod_asig', flat=True)
-            nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
-            activos_pendientes = in_activo.objects.filter(nro_activo__in=nros, a_b='A')
-            if activos_pendientes.exists():
-                lista = ', '.join([f"{a.cod_activo}: {a.descripcion[:40]}" for a in activos_pendientes[:5]])
-                return f'PENDIENTE:{lista}'
-            return 'OK'
-        except Exception:
-            return 'ERROR'
+        responsable = in_responsable.objects.filter(cod_emp_id=id_empleado, a_b='A').first()
+        if not responsable:
+            return 'SIN_RESPONSABLE'
+        asigs = in_asignado.objects.filter(cod_resp=responsable.cod_resp, estado='A').values_list('cod_asig', flat=True)
+        nros = in_det_asig.objects.filter(cod_asig_id__in=asigs).values_list('nro_activo_id', flat=True)
+        activos_pendientes = in_activo.objects.filter(nro_activo__in=nros, a_b='A')
+        if activos_pendientes.exists():
+            lista = ', '.join([f"{a.cod_activo}: {a.descripcion[:40]}" for a in activos_pendientes[:5]])
+            return f'PENDIENTE:{lista}'
+        return 'OK'
 
     def resolve_det_asig_por_asignacion(root, info, cod_asig):
         return in_det_asig.objects.filter(cod_asig_id=cod_asig).select_related('nro_activo')

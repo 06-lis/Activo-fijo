@@ -98,18 +98,25 @@ class InGrupoType(DjangoObjectType):
         model = in_grupo
         fields = '__all__'
 
+    def _primer_detalle_grupo(self):
+        detalles_precargados = getattr(self, '_prefetched_objects_cache', {})
+        if 'in_det_grp_set' in detalles_precargados:
+            detalles = detalles_precargados['in_det_grp_set']
+            return detalles[0] if detalles else None
+        return self.in_det_grp_set.first()
+
     def resolve_vida_util_default(self, info):
-        det = self.in_det_grp_set.first()
+        det = self._primer_detalle_grupo()
         return det.vida_util_ano if det else None
 
     def resolve_tasa_depreciacion(self, info):
-        det = self.in_det_grp_set.first()
+        det = self._primer_detalle_grupo()
         if det and det.vida_util_ano and det.vida_util_ano > 0:
             return round(100.0 / det.vida_util_ano, 2)
         return None
 
     def resolve_codigo_contable(self, info):
-        det = self.in_det_grp_set.first()
+        det = self._primer_detalle_grupo()
         return str(det.cuenta_cont) if det else None
 
 
