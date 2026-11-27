@@ -1258,6 +1258,14 @@ export default function Activos() {
           <div className="form-grid">
             <div className="form-group">
               <label>Grupo *</label>
+<input
+  type="text"
+  placeholder="Buscar grupo por nombre o código..."
+  value={grupoSearch}
+  onChange={e => setGrupoSearch(e.target.value)}
+  disabled={editId !== null && form.estadoRegistro === 'APROBADO'}
+  style={{ marginBottom: '8px', width: '100%' }}
+/>
               <select
                 name="codGrupo"
                 style={modalError && !form.codGrupo ? { borderColor: '#ef4444', borderWidth: '1.5px' } : undefined}
@@ -1279,7 +1287,22 @@ export default function Activos() {
                     (Selección actual) {cats?.todosGrupos?.find((g: any) => String(g.codGrupo) === String(form.codGrupo))?.desGrupo || form.codGrupo}
                   </option>
                 )}
-                {groupedLeaves.map(({ rootName, items }: any) => (
+                {groupedLeaves
+  .map(({ rootName, items }: any) => ({
+    rootName,
+    items: items.filter((g: any) => {
+      const query = grupoSearch.trim().toLowerCase();
+      return (
+        String(g.codGrupo) === String(form.codGrupo) ||
+        getGroupUnifiedCode(g).toLowerCase().includes(query) ||
+        getGroupFullCode(g).toLowerCase().includes(query) ||
+        getGroupSpecificPath(g).toLowerCase().includes(query) ||
+        rootName.toLowerCase().includes(query)
+      );
+    })
+  }))
+  .filter((grp: any) => grp.items.length > 0)
+  .map(({ rootName, items }: any) => (
                   <optgroup key={`optgrp-${rootName}`} label={`📁 ${rootName}`}>
                     {items.map((g: any) => {
                       const unified = getGroupUnifiedCode(g);

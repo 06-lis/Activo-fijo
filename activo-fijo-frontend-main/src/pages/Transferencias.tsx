@@ -108,10 +108,11 @@ const GET_CATS = gql`
       }
     }
     todasOficinas {
-      codOfic
-      codDpto
-      desDpto
-      codPadre {
+  codOfic
+  codDpto
+  desDpto
+  nivel
+  codPadre {
         codOfic
         codDpto
         desDpto
@@ -236,24 +237,24 @@ const estadoClass: Record<string, string> = {
 
 function getOfficeFullCode(ofic: any): string {
   if (!ofic) return '';
-  const parts = [];
-  let current = ofic;
-  while (current) {
-    parts.unshift(current.codDpto);
-    current = current.codPadre;
+
+  const code = String(ofic.codDpto || '');
+
+  if (!ofic.codPadre) return code;
+
+  const parentCode = getOfficeFullCode(ofic.codPadre);
+
+  if (!parentCode) return code;
+
+  if (code.startsWith(parentCode + '-')) {
+    return code;
   }
-  return parts.join('-');
+
+  return parentCode + '-' + code;
 }
 
 function getOfficeUnifiedCode(ofic: any): string {
-  if (!ofic) return '';
-  const parts = [];
-  let current = ofic;
-  while (current) {
-    parts.unshift(current.codDpto);
-    current = current.codPadre;
-  }
-  return parts.join('');
+  return getOfficeFullCode(ofic);
 }
 
 function formatOfficeName(oficina: any): string {
@@ -414,14 +415,18 @@ export default function Transferencias() {
     setSelectedNuevoResp(null);
     setShowNuevoRespDropdown(true);
   };
-
   // Autocomplete filtering
   const filteredOficinasDest = cats?.todasOficinas?.filter((o: any) => {
+    if (Number(o.nivel) !== 3) return false;
+
     const fullCode = getOfficeFullCode(o).toLowerCase();
-    const unifiedCode = getOfficeUnifiedCode(o).toLowerCase();
-    const text = o.desDpto.toLowerCase();
-    const query = oficinaDestSearch.toLowerCase();
-    return text.includes(query) || fullCode.includes(query) || unifiedCode.includes(query);
+    const unifiedCode = fullCode.replace(/-/g, '');
+    const text = formatOfficeName(o).toLowerCase();
+    const query = oficinaDestSearch.trim().toLowerCase();
+
+    return text.includes(query)
+      || fullCode.includes(query)
+      || unifiedCode.includes(query);
   }) || [];
 
   const filteredResponsables = cats?.todosResponsables?.filter((r: any) => {
@@ -429,7 +434,10 @@ export default function Transferencias() {
     const fullName = `${r.codEmp.nombre} ${r.codEmp.apellido}`.toLowerCase();
     const cargo = (r.codEmp.cargo || '').toLowerCase();
     const query = nuevoRespSearch.toLowerCase();
-    return fullName.includes(query) || cargo.includes(query) || String(r.codResp).includes(query);
+
+    return fullName.includes(query)
+      || cargo.includes(query)
+      || String(r.codResp).includes(query);
   }) || [];
 
   const filteredActivosNew = cats?.todosActivos?.filter((a: any) => {
@@ -441,11 +449,23 @@ export default function Transferencias() {
   }) || [];
 
   const filteredActivosExist = cats?.todosActivos?.filter((a: any) => {
-    const code = a.codActivo.toLowerCase();
-    const desc = a.descripcion.toLowerCase();
-    const query = activoExistSearch.toLowerCase();
-    return code.includes(query) || desc.includes(query);
-  }) || [];
+  const transferencia = data?.todasTransferencias?.find(
+    (t: any) => String(t.codTransf) === String(transfCreada)
+  );
+
+  const yaAgregado = transferencia?.inDetTranfSet?.some(
+    (det: any) =>
+      String(det.nroActivo?.nroActivo) === String(a.nroActivo)
+  );
+
+  if (yaAgregado) return false;
+
+  const code = a.codActivo.toLowerCase();
+  const desc = a.descripcion.toLowerCase();
+  const query = activoExistSearch.toLowerCase();
+
+  return code.includes(query) || desc.includes(query);
+}) || [];
 
   // Abrir modal para transferencia EXISTENTE
   const handleAbrirExistente = (codTransf: number) => {
@@ -813,7 +833,19 @@ export default function Transferencias() {
 
       {showModal && (
         <div className="modal-overlay" onClick={handleCerrarModal}>
-          <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
+         <div
+  className="modal modal-lg"
+  onClick={e => e.stopPropagation()}
+  style={transfCreada ? {
+    width: '95%',
+    maxWidth: '1000px',
+    minHeight: 'min(450px, 85vh)',
+    maxHeight: '90vh',
+ overflowY: 'auto',
+display: 'flex',
+flexDirection: 'column'
+  } : undefined}
+>
             <h2 className="modal-title">
               {transfCreada ? `Transferencia #${transfCreada} — Agregar Activo` : 'Nueva Transferencia'}
             </h2>
@@ -1034,7 +1066,12 @@ export default function Transferencias() {
                       placeholder="Buscar activo por código o descripción..."
                     />
                     {showActivoExistDropdown && (
-                      <ul className="autocomplete-dropdown">
+  <ul className="autocomplete-dropdown" style={{
+    position: 'relative',
+    maxHeight: '280px',
+    overflowY: 'auto',
+    width: '100%'
+  }}>
                         {filteredActivosExist.slice(0, 20).map((a: any) => {
                           const office = getActivoOffice(a);
                           const officeLabel = office ? formatOfficeName(office) : 'Sin oficina';
@@ -1055,7 +1092,14 @@ export default function Transferencias() {
                     )}
                   </div>
                 </div>
-                <div className="modal-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '1.15rem' }}>
+               <div className="modal-actions" style={{
+  display: 'flex',
+  gap: '8px',
+  justifyContent: 'flex-end',
+  marginTop: 'auto',
+  padding: '12px',
+  flexShrink: 0
+}}>
                   <button className="btn btn-secondary" onClick={handleCerrarModal}>Cerrar</button>
                   <button className="btn btn-primary" onClick={handleAgregar}>Agregar Activo</button>
                 </div>

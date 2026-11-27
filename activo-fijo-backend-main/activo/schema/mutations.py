@@ -2192,15 +2192,178 @@ class CrearTransferencia(graphene.Mutation):
 
 class EditarTransferencia(graphene.Mutation):
     class Arguments:
-        cod_transf   = graphene.Int(required=True)
-        estado       = graphene.String()
+        cod_transf = graphene.Int(required=True)
+        estado = graphene.String()
         cod_ofi_dest = graphene.Int()
+
     transferido = graphene.Field(InTransferidoType)
+
     def mutate(root, info, cod_transf, estado=None, cod_ofi_dest=None):
-        obj = in_transferido.objects.get(pk=cod_transf)
-        if estado       is not None: obj.estado = estado
-        if cod_ofi_dest is not None: obj.cod_ofi_dest_id = cod_ofi_dest
-        obj.save()
+        from django.db import transaction
+
+        with transaction.atomic():
+            obj = in_transferido.objects.select_for_update().get(
+                pk=cod_transf
+            )
+
+            if obj.estado in ('C', 'B', 'R'):
+                raise Exception(
+                    'No se puede modificar una transferencia finalizada.'
+                )
+
+            if cod_ofi_dest is not None:
+                if cod_ofi_dest != obj.cod_ofi_dest_id:
+                    raise Exception(
+                        'No se puede cambiar la oficina de destino.'
+                    )
+
+            transiciones = {
+                'P': ('A', 'R'),
+                'A': ('C',),
+            }
+
+            if estado is not None:
+                if estado not in transiciones.get(obj.estado, ()):
+                    raise Exception('Cambio de estado no permitido.')
+
+            if estado == 'C':
+
+                if not obj.cod_asig_de:
+                    raise Exception(
+                        'No existe una asignación de destino.'
+                    )
+
+                detalles = list(
+                    in_det_tranf.objects.filter(
+                        cod_transf_id=cod_transf
+                    )
+                )
+
+                if not detalles:
+                    raise Exception(
+                        'La transferencia no contiene activos.'
+                    )
+
+                ids = [d.nro_activo_id for d in detalles]
+
+                if len(ids) != len(set(ids)):
+                    raise Exception(
+                        'La transferencia contiene activos duplicados.'
+                    )
+
+                activos = {
+                    a.pk: a
+                    for a in in_activo.objects.select_for_update()
+                    .filter(pk__in=ids).order_by('pk')
+                }
+
+                destino = in_asignado.objects.select_for_update().get(
+                    pk=obj.cod_asig_de
+                )
+
+                if destino.estado != 'A':
+                    raise Exception(
+                        'La asignación de destino no está vigente.'
+                    )
+
+                if destino.cod_ofic_id != obj.cod_ofi_dest_id:
+                    raise Exception(
+                        'La oficina de destino no coincide.'
+                    )
+
+                if destino.cod_ofic.nivel != 3:
+                    raise Exception(
+                        'Seleccione una oficina de nivel 3.'
+                    )
+
+                for detalle in detalles:
+
+                    activo = activos[detalle.nro_activo_id]
+
+                    if activo.a_b == 'B':
+                        raise Exception(
+                            'No se puede transferir un activo dado de baja.'
+                        )
+
+                    if activo.estado_registro != 'APROBADO':
+                        raise Exception(
+                            'El activo debe estar aprobado.'
+                        )
+
+                    vigentes = list(
+                        in_det_asig.objects.filter(
+                            nro_activo_id=activo.pk,
+                            cod_asig__estado='A'
+                        ).select_related('cod_asig')
+                    )
+
+                    if len(vigentes) != 1:
+                        raise Exception(
+                            'El activo debe tener una sola asignación vigente.'
+                        )
+
+                    anterior = vigentes[0]
+
+                    if anterior.cod_asig_id != obj.cod_asig_or:
+                        raise Exception(
+                            'La asignación de origen no coincide.'
+                        )
+
+                    if anterior.cod_asig.cod_ofic_id != obj.cod_ofi_rem_id:
+                        raise Exception(
+                            'La oficina de origen no coincide.'
+                        )
+
+                    if anterior.cod_asig_id == destino.pk:
+                        raise Exception(
+                            'El origen y destino son la misma asignación.'
+                        )
+
+                    if detalle.cantidad != anterior.cantidad:
+                        raise Exception(
+                            'La cantidad no coincide con la asignación.'
+                        )
+
+                    # Guardar historial de salida
+                    in_log_det_asig.objects.create(
+                        cod_asig=anterior.cod_asig_id,
+                        nro_activo=anterior.nro_activo_id,
+                        cantidad=anterior.cantidad,
+                        fecha_trans=anterior.fecha_trans,
+                        tipo_trans=1,
+                        cod_trans=anterior.cod_asig_id,
+                        tipo_trans_act=3,
+                        cod_trans_act=anterior.cod_asig_id,
+                        fecha_trans_act=timezone.now(),
+                        tipo_actual='D'
+                    )
+
+                    # Trasladar únicamente el activo seleccionado
+                    anterior.cod_asig_id = destino.pk
+                    anterior.fecha_trans = timezone.now().date()
+                    anterior.save(
+                        update_fields=['cod_asig', 'fecha_trans']
+                    )
+
+                    # Guardar historial de entrada
+                    in_log_det_asig.objects.create(
+                        cod_asig=destino.pk,
+                        nro_activo=activo.pk,
+                        cantidad=anterior.cantidad,
+                        fecha_trans=anterior.fecha_trans,
+                        tipo_trans=1,
+                        cod_trans=destino.pk,
+                        tipo_trans_act=1,
+                        cod_trans_act=destino.pk,
+                        fecha_trans_act=timezone.now(),
+                        tipo_actual='I'
+                    )
+
+            if estado is not None:
+                obj.estado = estado
+
+            obj.save()
+
         return EditarTransferencia(transferido=obj)
 
 class AnularTransferencia(graphene.Mutation):
