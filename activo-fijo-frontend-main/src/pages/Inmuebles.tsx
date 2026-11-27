@@ -74,7 +74,9 @@ export default function Inmuebles() {
     variables: { search: busqueda.trim() || null },
     fetchPolicy: 'network-only',
   });
-  const { data: dataActivos } = useQuery(GET_ACTIVOS_SELECT);
+ const { data: dataActivos, refetch: refetchActivos } = useQuery(GET_ACTIVOS_SELECT, {
+    fetchPolicy: 'network-only',
+});
   const [guardarInmueble] = useMutation(GUARDAR_INMUEBLE);
 
   const inmuebles: any[] = data?.todosInmuebles || [];
@@ -91,11 +93,12 @@ export default function Inmuebles() {
   const cambiar = (campo: string, valor: string) =>
     setForm((prev: any) => ({ ...prev, [campo]: valor }));
 
-  const abrirNueva = () => {
+const abrirNueva = () => {
+    refetchActivos();
     setEditando(false);
     setFiltroActivo('');
     setForm({ ...VACIO });
-  };
+};
 
   const abrirEditar = (i: any) => {
     setEditando(true);
@@ -156,9 +159,16 @@ export default function Inmuebles() {
     <PageLayout
       title="Ficha de Inmuebles e Inspección Técnica (I.T.E.)"
       actions={[
-        ...(puedeEditar ? [{ label: 'Nueva ficha', icon: '+', onClick: abrirNueva }] : []),
-        { label: 'Actualizar', icon: '↺', onClick: () => refetch() },
-      ]}
+  ...(puedeEditar ? [{ label: 'Nueva ficha', icon: '+', onClick: abrirNueva }] : []),
+  {
+    label: 'Actualizar',
+    icon: '↻',
+    onClick: () => {
+      refetch();
+      refetchActivos();
+    }
+  }
+]}
     >
       <div className="bg-white border border-slate-200 rounded-xl p-4 mb-6 shadow-sm">
         <input
