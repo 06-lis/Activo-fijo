@@ -25,17 +25,17 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => {
-    const email = localStorage.getItem('userEmail') || '';
-    const permisos = JSON.parse(localStorage.getItem('permisos') || '[]');
-    const esAdmin = localStorage.getItem('esAdmin') === 'true';
+    const email = sessionStorage.getItem('userEmail') || '';
+    const permisos = JSON.parse(sessionStorage.getItem('permisos') || '[]');
+    const esAdmin = sessionStorage.getItem('esAdmin') === 'true';
     if (email) return { token: '', email, permisos, esAdmin };
     return null;
   });
 
   const login = useCallback((token: string, email: string, permisos: string[] = [], esAdmin = false) => {
-    localStorage.setItem('userEmail', email);
-    localStorage.setItem('permisos', JSON.stringify(permisos));
-    localStorage.setItem('esAdmin', String(esAdmin));
+    sessionStorage.setItem('userEmail', email);
+    sessionStorage.setItem('permisos', JSON.stringify(permisos));
+    sessionStorage.setItem('esAdmin', String(esAdmin));
     setUser({ token: '', email, permisos, esAdmin });
   }, []);
 
@@ -48,28 +48,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ query: 'mutation { logout { success } }' })
     }).catch(console.error);
 
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('permisos');
-    localStorage.removeItem('esAdmin');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('permisos');
+    sessionStorage.removeItem('esAdmin');
     setUser(null);
   }, []);
 
   const updatePermisos = useCallback((permisos: string[], esAdmin: boolean) => {
-    localStorage.setItem('permisos', JSON.stringify(permisos));
-    localStorage.setItem('esAdmin', String(esAdmin));
+    sessionStorage.setItem('permisos', JSON.stringify(permisos));
+    sessionStorage.setItem('esAdmin', String(esAdmin));
     setUser(prev => prev ? { ...prev, permisos, esAdmin } : null);
   }, []);
 
   // Al arrancar: verificar con el backend que la cookie de sesión siga siendo válida.
   // Si expiró (o el servidor se reinició), se limpia la sesión local y se muestra el Login.
-  const [checking, setChecking] = useState<boolean>(() => !!localStorage.getItem('userEmail'));
+  const [checking, setChecking] = useState<boolean>(() => !!sessionStorage.getItem('userEmail'));
 
   useEffect(() => {
-    if (!localStorage.getItem('userEmail')) return;
+    if (!sessionStorage.getItem('userEmail')) return;
     const clearLocal = () => {
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('permisos');
-      localStorage.removeItem('esAdmin');
+      sessionStorage.removeItem('userEmail');
+      sessionStorage.removeItem('permisos');
+      sessionStorage.removeItem('esAdmin');
       setUser(null);
     };
     fetch('http://localhost:8000/graphql/', {

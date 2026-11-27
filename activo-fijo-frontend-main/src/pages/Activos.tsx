@@ -272,7 +272,7 @@ const FORM_VACIO = {
   organismoFinanciador: '', codRube: '', nroConvenio: '', estadoRegistro: 'ELABORADO'
 };
 
-const ITEMS_POR_PAGINA = 8;
+const ITEMS_POR_PAGINA = 20;
 
 export default function Activos() {  
   // ==================== PERMISOS ====================
@@ -889,7 +889,7 @@ export default function Activos() {
           </thead>
           <tbody>
             {loading ? (
-              Array.from({ length: 8 }).map((_, idx) => (
+              Array.from({ length: ITEMS_POR_PAGINA }).map((_, idx) => (
                 <tr key={idx} className="animate-pulse border-b border-slate-700/30">
                   <td><div className="h-4 bg-slate-700 rounded w-4 mx-auto"></div></td>
                   <td><div className="h-4 bg-slate-700 rounded w-16"></div></td>

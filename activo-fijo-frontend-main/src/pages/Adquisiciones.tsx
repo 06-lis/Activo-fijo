@@ -229,7 +229,7 @@ const ANULAR_ORDEN_COMPRA = gql`
 
 export default function Adquisiciones() {
   const { user } = useAuth();
-  const userEmail = localStorage.getItem('userEmail') || '';
+  const userEmail = sessionStorage.getItem('userEmail') || '';
   const [activeTab, setActiveTab] = useState<'solicitudes' | 'ofertas' | 'ordenes'>('solicitudes');
 
   // Permisos granulares
@@ -1030,7 +1030,7 @@ export default function Adquisiciones() {
                   }}
                 >
                   <option value="">Seleccionar Solicitud...</option>
-                  {data?.todasSolicitudes?.filter((s: any) => s.aB === 'A').map((s: any) => (
+                  {data?.todasSolicitudes?.filter((s: any) => s.aB === 'P').map((s: any) => (
                     <option key={s.nroSol} value={s.nroSol}>
                       #{s.nroSol} — {s.glosa}
                     </option>

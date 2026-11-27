@@ -7,24 +7,15 @@ import { useAuth } from '../context/AuthContext';
 // Helper functions to get office codes
 function getOfficeFullCode(ofic: any): string {
   if (!ofic) return '';
-  const parts = [];
-  let current = ofic;
-  while (current) {
-    parts.unshift(current.codDpto);
-    current = current.codPadre;
-  }
-  return parts.join('-');
+  const code = String(ofic.codDpto || '');
+  const parentCode = getOfficeFullCode(ofic.codPadre);
+  if (!parentCode) return code;
+  if (code.startsWith(parentCode + '-')) return code;
+  return parentCode + '-' + code;
 }
 
 function getOfficeUnifiedCode(ofic: any): string {
-  if (!ofic) return '';
-  const parts = [];
-  let current = ofic;
-  while (current) {
-    parts.unshift(current.codDpto);
-    current = current.codPadre;
-  }
-  return parts.join('');
+  return getOfficeFullCode(ofic);
 }
 
 const GET_INGRESOS = gql`
@@ -275,6 +266,7 @@ export default function Ingresos() {
 
   // Autocomplete filtering helpers
   const filteredOficinas = cats?.todasOficinas?.filter((o: any) => {
+    if (o.nivel !== 3) return false;
     const fullCode = getOfficeFullCode(o).toLowerCase();
     const unifiedCode = getOfficeUnifiedCode(o).toLowerCase();
     const text = o.desDpto.toLowerCase();

@@ -787,13 +787,23 @@ class AgregarDetSol(graphene.Mutation):
         nro_sol     = graphene.Int(required=True)
         id_material = graphene.Int(required=True)
         cantidad    = graphene.Int(required=True)
-    det_sol = graphene.Field(InDetSolType)
-    def mutate(root, info, nro_sol, id_material, cantidad):
-        obj = in_det_sol.objects.create(
-            nro_sol_id=nro_sol, id_material=id_material, cantidad=cantidad
-        )
-        return AgregarDetSol(det_sol=obj)
 
+    det_sol = graphene.Field(InDetSolType)
+
+    def mutate(root, info, nro_sol, id_material, cantidad):
+
+        if cantidad <= 0 or cantidad > 32767:
+            raise Exception(
+                "La cantidad debe estar entre 1 y 32767."
+            )
+
+        obj = in_det_sol.objects.create(
+            nro_sol_id=nro_sol,
+            id_material=id_material,
+            cantidad=cantidad
+        )
+
+        return AgregarDetSol(det_sol=obj)
 class EditarDetSol(graphene.Mutation):
     class Arguments:
         nro_sol     = graphene.Int(required=True)
@@ -815,6 +825,11 @@ class CrearOferta(graphene.Mutation):
         glosa      = graphene.String()
     oferta = graphene.Field(InOfertaType)
     def mutate(root, info, nro_sol, cod_prov, fecha_ofer, glosa=''):
+        solicitud = in_solicitud.objects.get(pk=nro_sol)
+        if solicitud.a_b != 'P':
+            raise Exception('Solo se pueden registrar ofertas de solicitudes aprobadas.')
+        if fecha_ofer < solicitud.fecha:
+            raise Exception('Fecha de oferta anterior a la solicitud.')
         obj = in_oferta.objects.create(
             nro_sol_id=nro_sol, cod_prov_id=cod_prov,
             fecha_ofer=fecha_ofer, glosa=glosa, estado='P'
@@ -853,15 +868,34 @@ class AgregarDetOfer(graphene.Mutation):
         monto_uni   = graphene.Float(required=True)
         id_marca    = graphene.Int()
         id_modelo   = graphene.Int()
-    det_ofer = graphene.Field(InDetOferType)
-    def mutate(root, info, nro_oferta, id_material, cantidad, monto_uni, id_marca=0, id_modelo=0):
-        obj = in_det_ofer.objects.create(
-            nro_oferta_id=nro_oferta, id_material=id_material,
-            cantidad=cantidad, monto_uni=monto_uni,
-            id_marca=id_marca, id_modelo=id_modelo
-        )
-        return AgregarDetOfer(det_ofer=obj)
 
+    det_ofer = graphene.Field(InDetOferType)
+
+    def mutate(root, info, nro_oferta, id_material,
+               cantidad, monto_uni, id_marca=0, id_modelo=0):
+
+        import math
+
+        if cantidad <= 0 or cantidad > 32767:
+            raise Exception(
+                "La cantidad debe estar entre 1 y 32767."
+            )
+
+        if not math.isfinite(monto_uni) or monto_uni <= 0:
+            raise Exception(
+                "El precio unitario debe ser mayor a cero."
+            )
+
+        obj = in_det_ofer.objects.create(
+            nro_oferta_id=nro_oferta,
+            id_material=id_material,
+            cantidad=cantidad,
+            monto_uni=monto_uni,
+            id_marca=id_marca or 0,
+            id_modelo=id_modelo or 0
+        )
+
+        return AgregarDetOfer(det_ofer=obj)
 class EditarDetOfer(graphene.Mutation):
     class Arguments:
         nro_oferta  = graphene.Int(required=True)
@@ -888,15 +922,63 @@ class CrearOrdenCompra(graphene.Mutation):
         fecha_orden  = graphene.Date(required=True)
         glosa        = graphene.String()
         nro_com_egre = graphene.Int()
-    orden_compra = graphene.Field(InOrdenCompraType)
-    def mutate(root, info, nro_oferta, emp_resp, fecha_orden, glosa='', nro_com_egre=0):
-        obj = in_orden_compra.objects.create(
-            nro_oferta_id=nro_oferta, emp_resp_id=emp_resp,
-            fecha_orden=fecha_orden, glosa=glosa,
-            nro_com_egre=nro_com_egre, a_b='A'
-        )
-        return CrearOrdenCompra(orden_compra=obj)
 
+    orden_compra = graphene.Field(InOrdenCompraType)
+
+    def mutate(root, info, nro_oferta, emp_resp,
+               fecha_orden, glosa='', nro_com_egre=0):
+
+        from django.db import transaction
+
+        with transaction.atomic():
+
+            oferta = in_oferta.objects.select_for_update().get(
+                pk=nro_oferta
+            )
+
+            if oferta.estado != 'P':
+                raise Exception(
+                    "Solo se pueden autorizar ofertas pendientes."
+                )
+
+            if oferta.nro_sol.a_b != 'P':
+                raise Exception(
+                    "La solicitud debe estar aprobada."
+                )
+
+            if fecha_orden < oferta.fecha_ofer:
+                raise Exception(
+                    "La fecha de la orden no puede ser anterior a la oferta."
+                )
+
+            if in_orden_compra.objects.filter(
+                nro_oferta_id=nro_oferta,
+                a_b='A'
+            ).exists():
+                raise Exception(
+                    "Esta oferta ya tiene una orden de compra activa."
+                )
+
+            if not in_det_ofer.objects.filter(
+                nro_oferta_id=nro_oferta
+            ).exists():
+                raise Exception(
+                    "La oferta no tiene detalles registrados."
+                )
+
+            obj = in_orden_compra.objects.create(
+                nro_oferta_id=nro_oferta,
+                emp_resp_id=emp_resp,
+                fecha_orden=fecha_orden,
+                glosa=glosa or '',
+                nro_com_egre=nro_com_egre,
+                a_b='A'
+            )
+
+            oferta.estado = 'A'
+            oferta.save(update_fields=['estado'])
+
+        return CrearOrdenCompra(orden_compra=obj)
 class EditarOrdenCompra(graphene.Mutation):
     class Arguments:
         nro_compra   = graphene.Int(required=True)
@@ -915,13 +997,43 @@ class EditarOrdenCompra(graphene.Mutation):
 class AnularOrdenCompra(graphene.Mutation):
     class Arguments:
         nro_compra = graphene.Int(required=True)
-    orden_compra = graphene.Field(InOrdenCompraType)
-    def mutate(root, info, nro_compra):
-        obj = in_orden_compra.objects.get(pk=nro_compra)
-        obj.a_b = 'B'
-        obj.save()
-        return AnularOrdenCompra(orden_compra=obj)
 
+    orden_compra = graphene.Field(InOrdenCompraType)
+
+    def mutate(root, info, nro_compra):
+        from django.db import transaction
+
+        with transaction.atomic():
+            obj = in_orden_compra.objects.get(pk=nro_compra)
+
+            oferta = in_oferta.objects.select_for_update().get(
+                pk=obj.nro_oferta_id
+            )
+
+            obj.refresh_from_db()
+
+            if obj.a_b != 'A':
+                raise Exception(
+                    "La orden de compra no esta activa."
+                )
+
+            obj.a_b = 'B'
+            obj.save(update_fields=['a_b'])
+
+            existe_orden = in_orden_compra.objects.filter(
+                nro_oferta_id=oferta.pk,
+                a_b='A'
+            ).exists()
+
+            if (
+                not existe_orden
+                and oferta.estado == 'A'
+                and oferta.nro_sol.a_b == 'P'
+            ):
+                oferta.estado = 'P'
+                oferta.save(update_fields=['estado'])
+
+        return AnularOrdenCompra(orden_compra=obj)
 
 # ═══════════════════════════════════════════════════════════════
 # MUTATIONS — INGRESO DE BIENES
@@ -997,6 +1109,9 @@ class CrearIngreso(graphene.Mutation):
         # ─────────────────────────────────────────────────────────────
     ingreso = graphene.Field(InIngresoType)
     def mutate(root, info, estado='E', cod_prov=None, cod_ofic_dest=None, **kwargs):
+        from activo.models import in_oficina
+        if not in_oficina.objects.filter(pk=cod_ofic_dest, nivel=3).exists():
+            raise Exception("Solo se permiten oficinas de destino de nivel 3.")
         obj = in_ingreso.objects.create(
             estado=estado,
             cod_prov_id=cod_prov,
@@ -1028,7 +1143,11 @@ class EditarIngreso(graphene.Mutation):
         if in_activo.objects.filter(nro_ingreso_id=nro_ingreso, a_b='B').exists():
             raise Exception("No se puede editar un ingreso que tiene activos dados de baja.")
         if glosa         is not None: obj.glosa = glosa
-        if cod_ofic_dest is not None: obj.cod_ofic_dest_id = cod_ofic_dest
+        if cod_ofic_dest is not None:
+            from activo.models import in_oficina
+            if not in_oficina.objects.filter(pk=cod_ofic_dest, nivel=3).exists():
+                raise Exception("Solo se permiten oficinas de destino de nivel 3.")
+            obj.cod_ofic_dest_id = cod_ofic_dest
         if cod_prov      is not None: obj.cod_prov_id = cod_prov
         if foto_bien     is not None: obj.foto_bien = foto_bien
         if foto_placa    is not None: obj.foto_placa = foto_placa

@@ -116,7 +116,7 @@ export default function Usuarios() {
   const puedeEliminarResp = user?.esAdmin || user?.permisos.includes('eliminar_responsable');
   const puedeGestionarPermisos = user?.esAdmin || user?.permisos.includes('gestionar_permisos');
 
-  const currentUserEmail = localStorage.getItem('userEmail') || '';
+  const currentUserEmail = sessionStorage.getItem('userEmail') || '';
 
   // UI state
   const [showModal, setShowModal] = useState(false);
