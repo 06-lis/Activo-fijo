@@ -106,17 +106,17 @@ class InGrupoType(DjangoObjectType):
         return self.in_det_grp_set.first()
 
     def resolve_vida_util_default(self, info):
-        det = self._primer_detalle_grupo()
+        det = InGrupoType._primer_detalle_grupo(self)
         return det.vida_util_ano if det else None
 
     def resolve_tasa_depreciacion(self, info):
-        det = self._primer_detalle_grupo()
+        det = InGrupoType._primer_detalle_grupo(self)
         if det and det.vida_util_ano and det.vida_util_ano > 0:
             return round(100.0 / det.vida_util_ano, 2)
         return None
 
     def resolve_codigo_contable(self, info):
-        det = self._primer_detalle_grupo()
+        det = InGrupoType._primer_detalle_grupo(self)
         return str(det.cuenta_cont) if det else None
 
 
